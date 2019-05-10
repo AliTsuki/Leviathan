@@ -5,20 +5,40 @@ public class PlayerController : MonoBehaviour
 {
     public GameObject ship;
     private PlayerInput playerInput;
+    private Rigidbody shipRigidbody;
+    public GameObject impulseEngine;
+    public GameObject warpEngine;
+    private ParticleSystem impulseParticleSystem;
+    private ParticleSystem warpParticleSystem;
+    private ParticleSystem.MainModule impulseParticleMain;
+    private ParticleSystem.MainModule warpParticleMain;
     public Vector3 intendedRotation;
     public Vector3 currentRotation;
     public Vector3 nextRotation;
-    public float intendedAngle = 0f;
-    public float maxRotationSpeed = 5f;
-    public float currentSpeed = 0f;
-    public float impulseSpeed = 1f;
-    public float warpMulti = 2f;
+    public Vector3 tiltRotation;
+    private bool intendedRotationClockwise = false;
+    public float differenceAngle = 0f;
+    private float intendedAngle = 0f;
+    private float maxRotationSpeed = 5f;
+    private float impulseMaxSpeed = 10f;
+    private float warpSpeedMultiplier = 3f;
     public float energy = 100f;
+    private int recentRotationsIndex = 0;
+    private int recentRotationsIndexMax = 60;
+    private float[] recentRotations;
+    public float recentRotationsAverage = 0f;
+    public float tiltAngle = 0f;
 
     // Start is called before the first frame update
     private void Start()
     {
-         playerInput = ship.GetComponent<PlayerInput>();
+        playerInput = ship.GetComponent<PlayerInput>();
+        shipRigidbody = ship.GetComponent<Rigidbody>();
+        impulseParticleSystem = impulseEngine.GetComponent<ParticleSystem>();
+        impulseParticleMain = impulseParticleSystem.main;
+        warpParticleSystem = warpEngine.GetComponent<ParticleSystem>();
+        warpParticleMain = warpParticleSystem.main;
+        recentRotations = new float[recentRotationsIndexMax];
     }
 
     // Update is called once per frame
@@ -30,44 +50,112 @@ public class PlayerController : MonoBehaviour
     // Fixed Update is called a fixed number of times per second
     private void FixedUpdate()
     {
-        ApplyInput();
+        UpdateShipState();
     }
 
-    private void ApplyInput()
+    // Updates the state of the ship, turning, accelerating, using weapons etc.
+    private void UpdateShipState()
     {
-        // if stick is being pushed in any direction, get the intended angle to rotate toward
+        TurnShip();
+        LeanShip();
+        AccelerateShip();
+        UseAbilities();
+    }
+
+    // Turns the ship
+    private void TurnShip()
+    {
         if(playerInput.horizontal != 0 || playerInput.vertical != 0)
         {
             intendedAngle = MathOps.Modulo((Mathf.Atan2(playerInput.vertical, playerInput.horizontal) * Mathf.Rad2Deg), 360);
             intendedRotation = new Vector3(0, intendedAngle, 0);
-            // the intended rotation is stored as 0°-359.99° where 0 is right, 90 is down, 180 is left, 270 is up
         }
-        // get the current rotation of the ship
         currentRotation = ship.transform.rotation.eulerAngles;
-        // if the absolute value of the current rotation minus the intended rotation is greater than the maximum rotation speed
-        // then rotate by the maximum rotation speed in the direction of the intended rotation
-        // TODO: something below is behaving incorrectly over the 0°/360° barrier
-        if(Mathf.Abs(currentRotation.y - intendedRotation.y) >= maxRotationSpeed)
+        currentRotation.y += 360;
+        differenceAngle = MathOps.Modulo((currentRotation.y - intendedRotation.y), 360);
+        if(differenceAngle > 180)
         {
-            // if the difference in current rotation and intended rotation is NEGATIVE then advance clockwise toward the intended rotation
-            // in increments of maximum rotation speed
-            if(currentRotation.y - intendedRotation.y < 0)
+            differenceAngle -= 180;
+            intendedRotationClockwise = true;
+        }
+        else
+        {
+            intendedRotationClockwise = false;
+        }
+        if(differenceAngle >= maxRotationSpeed)
+        {
+            if(intendedRotationClockwise == true)
             {
                 nextRotation.y = MathOps.Modulo((currentRotation.y + maxRotationSpeed), 360);
                 ship.transform.rotation = Quaternion.Euler(nextRotation);
+                recentRotations[recentRotationsIndex] = maxRotationSpeed;
             }
-            // otherwise, if the difference is POSITIVE then advance counterclockwise toward the intended rotation
-            // in increments of maximum rotation speed
-            else if(currentRotation.y - intendedRotation.y >= 0)
+            else
             {
                 nextRotation.y = MathOps.Modulo((currentRotation.y - maxRotationSpeed), 360);
                 ship.transform.rotation = Quaternion.Euler(nextRotation);
+                recentRotations[recentRotationsIndex] = -maxRotationSpeed;
             }
         }
-        // if the intended rotation is within distance of the maximum rotation from the current rotation then just apply the intended rotation
-        else
+        else if(differenceAngle < maxRotationSpeed && differenceAngle > 0)
         {
             ship.transform.rotation = Quaternion.Euler(intendedRotation);
+            //intendedRotation = ship.transform.rotation.eulerAngles;
+            recentRotations[recentRotationsIndex] = 2.5f;
         }
+        else
+        {
+            recentRotations[recentRotationsIndex] = 0;
+        }
+        recentRotationsIndex++;
+        if(recentRotationsIndex == recentRotationsIndexMax)
+        {
+            recentRotationsIndex = 0;
+        }
+    }
+
+    // Lean the ship during turns
+    private void LeanShip()
+    {
+        recentRotationsAverage = 0;
+        for(int i = 0; i < recentRotationsIndexMax; i++)
+        {
+            recentRotationsAverage += recentRotations[i];
+        }
+        recentRotationsAverage /= recentRotationsIndexMax;
+        currentRotation = ship.transform.rotation.eulerAngles;
+        tiltAngle = -(recentRotationsAverage * 5);
+        tiltRotation = new Vector3(currentRotation.x, currentRotation.y, tiltAngle);
+        ship.transform.rotation = Quaternion.Euler(tiltRotation);
+    }
+
+    // Accelerates the ship
+    private void AccelerateShip()
+    {
+        if(playerInput.impulse)
+        {
+            shipRigidbody.AddRelativeForce(new Vector3(0, 0, impulseMaxSpeed));
+            impulseParticleMain.startSpeed = 2.8f;
+            warpParticleMain.startLifetime = 0f;
+        }
+        else if(playerInput.warp)
+        {
+            shipRigidbody.AddRelativeForce(new Vector3(0, 0, impulseMaxSpeed * warpSpeedMultiplier));
+            impulseParticleMain.startSpeed = 5f;
+            warpParticleMain.startSpeed = 10f;
+            warpParticleMain.startLifetime = 1f;
+        }
+        else
+        {
+            impulseParticleMain.startSpeed = 1f;
+            warpParticleMain.startSpeed = 1f;
+            warpParticleMain.startLifetime = 0f;
+        }
+    }
+
+    // Uses abilities: fire weapons, bombs, use shield and scanner
+    private void UseAbilities()
+    {
+
     }
 }

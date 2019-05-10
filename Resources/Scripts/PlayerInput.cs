@@ -5,8 +5,8 @@ public class PlayerInput : MonoBehaviour
 {
     public float horizontal;
     public float vertical;
-    public float impulse;
-    public float warp;
+    public bool impulse;
+    public bool warp;
     public bool fire;
     public bool bomb;
     public bool shield;
@@ -40,8 +40,8 @@ public class PlayerInput : MonoBehaviour
             return;
         horizontal = 0f;
         vertical = 0f;
-        impulse = 0f;
-        warp = 0f;
+        impulse = false;
+        warp = false;
         fire = false;
         bomb = false;
         shield = false;
@@ -55,8 +55,8 @@ public class PlayerInput : MonoBehaviour
     {
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
-        impulse = Input.GetAxis("Impulse");
-        warp = Input.GetAxis("Warp");
+        impulse = Input.GetButton("Impulse");
+        warp = Input.GetButton("Warp");
         fire = Input.GetButton("Fire");
         bomb = Input.GetButton("Bomb");
         shield = Input.GetButton("Shield");
