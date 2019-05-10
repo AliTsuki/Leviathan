@@ -20,8 +20,9 @@ public class PlayerController : MonoBehaviour
     public float differenceAngle = 0f;
     private float intendedAngle = 0f;
     private float maxRotationSpeed = 5f;
-    private float impulseMaxSpeed = 10f;
+    private float impulseMaxSpeed = 15f;
     private float warpSpeedMultiplier = 3f;
+    private float warpEnergyCost = 5f;
     public float energy = 100f;
     private int recentRotationsIndex = 0;
     private int recentRotationsIndexMax = 60;
@@ -100,8 +101,14 @@ public class PlayerController : MonoBehaviour
         else if(differenceAngle < maxRotationSpeed && differenceAngle > 0)
         {
             ship.transform.rotation = Quaternion.Euler(intendedRotation);
-            //intendedRotation = ship.transform.rotation.eulerAngles;
-            recentRotations[recentRotationsIndex] = 2.5f;
+            if(currentRotation.y - intendedRotation.y - 180 < 0)
+            {
+                recentRotations[recentRotationsIndex] = -2.5f;
+            }
+            else
+            {
+                recentRotations[recentRotationsIndex] = 2.5f;
+            }
         }
         else
         {
