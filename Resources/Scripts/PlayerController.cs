@@ -8,6 +8,9 @@ public class PlayerController : MonoBehaviour
     private Rigidbody shipRigidbody;
     public GameObject impulseEngine;
     public GameObject warpEngine;
+    public GameObject gunBarrel;
+    public GameObject gunBarrelLights;
+    public GameObject laserBolt;
     private ParticleSystem impulseParticleSystem;
     private ParticleSystem warpParticleSystem;
     private ParticleSystem.MainModule impulseParticleMain;
@@ -20,9 +23,11 @@ public class PlayerController : MonoBehaviour
     public float differenceAngle = 0f;
     private float intendedAngle = 0f;
     private float maxRotationSpeed = 5f;
-    private float impulseMaxSpeed = 15f;
+    private float impulseMaxSpeed = 30f;
     private float warpSpeedMultiplier = 3f;
     private float warpEnergyCost = 5f;
+    private float shotEnergyCost = 5f;
+    private float shotCooldownTime = 1f;
     public float energy = 100f;
     private int recentRotationsIndex = 0;
     private int recentRotationsIndexMax = 60;
@@ -163,6 +168,14 @@ public class PlayerController : MonoBehaviour
     // Uses abilities: fire weapons, bombs, use shield and scanner
     private void UseAbilities()
     {
-
+        if(playerInput.fire)
+        {
+            gunBarrelLights.SetActive(true);
+            Instantiate(laserBolt, gunBarrel.transform.position, gunBarrel.transform.rotation);
+        }
+        else
+        {
+            gunBarrelLights.SetActive(false);
+        }
     }
 }
