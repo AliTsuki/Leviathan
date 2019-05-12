@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-// Player Input class reads and stores inputs from Player
-public class PlayerInput : MonoBehaviour
+// Reads and stores inputs from player
+public class PlayerInput
 {
     public float horizontal;
     public float vertical;
@@ -15,20 +15,20 @@ public class PlayerInput : MonoBehaviour
     public bool readyToClear;
 
     // Start is called before the first frame update
-    private void Start()
+    public void Start()
     {
         
     }
 
     // Update is called once per frame
-    private void Update()
+    public void Update()
     {
         ClearInput();
         ProcessInputs();
     }
 
     // Fixed Update is called a fixed number of times per second
-    private void FixedUpdate()
+    public void FixedUpdate()
     {
         readyToClear = true;
     }

@@ -88,7 +88,6 @@ GameObject:
   - component: {fileID: 8559128422755706058}
   - component: {fileID: 7636686378393426385}
   - component: {fileID: 7657311502592618059}
-  - component: {fileID: 8133912984304239583}
   m_Layer: 0
   m_Name: Laser Bolt
   m_TagString: Untagged
@@ -141,17 +140,3 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 1
---- !u!114 &8133912984304239583
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7091023098713015145}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3eb24031a601e2d4f88a7c89332891a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  projectile: {fileID: 7091023098713015145}
-  ship: {fileID: 0}
