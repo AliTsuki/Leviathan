@@ -3,10 +3,8 @@
 // Controls the player ships
 public class PlayerShip //: Ship
 {
-    private static GameController controller = GameManager.instance;
-
-    public GameObject ship;
-    private GameObject PlayerPrefab;
+    public GameObject Ship;
+    private GameObject playerPrefab;
     private PlayerInput playerInput = new PlayerInput();
     private Rigidbody shipRigidbody;
     private GameObject impulseEngine;
@@ -19,12 +17,10 @@ public class PlayerShip //: Ship
     private ParticleSystem warpParticleSystem;
     private ParticleSystem.MainModule impulseParticleMain;
     private ParticleSystem.MainModule warpParticleMain;
-
     private Vector3 intendedRotation;
     private Vector3 currentRotation;
     private Vector3 nextRotation;
     private Vector3 tiltRotation;
-
     private int recentRotationsIndex = 0;
     private static int recentRotationsIndexMax = 30;
     private float[] recentRotations;
@@ -34,234 +30,262 @@ public class PlayerShip //: Ship
     private float differenceAngle = 0f;
     private float intendedAngle = 0f;
     private float maxRotationSpeed = 5f;
-    private float energy = 0f;
 
+    // Ship stats
+    // Speed/Acceleration
     private float impulseAcceleration = 30f;
     private float warpAccelMultiplier = 3f;
     private float maxImpulseSpeed = 100f;
     private float maxWarpSpeed = 200f;
+    // Energy cost
     private float warpEnergyCost = 5f;
     private float shotEnergyCost = 5f;
-    private float shotCooldownTime = 1f;
-    private float shotSpeed = 50f;
+    // Cooldowns
+    private float shotCooldownTime = 0.25f;
+    private float lastShotFireTime = 0f;
+    private bool weaponOnCooldown = false;
+    // Weapon stats
+    private float shotSpeed = 25f;
     private float shotLifetime = 2.5f;
+    // Current/Max energy
+    private float energy = 0f;
     private float maxEnergy = 100f;
     
-    private int ID;
+    private int id;
+    public bool Alive = false;
 
     public PlayerShip(int _id)
     {
-        this.ID = _id;
+        this.id = _id;
+        this.Start();
     }
 
 
     // Start is called before the first frame update
     public void Start()
     {
-        PlayerPrefab = Resources.Load<GameObject>(controller.PlayerPrefabName);
-        ship = GameObject.Instantiate(PlayerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        ship.name = $@"Player: {ID}";
-        shipRigidbody = ship.GetComponent<Rigidbody>();
-        impulseEngine = ship.transform.Find("Impulse Engine").gameObject;
-        warpEngine = ship.transform.Find("Warp Engine").gameObject;
-        gunBarrel = ship.transform.Find("Gun Barrel").gameObject;
-        gunBarrelLights = gunBarrel.transform.Find("Gun Barrel Lights").gameObject;
-        shield = ship.transform.Find("Shield").gameObject;
-        scanner = ship.transform.Find("Scanner").gameObject;
-        impulseParticleSystem = impulseEngine.GetComponent<ParticleSystem>();
-        impulseParticleMain = impulseParticleSystem.main;
-        warpParticleSystem = warpEngine.GetComponent<ParticleSystem>();
-        warpParticleMain = warpParticleSystem.main;
-        recentRotations = new float[recentRotationsIndexMax];
-
-        playerInput.Start();
+        this.playerPrefab = Resources.Load(GameController.PlayerPrefabName, typeof(GameObject)) as GameObject;
+        this.Ship = GameObject.Instantiate(this.playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        this.Ship.name = $@"Player: {this.id}";
+        this.shipRigidbody = this.Ship.GetComponent<Rigidbody>();
+        this.impulseEngine = this.Ship.transform.Find("Impulse Engine").gameObject;
+        this.warpEngine = this.Ship.transform.Find("Warp Engine").gameObject;
+        this.gunBarrel = this.Ship.transform.Find("Gun Barrel").gameObject;
+        this.gunBarrelLights = this.gunBarrel.transform.Find("Gun Barrel Lights").gameObject;
+        this.shield = this.Ship.transform.Find("Shield").gameObject;
+        this.scanner = this.Ship.transform.Find("Scanner").gameObject;
+        this.impulseParticleSystem = this.impulseEngine.GetComponent<ParticleSystem>();
+        this.impulseParticleMain = this.impulseParticleSystem.main;
+        this.warpParticleSystem = this.warpEngine.GetComponent<ParticleSystem>();
+        this.warpParticleMain = this.warpParticleSystem.main;
+        this.recentRotations = new float[recentRotationsIndexMax];
+        this.Alive = true;
+        this.playerInput.Start();
     }
 
     // Update is called once per frame
     public void Update()
     {
-        playerInput.Update();
+        if(this.Alive)
+        {
+            this.playerInput.Update();
+        }
     }
 
     // Fixed Update is called a fixed number of times per second
     public void FixedUpdate()
     {
-        playerInput.FixedUpdate();
-
-        UpdateShipState();
+        if(this.Alive)
+        {
+            this.playerInput.FixedUpdate();
+            this.UpdateShipState();
+        }
     }
 
     // Updates the state of the ship, turning, accelerating, using weapons etc.
     private void UpdateShipState()
     {
-        RotateShip();
-        AccelerateShip();
-        UseAbilities();
+        this.RotateShip();
+        this.AccelerateShip();
+        this.UseAbilities();
     }
 
     // Rotates the ship according to player input
     private void RotateShip()
     {
-        TurnShip();
-        LeanShip();
+        this.TurnShip();
+        this.LeanShip();
     }
 
     // Turns the ship
     private void TurnShip()
     {
         // if joystick is pointed in some direction, set a new intended rotation
-        if(playerInput.horizontal != 0 || playerInput.vertical != 0)
+        if(this.playerInput.horizontal != 0 || this.playerInput.vertical != 0)
         {
-            intendedAngle = MathOps.Modulo((Mathf.Atan2(playerInput.vertical, playerInput.horizontal) * Mathf.Rad2Deg), 360);
-            intendedRotation = new Vector3(0, intendedAngle, 0);
+            this.intendedAngle = MathOps.Modulo(Mathf.Atan2(this.playerInput.vertical, this.playerInput.horizontal) * Mathf.Rad2Deg, 360);
+            this.intendedRotation = new Vector3(0, this.intendedAngle, 0);
         }
         // get current rotation
-        currentRotation = ship.transform.rotation.eulerAngles;
-        currentRotation.y += 360;
+        this.currentRotation = this.Ship.transform.rotation.eulerAngles;
+        this.currentRotation.y += 360;
         // Check if the turn should be clockwise or anti-cw
-        differenceAngle = MathOps.Modulo((currentRotation.y - intendedRotation.y), 360);
-        if(differenceAngle > 180)
+        this.differenceAngle = MathOps.Modulo(this.currentRotation.y - this.intendedRotation.y, 360);
+        if(this.differenceAngle > 180)
         {
-            differenceAngle -= 180;
-            intendedRotationClockwise = true;
+            this.differenceAngle -= 180;
+            this.intendedRotationClockwise = true;
         }
         else
         {
-            intendedRotationClockwise = false;
+            this.intendedRotationClockwise = false;
         }
         // if turning angle is greater than max rotation speed allows, rotate by max rot speed
-        if(differenceAngle >= maxRotationSpeed)
+        if(this.differenceAngle >= this.maxRotationSpeed)
         {
             // if clockwise, add rotation speed
-            if(intendedRotationClockwise == true)
+            if(this.intendedRotationClockwise == true)
             {
-                nextRotation.y = MathOps.Modulo((currentRotation.y + maxRotationSpeed), 360);
-                ship.transform.rotation = Quaternion.Euler(nextRotation);
-                recentRotations[recentRotationsIndex] = maxRotationSpeed;
+                this.nextRotation.y = MathOps.Modulo(this.currentRotation.y + this.maxRotationSpeed, 360);
+                this.Ship.transform.rotation = Quaternion.Euler(this.nextRotation);
+                this.recentRotations[this.recentRotationsIndex] = this.maxRotationSpeed;
             }
             // if anticlockwise, subtract rotation speed
             else
             {
-                nextRotation.y = MathOps.Modulo((currentRotation.y - maxRotationSpeed), 360);
-                ship.transform.rotation = Quaternion.Euler(nextRotation);
-                recentRotations[recentRotationsIndex] = -maxRotationSpeed;
+                this.nextRotation.y = MathOps.Modulo(this.currentRotation.y - this.maxRotationSpeed, 360);
+                this.Ship.transform.rotation = Quaternion.Euler(this.nextRotation);
+                this.recentRotations[this.recentRotationsIndex] = -this.maxRotationSpeed;
             }
         }
         // if turning angle is less than max rotation speed limit, immediately rotate to intended rotation
-        else if(differenceAngle < maxRotationSpeed && differenceAngle > 0)
+        else if(this.differenceAngle < this.maxRotationSpeed && this.differenceAngle > 0)
         {
-            ship.transform.rotation = Quaternion.Euler(intendedRotation);
+            this.Ship.transform.rotation = Quaternion.Euler(this.intendedRotation);
             // if
-            if(currentRotation.y - intendedRotation.y - 180 < 0)
+            if(this.currentRotation.y - this.intendedRotation.y - 180 < 0)
             {
-                recentRotations[recentRotationsIndex] = 2.5f;
+                this.recentRotations[this.recentRotationsIndex] = 2.5f;
             }
             else
             {
-                recentRotations[recentRotationsIndex] = -2.5f;
+                this.recentRotations[this.recentRotationsIndex] = -2.5f;
             }
         }
         else
         {
-            recentRotations[recentRotationsIndex] = 0;
+            this.recentRotations[this.recentRotationsIndex] = 0;
         }
-        recentRotationsIndex++;
-        if(recentRotationsIndex == recentRotationsIndexMax)
+        this.recentRotationsIndex++;
+        if(this.recentRotationsIndex == recentRotationsIndexMax)
         {
-            recentRotationsIndex = 0;
+            this.recentRotationsIndex = 0;
         }
     }
 
     // Lean the ship during turns
     private void LeanShip()
     {
-        recentRotationsAverage = 0;
+        this.recentRotationsAverage = 0;
         for(int i = 0; i < recentRotationsIndexMax; i++)
         {
-            recentRotationsAverage += recentRotations[i];
+            this.recentRotationsAverage += this.recentRotations[i];
         }
-        recentRotationsAverage /= recentRotationsIndexMax;
-        currentRotation = ship.transform.rotation.eulerAngles;
-        tiltAngle = -(recentRotationsAverage * 5);
-        tiltRotation = new Vector3(currentRotation.x, currentRotation.y, tiltAngle);
-        ship.transform.rotation = Quaternion.Euler(tiltRotation);
+        this.recentRotationsAverage /= recentRotationsIndexMax;
+        this.currentRotation = this.Ship.transform.rotation.eulerAngles;
+        this.tiltAngle = -(this.recentRotationsAverage * 5);
+        this.tiltRotation = new Vector3(this.currentRotation.x, this.currentRotation.y, this.tiltAngle);
+        this.Ship.transform.rotation = Quaternion.Euler(this.tiltRotation);
     }
 
     // Accelerates the ship
     private void AccelerateShip()
     {
-        if(playerInput.impulse)
+        if(this.playerInput.impulse)
         {
-            if(shipRigidbody.velocity.magnitude < maxImpulseSpeed)
+            if(this.shipRigidbody.velocity.magnitude < this.maxImpulseSpeed)
             {
-                shipRigidbody.AddRelativeForce(new Vector3(0, 0, impulseAcceleration));
-                impulseParticleMain.startSpeed = 2.8f;
-                warpParticleMain.startLifetime = 0f;
+                this.shipRigidbody.AddRelativeForce(new Vector3(0, 0, this.impulseAcceleration));
+                this.impulseParticleMain.startSpeed = 2.8f;
+                this.warpParticleMain.startLifetime = 0f;
             }
         }
-        else if(playerInput.warp)
+        else if(this.playerInput.warp)
         {
-            if(shipRigidbody.velocity.magnitude < maxWarpSpeed)
+            if(this.shipRigidbody.velocity.magnitude < this.maxWarpSpeed)
             {
-                shipRigidbody.AddRelativeForce(new Vector3(0, 0, impulseAcceleration * warpAccelMultiplier));
-                impulseParticleMain.startSpeed = 5f;
-                warpParticleMain.startSpeed = 10f;
-                warpParticleMain.startLifetime = 1f;
+                this.shipRigidbody.AddRelativeForce(new Vector3(0, 0, this.impulseAcceleration * this.warpAccelMultiplier));
+                this.impulseParticleMain.startSpeed = 5f;
+                this.warpParticleMain.startSpeed = 10f;
+                this.warpParticleMain.startLifetime = 1f;
             }
         }
         else
         {
-            impulseParticleMain.startSpeed = 1f;
-            warpParticleMain.startSpeed = 1f;
-            warpParticleMain.startLifetime = 0f;
+            this.impulseParticleMain.startSpeed = 1f;
+            this.warpParticleMain.startSpeed = 1f;
+            this.warpParticleMain.startLifetime = 0f;
         }
     }
 
     // Uses abilities: fire weapons, bombs, use shield and scanner
     private void UseAbilities()
     {
-        FireMainGun();
-        ActivateShields();
-        ActivateScanner();
+        this.FireMainGun();
+        this.ActivateShields();
+        this.ActivateScanner();
     }
 
     // Fires main guns
     private void FireMainGun()
     {
-        if(playerInput.fire)
+        if(Time.time - lastShotFireTime >= shotCooldownTime)
         {
-            gunBarrelLights.SetActive(true);
-            controller.SpawnProjectile(gunBarrel.transform.position, gunBarrel.transform.rotation, shotSpeed, shotLifetime);
+            weaponOnCooldown = false;
+        }
+        if(this.playerInput.fire)
+        {
+            if(!weaponOnCooldown)
+            {
+                this.gunBarrelLights.SetActive(true);
+                GameController.SpawnProjectile(this.gunBarrel.transform.position, this.gunBarrel.transform.rotation, this.shipRigidbody.velocity, this.shotSpeed, this.shotLifetime);
+                this.lastShotFireTime = Time.time;
+                weaponOnCooldown = true;
+            }
+            else
+            {
+                this.gunBarrelLights.SetActive(false);
+            }
         }
         else
         {
-            gunBarrelLights.SetActive(false);
+            this.gunBarrelLights.SetActive(false);
         }
     }
 
     // Activates shields
     private void ActivateShields()
     {
-        if(playerInput.shield)
+        if(this.playerInput.shield)
         {
-            shield.SetActive(true);
+            this.shield.SetActive(true);
         }
         else
         {
-            shield.SetActive(false);
+            this.shield.SetActive(false);
         }
     }
 
     // Activates scanner
     private void ActivateScanner()
     {
-        if(playerInput.scanner)
+        if(this.playerInput.scanner)
         {
-            scanner.SetActive(true);
+            this.scanner.SetActive(true);
         }
         else
         {
-            scanner.SetActive(false);
+            this.scanner.SetActive(false);
         }
     }
 }

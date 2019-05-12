@@ -1,13 +1,13 @@
 ﻿// Controls the enemy ships
 public class EnemyShip //: Ship
 {
-    private static GameController controller = GameManager.instance;
-
-    private int ID;
+    private int id;
+    public bool Alive = false;
 
     public EnemyShip(int _id)
     {
-        this.ID = _id;
+        this.id = _id;
+        this.Start();
     }
 
 

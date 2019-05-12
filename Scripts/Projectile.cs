@@ -3,36 +3,40 @@
 // Controls all projectiles
 public class Projectile
 {
-    private static GameController controller = GameManager.instance;
-
     private GameObject ProjectilePrefab;
     private GameObject projectile;
     private Rigidbody projectileRigidbody;
 
-    private int ID;
-    private Vector3 Position;
-    private Quaternion Rotation;
-    private float Lifetime = 2.5f;
-    private float Speed = 50f;
+    private int id;
+    private Vector3 position;
+    private Quaternion rotation;
+    private Vector3 velocity;
+    private float lifetime;
+    private float speed;
+    public bool Alive = false;
     
 
-    public Projectile(int _id, Vector3 _position, Quaternion _rotation, float _speed, float _lifetime)
+    public Projectile(int _id, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
-        this.ID = _id;
-        this.Position = _position;
-        this.Rotation = _rotation;
-        this.Speed = _speed;
-        this.Lifetime = _lifetime;
+        this.id = _id;
+        this.position = _position;
+        this.rotation = _rotation;
+        this.velocity = _velocity;
+        this.speed = _speed;
+        this.lifetime = _lifetime;
+        this.Start();
     }
 
 
     // Start is called before the first frame update
     public void Start()
     {
-        ProjectilePrefab = Resources.Load<GameObject>(controller.ProjectilePrefabName);
-        projectile = GameObject.Instantiate(ProjectilePrefab, Position, Rotation);
-        projectile.name = $@"Projectile: {ID}";
-        projectileRigidbody = projectile.GetComponent<Rigidbody>();
+        this.ProjectilePrefab = Resources.Load(GameController.ProjectilePrefabName, typeof(GameObject)) as GameObject;
+        this.projectile = GameObject.Instantiate(this.ProjectilePrefab, this.position, this.rotation);
+        this.projectile.name = $@"Projectile: {this.id}";
+        this.projectileRigidbody = this.projectile.GetComponent<Rigidbody>();
+        this.projectileRigidbody.velocity = this.velocity;
+        this.Alive = true;
     }
 
     // Update is called once per frame
@@ -44,7 +48,14 @@ public class Projectile
     // Fixed Update is called a fixed number of times per second
     public void FixedUpdate()
     {
-        projectileRigidbody.velocity = projectile.transform.forward * Speed;
-        GameObject.Destroy(projectile, Lifetime);
+        if(this.projectile != null)
+        {
+            this.projectileRigidbody.velocity += this.projectile.transform.forward * this.speed;
+            GameObject.Destroy(this.projectile, this.lifetime);
+        }
+        else
+        {
+            this.Alive = false;
+        }
     }
 }

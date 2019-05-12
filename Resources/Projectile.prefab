@@ -89,8 +89,8 @@ GameObject:
   - component: {fileID: 7636686378393426385}
   - component: {fileID: 7657311502592618059}
   m_Layer: 0
-  m_Name: Laser Bolt
-  m_TagString: Untagged
+  m_Name: Projectile
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

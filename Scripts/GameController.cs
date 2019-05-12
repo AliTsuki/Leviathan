@@ -5,110 +5,153 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Keeps track of all entites and updates all systems in the game
-public class GameController
+public static class GameController
 {
-    public string FollowCameraName = "Follow Camera";
-    public string BackgroundPrefabName = "Background";
-    public string PlayerPrefabName = "Player Ship";
-    public string EnemyPrefabName = "Player Ship";
-    public string ProjectilePrefabName = "Projectile";
+    public static PlayerShip Player;
+    private static CinemachineVirtualCamera followCamera;
 
-    private CinemachineVirtualCamera FollowCamera;
+    private static readonly Dictionary<int, PlayerShip> playerShips = new Dictionary<int, PlayerShip>();
+    private static readonly Dictionary<int, EnemyShip> enemyShips = new Dictionary<int, EnemyShip>();
+    private static readonly Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
+    private static List<int> projectilesToRemove = new List<int>();
+    private static List<int> enemiesToRemove = new List<int>();
 
-    public Dictionary<int, PlayerShip> playerShips = new Dictionary<int, PlayerShip>();
-    private Dictionary<int, EnemyShip> enemyShips = new Dictionary<int, EnemyShip>();
-    private Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
+    public const string FollowCameraName = "Follow Camera";
+    public const string BackgroundPrefabName = "Background";
+    public const string PlayerPrefabName = "Player Ship";
+    public const string EnemyPrefabName = "Player Ship";
+    public const string ProjectilePrefabName = "Projectile";
 
-    private readonly Background background = new Background();
-
-    public int playerID = 0;
-    public int enemyID = 0;
-    public int projectileID = 0;
+    private static int playerID = 0;
+    private static int enemyID = 0;
+    private static int projectileID = 0;
 
     // Start is called before the first frame update
-    public void Start()
+    public static void Start()
     {
         // Spawn player
-        this.SpawnPlayer();
-        // Start for all entities
-        foreach(KeyValuePair<int, PlayerShip> player in this.playerShips)
-        {
-            player.Value.Start();
-        }
-        foreach(KeyValuePair<int, EnemyShip> enemy in this.enemyShips)
-        {
-            enemy.Value.Start();
-        }
-        foreach(KeyValuePair<int, Projectile> projectile in this.projectiles)
-        {
-            projectile.Value.Start();
-        }
+        SpawnPlayer();
+        Player = playerShips[0];
         // Set up follow camera
-        this.FollowCamera = GameObject.Find(this.FollowCameraName).GetComponent<CinemachineVirtualCamera>();
-        this.FollowCamera.Follow = this.playerShips[0].ship.transform;
+        followCamera = GameObject.Find(FollowCameraName).GetComponent<CinemachineVirtualCamera>();
+        followCamera.Follow = playerShips[0].Ship.transform;
         // Initialize background
-        this.background.Start();
+        Background.Start();
     }
 
     // Update is called once per frame
-    public void Update()
+    public static void Update()
     {
         // Update all entities
-        foreach(KeyValuePair<int, PlayerShip> player in this.playerShips)
+        foreach(KeyValuePair<int, PlayerShip> player in playerShips)
         {
-            player.Value.Update();
+            if(player.Value.Alive)
+            {
+                player.Value.Update();
+            }
         }
-        foreach(KeyValuePair<int, EnemyShip> enemy in this.enemyShips)
+        foreach(KeyValuePair<int, EnemyShip> enemy in enemyShips)
         {
-            enemy.Value.Update();
+            if(enemy.Value.Alive)
+            {
+                enemy.Value.Update();
+            }
+            else
+            {
+                enemiesToRemove.Add(enemy.Key);
+            }
         }
-        foreach(KeyValuePair<int, Projectile> projectile in this.projectiles)
+        foreach(KeyValuePair<int, Projectile> projectile in projectiles)
         {
-            projectile.Value.Update();
+            if(projectile.Value.Alive)
+            {
+                projectile.Value.Update();
+            }
+            else
+            {
+                projectilesToRemove.Add(projectile.Key);
+            }
+            
         }
+        // Remove dead enemies/projectiles from dicts
+        foreach(int enemyID in enemiesToRemove)
+        {
+            enemyShips.Remove(enemyID);
+        }
+        enemiesToRemove.Clear();
+        foreach(int projectileID in projectilesToRemove)
+        {
+            projectiles.Remove(projectileID);
+        }
+        projectilesToRemove.Clear();
         // Update Background
-        this.background.Update();
+        Background.Update();
     }
 
     // Fixed Update is called a fixed number of times per second
-    public void FixedUpdate()
+    public static void FixedUpdate()
     {
         // FixedUpdate all entities
-        foreach(KeyValuePair<int, PlayerShip> player in this.playerShips)
+        foreach(KeyValuePair<int, PlayerShip> player in playerShips)
         {
-            player.Value.FixedUpdate();
+            if(player.Value.Alive)
+            {
+                player.Value.FixedUpdate();
+            }
         }
-        foreach(KeyValuePair<int, EnemyShip> enemy in this.enemyShips)
+        foreach(KeyValuePair<int, EnemyShip> enemy in enemyShips)
         {
-            enemy.Value.FixedUpdate();
+            if(enemy.Value.Alive)
+            {
+                enemy.Value.FixedUpdate();
+            }
+            else
+            {
+                enemiesToRemove.Add(enemy.Key);
+            }
         }
-        foreach(KeyValuePair<int, Projectile> projectile in this.projectiles)
+        foreach(KeyValuePair<int, Projectile> projectile in projectiles)
         {
-            projectile.Value.FixedUpdate();
+            if(projectile.Value.Alive)
+            {
+                projectile.Value.FixedUpdate();
+            }
+            else
+            {
+                projectilesToRemove.Add(projectile.Key);
+            }
         }
+        // Remove dead enemies/projectiles from dicts
+        foreach(int enemyID in enemiesToRemove)
+        {
+            enemyShips.Remove(enemyID);
+        }
+        enemiesToRemove.Clear();
+        foreach(int projectileID in projectilesToRemove)
+        {
+            projectiles.Remove(projectileID);
+        }
+        projectilesToRemove.Clear();
     }
 
     // Initialize player ship in world
-    public void SpawnPlayer()
+    public static void SpawnPlayer()
     {
-        this.playerShips.Add(this.playerID, new PlayerShip(this.playerID));
-        Debug.Log($@"Added new Player: ID {this.playerID}");
-        this.playerID++;
+        playerShips.Add(playerID, new PlayerShip(playerID));
+        playerID++;
     }
 
     // Spawn enemies
-    public void SpawnEnemy()
+    public static void SpawnEnemy()
     {
-        this.enemyShips.Add(this.enemyID, new EnemyShip(this.enemyID));
-        Debug.Log($@"Added new Enemy: ID {this.enemyID}");
-        this.enemyID++;
+        enemyShips.Add(enemyID, new EnemyShip(enemyID));
+        enemyID++;
     }
 
     // Spawn projectiles
-    public void SpawnProjectile(Vector3 _position, Quaternion _rotation, float _speed, float _lifetime)
+    public static void SpawnProjectile(Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
-        this.projectiles.Add(this.projectileID, new Projectile(this.projectileID, _position, _rotation, _speed, _lifetime));
-        Debug.Log($@"Added new Projectile: ID {this.projectileID}");
-        this.projectileID++;
+        projectiles.Add(projectileID, new Projectile(projectileID, _position, _rotation, _velocity, _speed, _lifetime));
+        projectileID++;
     }
 }

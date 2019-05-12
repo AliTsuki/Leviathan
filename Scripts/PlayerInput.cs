@@ -23,44 +23,46 @@ public class PlayerInput
     // Update is called once per frame
     public void Update()
     {
-        ClearInput();
-        ProcessInputs();
+        this.ClearInput();
+        this.ProcessInputs();
     }
 
     // Fixed Update is called a fixed number of times per second
     public void FixedUpdate()
     {
-        readyToClear = true;
+        this.readyToClear = true;
     }
 
     // Clears the inputs to default state
     private void ClearInput()
     {
-        if(!readyToClear)
+        if(!this.readyToClear)
+        {
             return;
-        horizontal = 0f;
-        vertical = 0f;
-        impulse = false;
-        warp = false;
-        fire = false;
-        bomb = false;
-        shield = false;
-        scanner = false;
-        pause = false;
-        readyToClear = false;
+        }
+        this.horizontal = 0f;
+        this.vertical = 0f;
+        this.impulse = false;
+        this.warp = false;
+        this.fire = false;
+        this.bomb = false;
+        this.shield = false;
+        this.scanner = false;
+        this.pause = false;
+        this.readyToClear = false;
     }
 
     // Reads the inputs and stores them
     private void ProcessInputs()
     {
-        horizontal = Input.GetAxis("Horizontal");
-        vertical = Input.GetAxis("Vertical");
-        impulse = Input.GetButton("Impulse");
-        warp = Input.GetButton("Warp");
-        fire = Input.GetButton("Fire");
-        bomb = Input.GetButton("Bomb");
-        shield = Input.GetButton("Shield");
-        scanner = Input.GetButton("Scanner");
-        pause = Input.GetButton("Pause");
+        this.horizontal = Input.GetAxis("Horizontal");
+        this.vertical = Input.GetAxis("Vertical");
+        this.impulse = Input.GetButton("Impulse");
+        this.warp = Input.GetButton("Warp");
+        this.fire = Input.GetButton("Fire");
+        this.bomb = Input.GetButton("Bomb");
+        this.shield = Input.GetButton("Shield");
+        this.scanner = Input.GetButton("Scanner");
+        this.pause = Input.GetButton("Pause");
     }
 }
