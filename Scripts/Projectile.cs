@@ -5,7 +5,6 @@ public class Projectile
 {
     private static GameController controller = GameManager.instance;
 
-    private GameObject ProjectileParent;
     private GameObject ProjectilePrefab;
     private GameObject projectile;
     private Rigidbody projectileRigidbody;
@@ -30,11 +29,9 @@ public class Projectile
     // Start is called before the first frame update
     public void Start()
     {
-        ProjectileParent = GameObject.Find(controller.ProjectileParentName);
         ProjectilePrefab = Resources.Load<GameObject>(controller.ProjectilePrefabName);
         projectile = GameObject.Instantiate(ProjectilePrefab, Position, Rotation);
         projectile.name = $@"Projectile: {ID}";
-        projectile.transform.parent = ProjectileParent.transform;
         projectileRigidbody = projectile.GetComponent<Rigidbody>();
     }
 

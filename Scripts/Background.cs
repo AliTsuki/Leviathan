@@ -7,7 +7,6 @@ public class Background
 {
     private static GameController controller = GameManager.instance;
 
-    private GameObject BackgroundParent;
     private GameObject BackgroundPrefab;
    
     private Dictionary<Vector2Int, GameObject> backgrounds = new Dictionary<Vector2Int, GameObject>();
@@ -25,7 +24,6 @@ public class Background
     // Start is called before the first frame update
     public void Start()
     {
-        BackgroundParent = GameObject.Find(controller.BackgroundParentName);
         BackgroundPrefab = Resources.Load<GameObject>(controller.BackgroundPrefabName);
         InitializeBackground();
     }
@@ -48,7 +46,6 @@ public class Background
                 nextBackgroundPosition = new Vector3((nextBackgroundKey.x * backgroundTileSize), 0, (nextBackgroundKey.y * backgroundTileSize));
                 backgrounds.Add(nextBackgroundKey, GameObject.Instantiate(BackgroundPrefab, nextBackgroundPosition, Quaternion.identity));
                 backgrounds[nextBackgroundKey].name = $@"Background: {nextBackgroundKey.x}, {nextBackgroundKey.y}";
-                backgrounds[nextBackgroundKey].transform.parent = BackgroundParent.transform;
             }
         }
     }
@@ -86,7 +83,6 @@ public class Background
                 {
                     backgrounds.Add(nextBackgroundKey, GameObject.Instantiate(BackgroundPrefab, nextBackgroundPosition, Quaternion.identity));
                     backgrounds[nextBackgroundKey].name = $@"Background: {nextBackgroundKey.x}, {nextBackgroundKey.y}";
-                    backgrounds[nextBackgroundKey].transform.parent = BackgroundParent.transform;
                 }
             }
         }

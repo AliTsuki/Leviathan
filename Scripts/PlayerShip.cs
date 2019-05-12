@@ -6,9 +6,8 @@ public class PlayerShip //: Ship
     private static GameController controller = GameManager.instance;
 
     public GameObject ship;
-    private GameObject PlayerParent;
     private GameObject PlayerPrefab;
-    private PlayerInput playerInput;
+    private PlayerInput playerInput = new PlayerInput();
     private Rigidbody shipRigidbody;
     private GameObject impulseEngine;
     private GameObject warpEngine;
@@ -59,17 +58,14 @@ public class PlayerShip //: Ship
     // Start is called before the first frame update
     public void Start()
     {
-        PlayerParent = GameObject.Find(controller.PlayerParentName);
         PlayerPrefab = Resources.Load<GameObject>(controller.PlayerPrefabName);
         ship = GameObject.Instantiate(PlayerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         ship.name = $@"Player: {ID}";
-        ship.transform.parent = PlayerParent.transform;
-        playerInput = ship.GetComponent<PlayerInput>();
         shipRigidbody = ship.GetComponent<Rigidbody>();
         impulseEngine = ship.transform.Find("Impulse Engine").gameObject;
         warpEngine = ship.transform.Find("Warp Engine").gameObject;
         gunBarrel = ship.transform.Find("Gun Barrel").gameObject;
-        gunBarrelLights = ship.transform.Find("Gun Barrel Lights").gameObject;
+        gunBarrelLights = gunBarrel.transform.Find("Gun Barrel Lights").gameObject;
         shield = ship.transform.Find("Shield").gameObject;
         scanner = ship.transform.Find("Scanner").gameObject;
         impulseParticleSystem = impulseEngine.GetComponent<ParticleSystem>();
