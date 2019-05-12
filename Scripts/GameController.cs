@@ -1,13 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using Cinemachine;
+
+using System.Collections.Generic;
 
 using UnityEngine;
 
 // Keeps track of all entites and updates all systems in the game
 public class GameController
 {
+    public string FollowCameraName = "Follow Camera";
+    public string BackgroundParentName = "Background Parent";
+    public string BackgroundPrefabName = "Background";
+    public string PlayerParentName = "Player Parent";
+    public string PlayerPrefabName = "Player Ship";
+    public string EnemyParentName = "Enemy Parent";
+    public string EnemyPrefabName = "Player Ship";
+    public string ProjectileParentName = "Projectile Parent";
+    public string ProjectilePrefabName = "Projectile";
+
+    private CinemachineVirtualCamera FollowCamera;
+
     public Dictionary<int, PlayerShip> playerShips = new Dictionary<int, PlayerShip>();
-    public Dictionary<int, EnemyShip> enemyShips = new Dictionary<int, EnemyShip>();
-    public Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
+    private Dictionary<int, EnemyShip> enemyShips = new Dictionary<int, EnemyShip>();
+    private Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
 
     private Background background = new Background();
 
@@ -20,7 +34,8 @@ public class GameController
     {
         // Initialize Player, Follow Camera, and Background
         SpawnPlayer();
-        GameManager.FollowCameraStatic.Follow = playerShips[0].ship.transform;
+        FollowCamera = GameObject.Find(FollowCameraName).GetComponent<CinemachineVirtualCamera>();
+        FollowCamera.Follow = playerShips[0].ship.transform;
         background.Start();
         // Start for all entities
         foreach(KeyValuePair<int, PlayerShip> player in playerShips)

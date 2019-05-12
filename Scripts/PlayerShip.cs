@@ -3,9 +3,11 @@
 // Controls the player ships
 public class PlayerShip //: Ship
 {
-    private GameController instance = GameManager.instance;
+    private static GameController controller = GameManager.instance;
 
     public GameObject ship;
+    private GameObject PlayerParent;
+    private GameObject PlayerPrefab;
     private PlayerInput playerInput;
     private Rigidbody shipRigidbody;
     private GameObject impulseEngine;
@@ -57,9 +59,11 @@ public class PlayerShip //: Ship
     // Start is called before the first frame update
     public void Start()
     {
-        ship = GameObject.Instantiate(GameManager.PlayerPrefabStatic, new Vector3(0, 0, 0), Quaternion.identity);
+        PlayerParent = GameObject.Find(controller.PlayerParentName);
+        PlayerPrefab = Resources.Load<GameObject>(controller.PlayerPrefabName);
+        ship = GameObject.Instantiate(PlayerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         ship.name = $@"Player: {ID}";
-        ship.transform.parent = GameManager.PlayerParentStatic.transform;
+        ship.transform.parent = PlayerParent.transform;
         playerInput = ship.GetComponent<PlayerInput>();
         shipRigidbody = ship.GetComponent<Rigidbody>();
         impulseEngine = ship.transform.Find("Impulse Engine").gameObject;
@@ -73,6 +77,7 @@ public class PlayerShip //: Ship
         warpParticleSystem = warpEngine.GetComponent<ParticleSystem>();
         warpParticleMain = warpParticleSystem.main;
         recentRotations = new float[recentRotationsIndexMax];
+
         playerInput.Start();
     }
 
@@ -86,6 +91,7 @@ public class PlayerShip //: Ship
     public void FixedUpdate()
     {
         playerInput.FixedUpdate();
+
         UpdateShipState();
     }
 
@@ -229,7 +235,7 @@ public class PlayerShip //: Ship
         if(playerInput.fire)
         {
             gunBarrelLights.SetActive(true);
-            instance.SpawnProjectile(gunBarrel.transform.position, gunBarrel.transform.rotation, shotSpeed, shotLifetime);
+            controller.SpawnProjectile(gunBarrel.transform.position, gunBarrel.transform.rotation, shotSpeed, shotLifetime);
         }
         else
         {

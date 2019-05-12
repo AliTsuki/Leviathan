@@ -1,8 +1,6 @@
 ﻿// Main ship class that all ships inherit from
 public class Ship
 {
-    private GameController instance = GameManager.instance;
-
     private float impulseAcceleration;
     private float warpAccelMultiplier;
     private float maxImpulseSpeed;

@@ -3,8 +3,10 @@
 // Controls all projectiles
 public class Projectile
 {
-    private GameController instance = GameManager.instance;
+    private static GameController controller = GameManager.instance;
 
+    private GameObject ProjectileParent;
+    private GameObject ProjectilePrefab;
     private GameObject projectile;
     private Rigidbody projectileRigidbody;
 
@@ -28,9 +30,11 @@ public class Projectile
     // Start is called before the first frame update
     public void Start()
     {
-        projectile = GameObject.Instantiate(GameManager.ProjectilePrefabStatic, Position, Rotation);
+        ProjectileParent = GameObject.Find(controller.ProjectileParentName);
+        ProjectilePrefab = Resources.Load<GameObject>(controller.ProjectilePrefabName);
+        projectile = GameObject.Instantiate(ProjectilePrefab, Position, Rotation);
         projectile.name = $@"Projectile: {ID}";
-        projectile.transform.parent = GameManager.ProjectileParentStatic.transform;
+        projectile.transform.parent = ProjectileParent.transform;
         projectileRigidbody = projectile.GetComponent<Rigidbody>();
     }
 

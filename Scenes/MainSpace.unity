@@ -227,7 +227,7 @@ MonoBehaviour:
     FieldOfView: 40
     OrthographicSize: 10
     NearClipPlane: 0.1
-    FarClipPlane: 5000
+    FarClipPlane: 1000
     Dutch: 0
     LensShift: {x: 0, y: 0}
   m_Transitions:
@@ -335,7 +335,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.1
-  far clip plane: 5000
+  far clip plane: 1000
   field of view: 40
   orthographic: 0
   orthographic size: 5
@@ -400,7 +400,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1178122299}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2.4745002}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -435,19 +435,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b09ed8b52dff754e9d24c220393ed7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FollowCamera: {fileID: 65251075}
-  BackgroundParent: {fileID: 1694098876}
-  BackgroundPrefab: {fileID: 2201643655749763959, guid: 660182c52be4c7c46aa9dd8a097ea0f9,
-    type: 3}
-  PlayerParent: {fileID: 2108136169}
-  PlayerPrefab: {fileID: 2122637302586307625, guid: e30e8bf3aa6a04745b9fa8c387f3f517,
-    type: 3}
-  EnemyParent: {fileID: 1279793551}
-  EnemyPrefab: {fileID: 2122637302586307625, guid: e30e8bf3aa6a04745b9fa8c387f3f517,
-    type: 3}
-  ProjectileParent: {fileID: 1178122299}
-  ProjectilePrefab: {fileID: 7091023098713015145, guid: 6e8fa1c48e6fc774bb31fcd11b238533,
-    type: 3}
 --- !u!4 &1204824865
 Transform:
   m_ObjectHideFlags: 0
@@ -472,7 +459,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1279793552}
   m_Layer: 0
-  m_Name: Enemy Ships Parent
+  m_Name: Enemy Parent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -486,7 +473,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1279793551}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -18.034267, y: -15.685295, z: -3.9749148}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -578,13 +565,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2000546936}
-  m_LocalRotation: {x: 0.5982281, y: 0.66473985, z: 0.35524347, w: 0.27211446}
+  m_LocalRotation: {x: 0.64085644, y: 0.64085644, z: 0.29883623, w: 0.29883623}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2022720532}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 188.437, y: -52.694, z: -91.845}
+  m_LocalEulerAnglesHint: {x: 180, y: -50, z: -90}
 --- !u!108 &2000546938
 Light:
   m_ObjectHideFlags: 0
@@ -687,7 +674,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2108136170}
   m_Layer: 0
-  m_Name: Player Ships Parent
+  m_Name: Player Parent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -791,10 +778,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2110103223}
-  m_LocalRotation: {x: 0.6015723, y: -0.3716326, z: -0.37163278, w: 0.6015722}
+  m_LocalRotation: {x: 0.61237246, y: -0.35355338, z: -0.35355338, w: 0.61237246}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2022720532}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 153.413, y: 89.99999, z: 89.99999}
+  m_LocalEulerAnglesHint: {x: 150, y: 90, z: 90}

@@ -1,7 +1,7 @@
 ﻿// Controls the enemy ships
 public class EnemyShip //: Ship
 {
-    private GameController instance = GameManager.instance;
+    private static GameController controller = GameManager.instance;
 
     private int ID;
 
