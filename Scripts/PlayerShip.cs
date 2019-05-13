@@ -3,6 +3,7 @@
 // Controls the player ships
 public class PlayerShip //: Ship
 {
+    // GameObjects and Components
     public GameObject Ship;
     private GameObject playerPrefab;
     private PlayerInput playerInput = new PlayerInput();
@@ -17,10 +18,15 @@ public class PlayerShip //: Ship
     private ParticleSystem warpParticleSystem;
     private ParticleSystem.MainModule impulseParticleMain;
     private ParticleSystem.MainModule warpParticleMain;
+    private AudioSource impulseAudio;
+    private AudioSource warpAudio;
+    private AudioSource gunAudio;
     private Vector3 intendedRotation;
     private Vector3 currentRotation;
     private Vector3 nextRotation;
     private Vector3 tiltRotation;
+    
+    // Fields not modified by player equipment/level
     private int recentRotationsIndex = 0;
     private static int recentRotationsIndexMax = 30;
     private float[] recentRotations;
@@ -30,30 +36,34 @@ public class PlayerShip //: Ship
     private float differenceAngle = 0f;
     private float intendedAngle = 0f;
     private float maxRotationSpeed = 5f;
+    private float lastShotFireTime = 0f;
+    private bool weaponOnCooldown = false;
 
     // Ship stats
     // Speed/Acceleration
-    private float impulseAcceleration = 30f;
+    private float impulseAcceleration = 50f;
     private float warpAccelMultiplier = 3f;
     private float maxImpulseSpeed = 100f;
     private float maxWarpSpeed = 200f;
-    // Energy cost
-    private float warpEnergyCost = 5f;
-    private float shotEnergyCost = 5f;
-    // Cooldowns
-    private float shotCooldownTime = 0.25f;
-    private float lastShotFireTime = 0f;
-    private bool weaponOnCooldown = false;
     // Weapon stats
     private float shotSpeed = 25f;
     private float shotLifetime = 2.5f;
+    // Cooldowns
+    private float shotCooldownTime = 0.25f;
+    // Energy cost
+    private float warpEnergyCost = 5f;
+    private float shotEnergyCost = 5f;
     // Current/Max energy
     private float energy = 0f;
     private float maxEnergy = 100f;
     
+    // Constuctor criteria
     private int id;
+
+    // Alive flag
     public bool Alive = false;
 
+    // Player ship constructor
     public PlayerShip(int _id)
     {
         this.id = _id;
@@ -78,6 +88,9 @@ public class PlayerShip //: Ship
         this.impulseParticleMain = this.impulseParticleSystem.main;
         this.warpParticleSystem = this.warpEngine.GetComponent<ParticleSystem>();
         this.warpParticleMain = this.warpParticleSystem.main;
+        this.impulseAudio = this.impulseEngine.GetComponent<AudioSource>();
+        this.warpAudio = this.warpEngine.GetComponent<AudioSource>();
+        this.gunAudio = this.gunBarrel.GetComponent<AudioSource>();
         this.recentRotations = new float[recentRotationsIndexMax];
         this.Alive = true;
         this.playerInput.Start();
@@ -208,6 +221,8 @@ public class PlayerShip //: Ship
                 this.shipRigidbody.AddRelativeForce(new Vector3(0, 0, this.impulseAcceleration));
                 this.impulseParticleMain.startSpeed = 2.8f;
                 this.warpParticleMain.startLifetime = 0f;
+                this.impulseAudio.Play();
+                this.warpAudio.Stop();
             }
         }
         else if(this.playerInput.warp)
@@ -218,6 +233,8 @@ public class PlayerShip //: Ship
                 this.impulseParticleMain.startSpeed = 5f;
                 this.warpParticleMain.startSpeed = 10f;
                 this.warpParticleMain.startLifetime = 1f;
+                this.warpAudio.Play();
+                this.impulseAudio.Stop();
             }
         }
         else
@@ -225,6 +242,8 @@ public class PlayerShip //: Ship
             this.impulseParticleMain.startSpeed = 1f;
             this.warpParticleMain.startSpeed = 1f;
             this.warpParticleMain.startLifetime = 0f;
+            this.impulseAudio.Stop();
+            this.warpAudio.Stop();
         }
     }
 
@@ -248,18 +267,21 @@ public class PlayerShip //: Ship
             if(!weaponOnCooldown)
             {
                 this.gunBarrelLights.SetActive(true);
-                GameController.SpawnProjectile(this.gunBarrel.transform.position, this.gunBarrel.transform.rotation, this.shipRigidbody.velocity, this.shotSpeed, this.shotLifetime);
+                GameController.SpawnProjectile(GameController.IFF.friend, this.gunBarrel.transform.position, this.gunBarrel.transform.rotation, this.shipRigidbody.velocity, this.shotSpeed, this.shotLifetime);
                 this.lastShotFireTime = Time.time;
                 weaponOnCooldown = true;
+                this.gunAudio.Play();
             }
             else
             {
                 this.gunBarrelLights.SetActive(false);
+                this.gunAudio.Stop();
             }
         }
         else
         {
             this.gunBarrelLights.SetActive(false);
+            this.gunAudio.Stop();
         }
     }
 

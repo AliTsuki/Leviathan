@@ -1,9 +1,13 @@
 ﻿// Controls the enemy ships
 public class EnemyShip //: Ship
 {
+    // Constructor criteria
     private int id;
+
+    // Alive flag
     public bool Alive = false;
 
+    // Enemy ship constructor
     public EnemyShip(int _id)
     {
         this.id = _id;

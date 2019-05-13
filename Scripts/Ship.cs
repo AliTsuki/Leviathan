@@ -1,6 +1,7 @@
 ﻿// Main ship class that all ships inherit from
 public class Ship
 {
+    // Fields
     private float impulseAcceleration;
     private float warpAccelMultiplier;
     private float maxImpulseSpeed;

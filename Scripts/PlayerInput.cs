@@ -3,6 +3,7 @@
 // Reads and stores inputs from player
 public class PlayerInput
 {
+    // Fields
     public float horizontal;
     public float vertical;
     public bool impulse;

@@ -5,14 +5,17 @@ using UnityEngine;
 // Controls the background tiles
 public static class Background
 {
+    // GameObjects
     private static GameObject BackgroundPrefab;
    
+    // Fields
     private static readonly Dictionary<Vector2Int, GameObject> backgrounds = new Dictionary<Vector2Int, GameObject>();
     private static List<Vector2Int> backgroundsToRemove = new List<Vector2Int>();
     private static Vector2Int nextBackgroundKey;
     private static Vector3 nextBackgroundPosition;
     private static Vector3 playerPosition;
 
+    // Constants
     private const int backgroundInitializationTileAmount = 2;
     private const int backgroundGenerationTileAmount = 2;
     private const int backgroundTileSize = 200;

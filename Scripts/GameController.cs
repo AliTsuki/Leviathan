@@ -7,24 +7,34 @@ using UnityEngine;
 // Keeps track of all entites and updates all systems in the game
 public static class GameController
 {
+    // GameObjects and Components
     public static PlayerShip Player;
     private static CinemachineVirtualCamera followCamera;
 
+    // Entity Lists and Dicts
     private static readonly Dictionary<int, PlayerShip> playerShips = new Dictionary<int, PlayerShip>();
     private static readonly Dictionary<int, EnemyShip> enemyShips = new Dictionary<int, EnemyShip>();
     private static readonly Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
     private static List<int> projectilesToRemove = new List<int>();
     private static List<int> enemiesToRemove = new List<int>();
 
+    // Constants
     public const string FollowCameraName = "Follow Camera";
     public const string BackgroundPrefabName = "Background";
     public const string PlayerPrefabName = "Player Ship";
     public const string EnemyPrefabName = "Player Ship";
     public const string ProjectilePrefabName = "Projectile";
 
+    // Entity IDs
     private static int playerID = 0;
     private static int enemyID = 0;
     private static int projectileID = 0;
+
+    public enum IFF
+    {
+        friend,
+        foe
+    };
 
     // Start is called before the first frame update
     public static void Start()
@@ -149,9 +159,9 @@ public static class GameController
     }
 
     // Spawn projectiles
-    public static void SpawnProjectile(Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public static void SpawnProjectile(IFF _iff, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
-        projectiles.Add(projectileID, new Projectile(projectileID, _position, _rotation, _velocity, _speed, _lifetime));
+        projectiles.Add(projectileID, new Projectile(projectileID, _iff, _position, _rotation, _velocity, _speed, _lifetime));
         projectileID++;
     }
 }

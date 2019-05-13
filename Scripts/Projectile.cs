@@ -3,22 +3,28 @@
 // Controls all projectiles
 public class Projectile
 {
-    private GameObject ProjectilePrefab;
+    // GameObjects and Components
+    private GameObject projectilePrefab;
     private GameObject projectile;
     private Rigidbody projectileRigidbody;
 
+    // Constructor criteria
     private int id;
+    public GameController.IFF IFF;
     private Vector3 position;
     private Quaternion rotation;
     private Vector3 velocity;
     private float lifetime;
     private float speed;
+    
+    // Alive flag
     public bool Alive = false;
     
-
-    public Projectile(int _id, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    // Projectile constructor
+    public Projectile(int _id, GameController.IFF _iff, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
         this.id = _id;
+        this.IFF = _iff;
         this.position = _position;
         this.rotation = _rotation;
         this.velocity = _velocity;
@@ -31,8 +37,8 @@ public class Projectile
     // Start is called before the first frame update
     public void Start()
     {
-        this.ProjectilePrefab = Resources.Load(GameController.ProjectilePrefabName, typeof(GameObject)) as GameObject;
-        this.projectile = GameObject.Instantiate(this.ProjectilePrefab, this.position, this.rotation);
+        this.projectilePrefab = Resources.Load(GameController.ProjectilePrefabName, typeof(GameObject)) as GameObject;
+        this.projectile = GameObject.Instantiate(this.projectilePrefab, this.position, this.rotation);
         this.projectile.name = $@"Projectile: {this.id}";
         this.projectileRigidbody = this.projectile.GetComponent<Rigidbody>();
         this.projectileRigidbody.velocity = this.velocity;
