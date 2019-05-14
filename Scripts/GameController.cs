@@ -12,8 +12,9 @@ public static class GameController
     private static CinemachineVirtualCamera followCamera;
 
     // Entity Lists and Dicts
-    private static readonly Dictionary<int, PlayerShip> playerShips = new Dictionary<int, PlayerShip>();
-    private static readonly Dictionary<int, EnemyShip> enemyShips = new Dictionary<int, EnemyShip>();
+    private static readonly Dictionary<int, PlayerShip> players = new Dictionary<int, PlayerShip>();
+    private static readonly Dictionary<int, Ship> friendlies = new Dictionary<int, Ship>();
+    private static readonly Dictionary<int, EnemyShip> enemies = new Dictionary<int, EnemyShip>();
     private static readonly Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
     private static List<int> projectilesToRemove = new List<int>();
     private static List<int> enemiesToRemove = new List<int>();
@@ -22,7 +23,7 @@ public static class GameController
     public const string FollowCameraName = "Follow Camera";
     public const string BackgroundPrefabName = "Background";
     public const string PlayerPrefabName = "Player Ship";
-    public const string EnemyPrefabName = "Player Ship";
+    public const string EnemyPrefabName = "Enemy Ship";
     public const string ProjectilePrefabName = "Projectile";
 
     // Entity IDs
@@ -33,7 +34,7 @@ public static class GameController
     public enum IFF
     {
         friend,
-        foe
+        enemy
     };
 
     // Start is called before the first frame update
@@ -41,26 +42,35 @@ public static class GameController
     {
         // Spawn player
         SpawnPlayer();
-        Player = playerShips[0];
+        Player = players[0];
         // Set up follow camera
         followCamera = GameObject.Find(FollowCameraName).GetComponent<CinemachineVirtualCamera>();
-        followCamera.Follow = playerShips[0].Ship.transform;
+        followCamera.Follow = players[0].ShipObject.transform;
         // Initialize background
         Background.Start();
+        // Spawn enemy
+        SpawnEnemy();
     }
 
     // Update is called once per frame
     public static void Update()
     {
         // Update all entities
-        foreach(KeyValuePair<int, PlayerShip> player in playerShips)
+        foreach(KeyValuePair<int, PlayerShip> player in players)
         {
             if(player.Value.Alive)
             {
                 player.Value.Update();
             }
         }
-        foreach(KeyValuePair<int, EnemyShip> enemy in enemyShips)
+        //foreach(KeyValuePair<int, Ship> friendly in friendlies)
+        //{
+        //    if(friendly.Value.Alive)
+        //    {
+        //        friendly.Value.Update();
+        //    }
+        //}
+        foreach(KeyValuePair<int, EnemyShip> enemy in enemies)
         {
             if(enemy.Value.Alive)
             {
@@ -81,19 +91,7 @@ public static class GameController
             {
                 projectilesToRemove.Add(projectile.Key);
             }
-            
         }
-        // Remove dead enemies/projectiles from dicts
-        foreach(int enemyID in enemiesToRemove)
-        {
-            enemyShips.Remove(enemyID);
-        }
-        enemiesToRemove.Clear();
-        foreach(int projectileID in projectilesToRemove)
-        {
-            projectiles.Remove(projectileID);
-        }
-        projectilesToRemove.Clear();
         // Update Background
         Background.Update();
     }
@@ -102,14 +100,21 @@ public static class GameController
     public static void FixedUpdate()
     {
         // FixedUpdate all entities
-        foreach(KeyValuePair<int, PlayerShip> player in playerShips)
+        foreach(KeyValuePair<int, PlayerShip> player in players)
         {
             if(player.Value.Alive)
             {
                 player.Value.FixedUpdate();
             }
         }
-        foreach(KeyValuePair<int, EnemyShip> enemy in enemyShips)
+        //foreach(KeyValuePair<int, Ship> friendly in friendlies)
+        //{
+        //    if(friendly.Value.Alive)
+        //    {
+        //        friendly.Value.FixedUpdate();
+        //    }
+        //}
+        foreach(KeyValuePair<int, EnemyShip> enemy in enemies)
         {
             if(enemy.Value.Alive)
             {
@@ -132,36 +137,73 @@ public static class GameController
             }
         }
         // Remove dead enemies/projectiles from dicts
-        foreach(int enemyID in enemiesToRemove)
+        if(enemiesToRemove.Count > 0)
         {
-            enemyShips.Remove(enemyID);
+            foreach(int enemyID in enemiesToRemove)
+            {
+                enemies.Remove(enemyID);
+            }
+            enemiesToRemove.Clear();
         }
-        enemiesToRemove.Clear();
-        foreach(int projectileID in projectilesToRemove)
+        if(projectilesToRemove.Count > 0)
         {
-            projectiles.Remove(projectileID);
+            foreach(int projectileID in projectilesToRemove)
+            {
+                projectiles.Remove(projectileID);
+            }
+            projectilesToRemove.Clear();
         }
-        projectilesToRemove.Clear();
     }
 
     // Initialize player ship in world
     public static void SpawnPlayer()
     {
-        playerShips.Add(playerID, new PlayerShip(playerID));
+        players.Add(playerID, new PlayerShip(playerID));
         playerID++;
+        if(playerID == int.MaxValue)
+        {
+            playerID = 0;
+        }
     }
 
     // Spawn enemies
     public static void SpawnEnemy()
     {
-        enemyShips.Add(enemyID, new EnemyShip(enemyID));
+        enemies.Add(enemyID, new EnemyShip(enemyID));
         enemyID++;
+        if(enemyID == int.MaxValue)
+        {
+            enemyID = 0;
+        }
     }
 
     // Spawn projectiles
-    public static void SpawnProjectile(IFF _iff, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public static void SpawnProjectile(IFF _iff, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
-        projectiles.Add(projectileID, new Projectile(projectileID, _iff, _position, _rotation, _velocity, _speed, _lifetime));
+        projectiles.Add(projectileID, new Projectile(projectileID, _iff, _damage, _position, _rotation, _velocity, _speed, _lifetime));
         projectileID++;
+        if(projectileID == int.MaxValue)
+        {
+            projectileID = 0;
+        }
+    }
+
+    // Recieve Collision info and propogate
+    public static void Collide(GameObject _collisionReporter, GameObject _collidedWith)
+    {
+        if(_collisionReporter.tag == "Projectile")
+        {
+            Projectile projectile = projectiles[int.Parse(_collisionReporter.name)];
+            if(projectile.IFF == IFF.friend && _collidedWith.tag == "Enemy")
+            {
+                projectile.ReceivedCollision();
+                enemies[int.Parse(_collidedWith.name)].ReceivedCollision(projectile.Damage);
+            }
+            if(projectile.IFF == IFF.enemy && _collidedWith.tag == "Player")
+            {
+                projectile.ReceivedCollision();
+                players[int.Parse(_collidedWith.name)].ReceivedCollision(projectile.Damage);
+            }
+        }
     }
 }

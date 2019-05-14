@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-// Makes an instance of the game controller and calls Start, Update, and FixedUpdate
+// Sends Start(), Update(), and FixedUpdate() calls from UnityEngine to GameController to propogate to all non-MonoBehaviour scripts
 public class GameManager : MonoBehaviour
 {
     // Start is called before the first frame update

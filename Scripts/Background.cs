@@ -54,7 +54,7 @@ public static class Background
     // Checks for backgrounds distance from player and removes if they are too distant
     private static void RemoveDistantBackgrounds()
     {
-        playerPosition = GameController.Player.Ship.transform.position;
+        playerPosition = GameController.Player.ShipObject.transform.position;
         foreach(KeyValuePair<Vector2Int, GameObject> bg in backgrounds)
         {
             if(Vector3.Distance(bg.Value.transform.position, playerPosition) > backgroundMaxDistance)
@@ -73,7 +73,7 @@ public static class Background
     // Adds new backgrounds around player as you explore
     private static void AddNewBackgrounds()
     {
-        playerPosition = GameController.Player.Ship.transform.position;
+        playerPosition = GameController.Player.ShipObject.transform.position;
         for(int x = -backgroundGenerationTileAmount; x < backgroundGenerationTileAmount; x++)
         {
             for(int z = -backgroundGenerationTileAmount; z < backgroundGenerationTileAmount; z++)
