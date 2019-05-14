@@ -8,28 +8,27 @@ using UnityEngine;
 public static class GameController
 {
     // GameObjects and Components
-    public static PlayerShip Player;
+    public static IEntity Player;
     private static CinemachineVirtualCamera followCamera;
 
-    // Entity Lists and Dicts
-    private static readonly Dictionary<int, PlayerShip> players = new Dictionary<int, PlayerShip>();
-    private static readonly Dictionary<int, Ship> friendlies = new Dictionary<int, Ship>();
-    private static readonly Dictionary<int, EnemyShip> enemies = new Dictionary<int, EnemyShip>();
-    private static readonly Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
-    private static List<int> projectilesToRemove = new List<int>();
-    private static List<int> enemiesToRemove = new List<int>();
+    // Entity List and Dicts
+    private static readonly Dictionary<uint, IEntity> entities = new Dictionary<uint, IEntity>();
+    private static readonly Dictionary<uint, Projectile> projectiles = new Dictionary<uint, Projectile>();
+    private static readonly List<uint> entitiesToRemove = new List<uint>();
+    private static readonly List<uint> projectilesToRemove = new List<uint>();
 
     // Constants
     public const string FollowCameraName = "Follow Camera";
     public const string BackgroundPrefabName = "Background";
     public const string PlayerPrefabName = "Player Ship";
+    public const string FriendPrefabName = "Player Ship";
     public const string EnemyPrefabName = "Enemy Ship";
     public const string ProjectilePrefabName = "Projectile";
 
     // Entity IDs
-    private static int playerID = 0;
-    private static int enemyID = 0;
-    private static int projectileID = 0;
+    private static uint entityID = 0;
+    private static uint projectileID = 0;
+    private static bool entityIDPassedMax = false;
 
     public enum IFF
     {
@@ -42,10 +41,9 @@ public static class GameController
     {
         // Spawn player
         SpawnPlayer();
-        Player = players[0];
         // Set up follow camera
         followCamera = GameObject.Find(FollowCameraName).GetComponent<CinemachineVirtualCamera>();
-        followCamera.Follow = players[0].ShipObject.transform;
+        followCamera.Follow = Player.ShipObject.transform;
         // Initialize background
         Background.Start();
         // Spawn enemy
@@ -56,40 +54,15 @@ public static class GameController
     public static void Update()
     {
         // Update all entities
-        foreach(KeyValuePair<int, PlayerShip> player in players)
+        foreach(KeyValuePair<uint, IEntity> entity in entities)
         {
-            if(player.Value.Alive)
+            if(entity.Value.Alive)
             {
-                player.Value.Update();
-            }
-        }
-        //foreach(KeyValuePair<int, Ship> friendly in friendlies)
-        //{
-        //    if(friendly.Value.Alive)
-        //    {
-        //        friendly.Value.Update();
-        //    }
-        //}
-        foreach(KeyValuePair<int, EnemyShip> enemy in enemies)
-        {
-            if(enemy.Value.Alive)
-            {
-                enemy.Value.Update();
+                entity.Value.Update();
             }
             else
             {
-                enemiesToRemove.Add(enemy.Key);
-            }
-        }
-        foreach(KeyValuePair<int, Projectile> projectile in projectiles)
-        {
-            if(projectile.Value.Alive)
-            {
-                projectile.Value.Update();
-            }
-            else
-            {
-                projectilesToRemove.Add(projectile.Key);
+                entitiesToRemove.Add(entity.Key);
             }
         }
         // Update Background
@@ -100,32 +73,18 @@ public static class GameController
     public static void FixedUpdate()
     {
         // FixedUpdate all entities
-        foreach(KeyValuePair<int, PlayerShip> player in players)
+        foreach(KeyValuePair<uint, IEntity> entity in entities)
         {
-            if(player.Value.Alive)
+            if(entity.Value.Alive)
             {
-                player.Value.FixedUpdate();
-            }
-        }
-        //foreach(KeyValuePair<int, Ship> friendly in friendlies)
-        //{
-        //    if(friendly.Value.Alive)
-        //    {
-        //        friendly.Value.FixedUpdate();
-        //    }
-        //}
-        foreach(KeyValuePair<int, EnemyShip> enemy in enemies)
-        {
-            if(enemy.Value.Alive)
-            {
-                enemy.Value.FixedUpdate();
+                entity.Value.FixedUpdate();
             }
             else
             {
-                enemiesToRemove.Add(enemy.Key);
+                entitiesToRemove.Add(entity.Key);
             }
         }
-        foreach(KeyValuePair<int, Projectile> projectile in projectiles)
+        foreach(KeyValuePair<uint, Projectile> projectile in projectiles)
         {
             if(projectile.Value.Alive)
             {
@@ -133,23 +92,23 @@ public static class GameController
             }
             else
             {
-                projectilesToRemove.Add(projectile.Key);
+                entitiesToRemove.Add(projectile.Key);
             }
         }
-        // Remove dead enemies/projectiles from dicts
-        if(enemiesToRemove.Count > 0)
+        // Remove dead entities
+        if(entitiesToRemove.Count > 0)
         {
-            foreach(int enemyID in enemiesToRemove)
+            foreach(uint ID in entitiesToRemove)
             {
-                enemies.Remove(enemyID);
+                entities.Remove(ID);
             }
-            enemiesToRemove.Clear();
+            entitiesToRemove.Clear();
         }
         if(projectilesToRemove.Count > 0)
         {
-            foreach(int projectileID in projectilesToRemove)
+            foreach(uint ID in projectilesToRemove)
             {
-                projectiles.Remove(projectileID);
+                projectiles.Remove(ID);
             }
             projectilesToRemove.Clear();
         }
@@ -158,23 +117,26 @@ public static class GameController
     // Initialize player ship in world
     public static void SpawnPlayer()
     {
-        players.Add(playerID, new PlayerShip(playerID));
-        playerID++;
-        if(playerID == int.MaxValue)
-        {
-            playerID = 0;
-        }
+        entities.Add(entityID, new PlayerShip(entityID));
+        Player = entities[entityID];
+        entityID++;
+        GetNextEntityID();
+    }
+
+    // Spawn friendly ships
+    public static void SpawnFriendly()
+    {
+        entities.Add(entityID, new FriendlyShip(entityID));
+        entityID++;
+        GetNextEntityID();
     }
 
     // Spawn enemies
     public static void SpawnEnemy()
     {
-        enemies.Add(enemyID, new EnemyShip(enemyID));
-        enemyID++;
-        if(enemyID == int.MaxValue)
-        {
-            enemyID = 0;
-        }
+        entities.Add(entityID, new EnemyShip(entityID));
+        entityID++;
+        GetNextEntityID();
     }
 
     // Spawn projectiles
@@ -182,9 +144,22 @@ public static class GameController
     {
         projectiles.Add(projectileID, new Projectile(projectileID, _iff, _damage, _position, _rotation, _velocity, _speed, _lifetime));
         projectileID++;
-        if(projectileID == int.MaxValue)
+    }
+
+    // Once entityID has passed max value and overflowed, since we are starting from 
+    public static void GetNextEntityID()
+    {
+        if(entityID == uint.MaxValue)
         {
-            projectileID = 0;
+            entityIDPassedMax = true;
+        }
+        else if(entityIDPassedMax == true)
+        {
+            if(entities.ContainsKey(entityID))
+            {
+                entityID++;
+                GetNextEntityID();
+            }
         }
     }
 
@@ -193,16 +168,45 @@ public static class GameController
     {
         if(_collisionReporter.tag == "Projectile")
         {
-            Projectile projectile = projectiles[int.Parse(_collisionReporter.name)];
+            Projectile projectile = projectiles[uint.Parse(_collisionReporter.name)];
             if(projectile.IFF == IFF.friend && _collidedWith.tag == "Enemy")
             {
-                projectile.ReceivedCollision();
-                enemies[int.Parse(_collidedWith.name)].ReceivedCollision(projectile.Damage);
+                try
+                {
+                    IEntity enemy = entities[uint.Parse(_collidedWith.name)];
+                    projectile.ReceivedCollision();
+                    enemy.ReceivedCollision(projectile.Damage);
+                }
+                catch(System.Exception e)
+                {
+                    Debug.Log($@"Projectile collided with entity that doesn't exist anymore...");
+                }
             }
-            if(projectile.IFF == IFF.enemy && _collidedWith.tag == "Player")
+            else if(projectile.IFF == IFF.enemy && _collidedWith.tag == "Player")
             {
-                projectile.ReceivedCollision();
-                players[int.Parse(_collidedWith.name)].ReceivedCollision(projectile.Damage);
+                try
+                {
+                    IEntity player = entities[uint.Parse(_collidedWith.name)];
+                    projectile.ReceivedCollision();
+                    player.ReceivedCollision(projectile.Damage);
+                }
+                catch(System.Exception e)
+                {
+                    Debug.Log($@"Projectile collided with entity that doesn't exist anymore...");
+                }
+            }
+            else if(projectile.IFF == IFF.enemy && _collidedWith.tag == "Friend")
+            {
+                try
+                {
+                    IEntity friend = entities[uint.Parse(_collidedWith.name)];
+                    projectile.ReceivedCollision();
+                    friend.ReceivedCollision(projectile.Damage);
+                }
+                catch(System.Exception e)
+                {
+                    Debug.Log($@"Projectile collided with entity that doesn't exist anymore...");
+                }
             }
         }
     }

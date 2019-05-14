@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
 // Controls the enemy ships
-public class EnemyShip : IEntity
+public class FriendlyShip : IEntity
 {
     // GameObjects and Components
     public GameObject ShipObject { get; set; }
-    private GameObject enemyPrefab;
+    private GameObject friendPrefab;
     private Rigidbody shipRigidbody;
 
     // Ship stats
@@ -44,10 +44,10 @@ public class EnemyShip : IEntity
     public bool Alive { get; set; }
 
     // Enemy ship constructor
-    public EnemyShip(uint _id)
+    public FriendlyShip(uint _id)
     {
         this.ID = _id;
-        this.IFF = GameController.IFF.enemy;
+        this.IFF = GameController.IFF.friend;
         this.Start();
     }
 
@@ -55,8 +55,8 @@ public class EnemyShip : IEntity
     // Start is called before the first frame update
     public void Start()
     {
-        this.enemyPrefab = Resources.Load(GameController.EnemyPrefabName, typeof(GameObject)) as GameObject;
-        this.ShipObject = GameObject.Instantiate(this.enemyPrefab, new Vector3(0, 0, 15), Quaternion.identity);
+        this.friendPrefab = Resources.Load(GameController.FriendPrefabName, typeof(GameObject)) as GameObject;
+        this.ShipObject = GameObject.Instantiate(this.friendPrefab, new Vector3(0, 0, 15), Quaternion.identity);
         this.ShipObject.name = $@"{this.ID}";
         this.shipRigidbody = this.ShipObject.GetComponent<Rigidbody>();
         this.Alive = true;
@@ -69,7 +69,7 @@ public class EnemyShip : IEntity
     // Update is called once per frame
     public void Update()
     {
-        
+
     }
 
     // Fixed Update is called a fixed number of times per second

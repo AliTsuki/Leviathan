@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 
 // Controls the player ships
-public class PlayerShip //: Ship
+public class PlayerShip : IEntity
 {
     // Input script intialization
     private PlayerInput playerInput = new PlayerInput();
-    
+
     // GameObjects and Components
-    public GameObject ShipObject;
+    public GameObject ShipObject { get; set; }
     private GameObject playerPrefab;
     private Rigidbody shipRigidbody;
     private GameObject impulseEngineObject;
@@ -76,18 +76,16 @@ public class PlayerShip //: Ship
     // Energy cost
     private float warpEnergyCost = 5f;
     private float shotEnergyCost = 5f;
-    
-    // Constuctor criteria
-    private int id;
-    public GameController.IFF IFF;
 
-    // Alive flag
-    public bool Alive = false;
+    // Entity Interface fields
+    public uint ID { get; set; }
+    public GameController.IFF IFF { get; set; }
+    public bool Alive { get; set; }
 
     // Player ship constructor
-    public PlayerShip(int _id)
+    public PlayerShip(uint _id)
     {
-        this.id = _id;
+        this.ID = _id;
         this.IFF = GameController.IFF.friend;
         this.Start();
     }
@@ -98,7 +96,7 @@ public class PlayerShip //: Ship
     {
         this.playerPrefab = Resources.Load(GameController.PlayerPrefabName, typeof(GameObject)) as GameObject;
         this.ShipObject = GameObject.Instantiate(this.playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        this.ShipObject.name = $@"{this.id}";
+        this.ShipObject.name = $@"{this.ID}";
         this.shipRigidbody = this.ShipObject.GetComponent<Rigidbody>();
         this.impulseEngineObject = this.ShipObject.transform.Find("Impulse Engine").gameObject;
         this.warpEngineObject = this.ShipObject.transform.Find("Warp Engine").gameObject;

@@ -9,8 +9,6 @@ public class Projectile
     private Rigidbody projectileRigidbody;
 
     // Constructor criteria
-    private int id;
-    public GameController.IFF IFF;
     public float Damage;
     private Vector3 position;
     private Quaternion rotation;
@@ -18,14 +16,16 @@ public class Projectile
     private float lifetime;
     private float speed;
     private bool piercingShot = false;
-    
-    // Alive flag
+
+    // Identification fields
+    public uint ID;
+    public GameController.IFF IFF;
     public bool Alive = false;
-    
+
     // Projectile constructor
-    public Projectile(int _id, GameController.IFF _iff, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public Projectile(uint _id, GameController.IFF _iff, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
-        this.id = _id;
+        this.ID = _id;
         this.IFF = _iff;
         this.Damage = _damage;
         this.position = _position;
@@ -42,7 +42,7 @@ public class Projectile
     {
         this.projectilePrefab = Resources.Load(GameController.ProjectilePrefabName, typeof(GameObject)) as GameObject;
         this.projectile = GameObject.Instantiate(this.projectilePrefab, this.position, this.rotation);
-        this.projectile.name = $@"{this.id}";
+        this.projectile.name = $@"{this.ID}";
         this.projectileRigidbody = this.projectile.GetComponent<Rigidbody>();
         this.projectileRigidbody.velocity = this.velocity;
         this.Alive = true;
