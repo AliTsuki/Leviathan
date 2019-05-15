@@ -4,18 +4,18 @@
 public class Projectile
 {
     // GameObjects and Components
-    private GameObject projectilePrefab;
-    private GameObject projectile;
-    private Rigidbody projectileRigidbody;
+    private GameObject ProjectilePrefab;
+    private GameObject ProjectileObject;
+    private Rigidbody ProjectileRigidbody;
 
     // Constructor criteria
     public float Damage;
-    private Vector3 position;
-    private Quaternion rotation;
-    private Vector3 velocity;
-    private float lifetime;
-    private float speed;
-    private bool piercingShot = false;
+    private Vector3 Position;
+    private Quaternion Rotation;
+    private Vector3 Velocity;
+    private float Lifetime;
+    private float Speed;
+    private bool PiercingShot = false;
 
     // Identification fields
     public uint ID;
@@ -28,11 +28,11 @@ public class Projectile
         this.ID = _id;
         this.IFF = _iff;
         this.Damage = _damage;
-        this.position = _position;
-        this.rotation = _rotation;
-        this.velocity = _velocity;
-        this.speed = _speed;
-        this.lifetime = _lifetime;
+        this.Position = _position;
+        this.Rotation = _rotation;
+        this.Velocity = _velocity;
+        this.Speed = _speed;
+        this.Lifetime = _lifetime;
         this.Start();
     }
 
@@ -40,27 +40,21 @@ public class Projectile
     // Start is called before the first frame update
     public void Start()
     {
-        this.projectilePrefab = Resources.Load(GameController.ProjectilePrefabName, typeof(GameObject)) as GameObject;
-        this.projectile = GameObject.Instantiate(this.projectilePrefab, this.position, this.rotation);
-        this.projectile.name = $@"{this.ID}";
-        this.projectileRigidbody = this.projectile.GetComponent<Rigidbody>();
-        this.projectileRigidbody.velocity = this.velocity;
+        this.ProjectilePrefab = Resources.Load(GameController.ProjectilePrefabName, typeof(GameObject)) as GameObject;
+        this.ProjectileObject = GameObject.Instantiate(this.ProjectilePrefab, this.Position, this.Rotation);
+        this.ProjectileObject.name = $@"{this.ID}";
+        this.ProjectileRigidbody = this.ProjectileObject.GetComponent<Rigidbody>();
+        this.ProjectileRigidbody.velocity = this.Velocity;
         this.Alive = true;
-    }
-
-    // Update is called once per frame
-    public void Update()
-    {
-
     }
 
     // Fixed Update is called a fixed number of times per second
     public void FixedUpdate()
     {
-        if(this.projectile != null)
+        if(this.ProjectileObject != null)
         {
-            this.projectileRigidbody.velocity += this.projectile.transform.forward * this.speed;
-            GameObject.Destroy(this.projectile, this.lifetime);
+            this.ProjectileRigidbody.velocity += this.ProjectileObject.transform.forward * this.Speed;
+            GameObject.Destroy(this.ProjectileObject, this.Lifetime);
         }
         else
         {
@@ -71,9 +65,9 @@ public class Projectile
     // Called when receiving collision
     public void ReceivedCollision()
     {
-        if(!this.piercingShot)
+        if(!this.PiercingShot)
         {
-            GameObject.Destroy(this.projectile);
+            GameObject.Destroy(this.ProjectileObject);
             this.Alive = false;
         }
     }

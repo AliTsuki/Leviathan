@@ -1,18 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class UIController : MonoBehaviour
+// Controls the game UI
+public static class UIController
 {
+    // GameObjects
+    private static Transform Player;
+    private static Transform Enemy;
+
     // Start is called before the first frame update
-    void Start()
+    public static void Start()
     {
         
     }
 
     // Update is called once per frame
-    void Update()
+    public static void Update()
     {
         
+    }
+
+    // Fixed Update is called a fixed number of times per second
+    public static void FixedUpdate()
+    {
+
     }
 }
