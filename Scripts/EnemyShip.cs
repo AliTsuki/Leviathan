@@ -58,9 +58,15 @@ public class EnemyShip : Ship
         {
             // Acquire new target
             this.CurrentTarget = AIController.AcquireTarget(this.ShipObject.transform.position, this.IFF, this.MaxTargetAcquisitionRange);
+            // If a new target can't be acquired
+            if(this.CurrentTarget == null)
+            {
+                // Wander around until finding a target
+                this.Wander();
+            }
         }
-        // If there is a current target
-        if(this.CurrentTarget != null)
+        // If there is a current target and it is alive
+        if(this.CurrentTarget != null && this.CurrentTarget.Alive == true)
         {
             // Use AI to figure out if ship should accelerate
             if(AIController.ShouldAccelerate(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange))

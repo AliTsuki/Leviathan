@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3191934649766761290}
   - component: {fileID: 1484697286126298545}
   - component: {fileID: 1024062559284146295}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Laser Bolt VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 7636686378393426385}
   - component: {fileID: 7657311502592618059}
   - component: {fileID: 5814732449601503746}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Projectile
   m_TagString: Projectile
   m_Icon: {fileID: 0}

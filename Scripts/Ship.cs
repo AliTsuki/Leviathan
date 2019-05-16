@@ -335,4 +335,10 @@ public class Ship
         this.Alive = false;
         GameObject.Destroy(this.ShipObject);
     }
+
+    // Called when a ship has no target and nothing else to do
+    public virtual void Wander()
+    {
+
+    }
 }

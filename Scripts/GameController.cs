@@ -21,7 +21,8 @@ public static class GameController
     // Enemy spawn fields
     private static uint EnemyCount = 0;
     private static uint MaxEnemyCount = 5;
-    private static int MaxEnemySpawnDistance = 100;
+    private static int MaxEnemySpawnDistance = 50;
+    private static int EnemyDespawnDistance = 100;
     private static Vector3 NextEnemySpawnPosition;
 
     // Constant references to Prefab filenames
@@ -155,6 +156,7 @@ public static class GameController
             // Clear projectile removal list
             ProjectilesToRemove.Clear();
         }
+        DespawnEnemies();
     }
 
     // Initialize player ship in world
@@ -259,6 +261,21 @@ public static class GameController
         else
         {
             return false;
+        }
+    }
+
+    // Checks if enemies should be despawned
+    private static void DespawnEnemies()
+    {
+        // Loop through all ships
+        foreach(KeyValuePair<uint, Ship> ship in Ships)
+        {
+            // If ship is enemy and further from player than despawn distance
+            if(ship.Value.IFF == IFF.Enemy && Vector3.Distance(Player.ShipObject.transform.position, ship.Value.ShipObject.transform.position) >= EnemyDespawnDistance)
+            {
+                // Despawn enemy ship
+                ship.Value.Despawn();
+            }
         }
     }
 }
