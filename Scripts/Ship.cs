@@ -134,7 +134,7 @@ public class Ship
     public virtual void FixedUpdate()
     {
         // If ship is alive, accept inputs from player input or AI
-        if(this.Alive)
+        if(this.Alive == true)
         {
             this.UpdateShipState();
         }
@@ -325,6 +325,7 @@ public class Ship
     {
         // Set to not alive and destroy GameObject
         this.Alive = false;
+        UIController.RemoveHealthbar(this.ID);
         GameObject.Destroy(this.ShipObject);
     }
 
@@ -333,6 +334,7 @@ public class Ship
     {
         // Set to not alive and destroy GameObject
         this.Alive = false;
+        UIController.RemoveHealthbar(this.ID);
         GameObject.Destroy(this.ShipObject);
     }
 

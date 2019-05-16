@@ -9,6 +9,8 @@ public static class GameController
 {
     // GameObjects and Components
     public static Ship Player;
+    private static GameObject CamerasPrefab;
+    private static GameObject Cameras;
     private static CinemachineVirtualCamera FollowCamera;
     private static System.Random r = new System.Random();
 
@@ -26,7 +28,11 @@ public static class GameController
     private static Vector3 NextEnemySpawnPosition;
 
     // Constant references to Prefab filenames
+    public const string CamerasPrefabName = "Cameras";
     public const string FollowCameraName = "Follow Camera";
+    public const string UIPrefabName = "UI";
+    public const string CanvasName = "Canvas";
+    public const string HealthbarPrefabName = "Health Bar UI";
     public const string BackgroundPrefabName = "Background";
     public const string PlayerPrefabName = "Player Ship";
     public const string FriendPrefabName = "Player Ship";
@@ -49,6 +55,12 @@ public static class GameController
     // Start is called before the first frame update
     public static void Start()
     {
+        // Initialize UI
+        UIController.Start();
+        // Spawn Camera
+        CamerasPrefab = Resources.Load(CamerasPrefabName, typeof(GameObject)) as GameObject;
+        Cameras = GameObject.Instantiate(CamerasPrefab);
+        Cameras.name = "Cameras";
         // Spawn player
         SpawnPlayer();
         // Set up follow camera
@@ -56,8 +68,6 @@ public static class GameController
         FollowCamera.Follow = Player.ShipObject.transform;
         // Initialize background
         Background.Start();
-        // Initialize UI
-        UIController.Start();
     }
 
     // Update is called once per frame

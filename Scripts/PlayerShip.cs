@@ -92,7 +92,7 @@ public class PlayerShip : Ship
     // Activates shields
     public void ActivateShields()
     {
-        if(this.playerInput.Shield)
+        if(this.playerInput.Shield == true)
         {
             this.ShieldObject.SetActive(true);
         }
@@ -105,7 +105,7 @@ public class PlayerShip : Ship
     // Activates scanner
     public void ActivateScanner()
     {
-        if(this.playerInput.Scanner)
+        if(this.playerInput.Scanner == true)
         {
             this.ScannerObject.SetActive(true);
         }

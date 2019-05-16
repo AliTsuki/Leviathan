@@ -69,7 +69,7 @@ public class EnemyShip : Ship
         if(this.CurrentTarget != null && this.CurrentTarget.Alive == true)
         {
             // Use AI to figure out if ship should accelerate
-            if(AIController.ShouldAccelerate(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange))
+            if(AIController.ShouldAccelerate(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
             {
                 this.ImpulseInput = true;
             }
@@ -78,7 +78,7 @@ public class EnemyShip : Ship
                 this.ImpulseInput = false;
             }
             // Use AI to figure out if ship should fire weapons
-            if(AIController.ShouldFireGun(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxWeaponsRange))
+            if(AIController.ShouldFireGun(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxWeaponsRange) == true)
             {
                 this.FireInput = true;
             }
