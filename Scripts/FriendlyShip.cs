@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-// Controls the enemy ships
+// Controls the friendly ships
 public class FriendlyShip : Ship
 {
     // Enemy ship constructor
@@ -8,7 +8,7 @@ public class FriendlyShip : Ship
     {
         this.ID = _id;
         this.StartingPosition = new Vector3(0, 0, 0);
-        this.IFF = GameController.IFF.enemy;
+        this.IFF = GameController.IFF.Friend;
         // Ship stats
         // Health/Armor/Shields
         this.Health = 0f;
@@ -44,6 +44,7 @@ public class FriendlyShip : Ship
         this.Start();
     }
 
+
     // Processes inputs
     public override void ProcessInputs()
     {
@@ -53,6 +54,6 @@ public class FriendlyShip : Ship
     // Gets intended rotation
     public override void GetIntendedRotation()
     {
-
+        // Do AI stuff
     }
 }

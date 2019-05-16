@@ -18,10 +18,4 @@ public static class UIController
     {
         
     }
-
-    // Fixed Update is called a fixed number of times per second
-    public static void FixedUpdate()
-    {
-
-    }
 }

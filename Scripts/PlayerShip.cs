@@ -6,17 +6,17 @@ public class PlayerShip : Ship
     // Input script intialization
     private PlayerInput playerInput = new PlayerInput();
 
-    // GameObjects
+    // Player-only GameObjects
     private GameObject ShieldObject;
     private GameObject ScannerObject;
-
 
     // Player ship constructor
     public PlayerShip(uint _id)
     {
         this.ID = _id;
         this.StartingPosition = new Vector3(0, 0, 0);
-        this.IFF = GameController.IFF.friend;
+        this.IFF = GameController.IFF.Friend;
+        this.IsPlayer = true;
         // Ship stats
         // Health/Armor/Shields
         this.Health = 0f;
@@ -54,6 +54,7 @@ public class PlayerShip : Ship
         this.Start();
     }
 
+
     // Processes inputs
     public override void ProcessInputs()
     {
@@ -75,8 +76,8 @@ public class PlayerShip : Ship
         // If joystick is pointed in some direction, set a new intended rotation
         if(this.HorizontalInput != 0 || this.VerticalInput != 0)
         {
-            this.IntendedAngle = MathOps.Modulo(Mathf.Atan2(this.VerticalInput, this.HorizontalInput) * Mathf.Rad2Deg, 360);
-            this.IntendedRotation = new Vector3(0, this.IntendedAngle, 0);
+            this.IntendedAngle = Mathf.Atan2(this.VerticalInput, this.HorizontalInput) * Mathf.Rad2Deg;
+            this.IntendedRotation = Quaternion.Euler(new Vector3(0, this.IntendedAngle, 0));
         }
     }
 
@@ -112,5 +113,11 @@ public class PlayerShip : Ship
         {
             this.ScannerObject.SetActive(false);
         }
+    }
+
+    // Called when entity is destroyed
+    public override void Kill()
+    {
+        this.Alive = false;
     }
 }

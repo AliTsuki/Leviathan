@@ -40,6 +40,7 @@ public class Projectile
     // Start is called before the first frame update
     public void Start()
     {
+        // Set up universal projectile fields
         this.ProjectilePrefab = Resources.Load(GameController.ProjectilePrefabName, typeof(GameObject)) as GameObject;
         this.ProjectileObject = GameObject.Instantiate(this.ProjectilePrefab, this.Position, this.Rotation);
         this.ProjectileObject.name = $@"{this.ID}";
@@ -48,16 +49,21 @@ public class Projectile
         this.Alive = true;
     }
 
-    // Fixed Update is called a fixed number of times per second
+    // Fixed Update is called a fixed number of times per second, Physics updates should be done in FixedUpdate
     public void FixedUpdate()
     {
+        // If projectile still exists
         if(this.ProjectileObject != null)
         {
+            // Accelerate forward
             this.ProjectileRigidbody.velocity += this.ProjectileObject.transform.forward * this.Speed;
+            // Set timer for projectile to burn out
             GameObject.Destroy(this.ProjectileObject, this.Lifetime);
         }
+        // If projectile has burnt out
         else
         {
+            // Set to dead
             this.Alive = false;
         }
     }
@@ -65,9 +71,12 @@ public class Projectile
     // Called when receiving collision
     public void ReceivedCollision()
     {
+        // Check if shot has piercing abilities
         if(!this.PiercingShot)
         {
+            // Destroy projectile object on collision
             GameObject.Destroy(this.ProjectileObject);
+            // Set to dead
             this.Alive = false;
         }
     }

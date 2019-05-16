@@ -8,7 +8,8 @@ public class EnemyShip : Ship
     {
         this.ID = _id;
         this.StartingPosition = _startingPosition;
-        this.IFF = GameController.IFF.enemy;
+        this.IFF = GameController.IFF.Enemy;
+        this.IsPlayer = false;
         // Ship stats
         // Health/Armor/Shields
         this.Health = 0f;
@@ -21,38 +22,75 @@ public class EnemyShip : Ship
         this.Energy = 0f;
         this.MaxEnergy = 100f;
         // Speed/Acceleration
-        this.ImpulseAcceleration = 40f;
+        this.ImpulseAcceleration = 15f;
         this.WarpAccelMultiplier = 3f;
-        this.MaxImpulseSpeed = 50f;
-        this.MaxWarpSpeed = 150f;
+        this.MaxImpulseSpeed = 20f;
+        this.MaxWarpSpeed = 0f;
         // Weapon stats
-        this.ShotDamage = 10f;
-        this.ShotSpeed = 10f;
+        this.ShotDamage = 1f;
+        this.ShotSpeed = 5f;
         this.ShotLifetime = 2.5f;
         this.ShotCurvature = 0f;
         // Cooldowns
-        this.ShotCooldownTime = 0.25f;
+        this.ShotCooldownTime = 0.5f;
         this.ShieldCooldownTime = 10f;
         this.BombCooldownTime = 10f;
         this.ScannerCooldownTime = 10f;
         // Energy cost
         this.WarpEnergyCost = 5f;
         this.ShotEnergyCost = 5f;
+        // AI fields
+        this.MaxTargetAcquisitionRange = 50f;
+        this.MaxOrbitRange = 20f;
+        this.MaxWeaponsRange = 25f;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load(GameController.EnemyPrefabName, typeof(GameObject)) as GameObject;
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
         this.Start();
     }
 
+
     // Processes inputs
     public override void ProcessInputs()
     {
-        // Do AI stuff
+        // If there is no current target or current target is dead
+        if(this.CurrentTarget == null || this.CurrentTarget.Alive == false)
+        {
+            // Acquire new target
+            this.CurrentTarget = AIController.AcquireTarget(this.ShipObject.transform.position, this.IFF, this.MaxTargetAcquisitionRange);
+        }
+        // If there is a current target
+        if(this.CurrentTarget != null)
+        {
+            // Use AI to figure out if ship should accelerate
+            if(AIController.ShouldAccelerate(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange))
+            {
+                this.ImpulseInput = true;
+            }
+            else
+            {
+                this.ImpulseInput = false;
+            }
+            // Use AI to figure out if ship should fire weapons
+            if(AIController.ShouldFireGun(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxWeaponsRange))
+            {
+                this.FireInput = true;
+            }
+            else
+            {
+                this.FireInput = false;
+            }
+        }
     }
 
     // Gets intended rotation
     public override void GetIntendedRotation()
     {
-
+        // If there is a current target
+        if(this.CurrentTarget != null)
+        {
+            // Get rotation to face target
+            this.IntendedRotation = AIController.GetRotationToTarget(this.ShipObject.transform, this.CurrentTarget.ShipObject.transform.position);
+        }
     }
 }

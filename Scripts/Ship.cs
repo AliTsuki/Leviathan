@@ -31,19 +31,21 @@ public class Ship
 
     // Fields not modified by player equipment/level
     public Vector3 StartingPosition;
-    public Vector3 IntendedRotation;
-    public Vector3 CurrentRotation;
-    public Vector3 NextRotation;
-    public Vector3 TiltRotation;
+    public Vector3 CurrentRotationForwardVector;
+    public Vector3 NextRotationForwardVector;
+    public Quaternion IntendedRotation;
+    public Quaternion CurrentRotation;
+    public Quaternion NextRotation;
+    public Quaternion TiltRotation;
+    public float CurrentRotationAngle;
+    public float NextRotationAngle;
     public int RecentRotationsIndex = 0;
     public static int RecentRotationsIndexMax = 30;
     public float[] RecentRotations;
     public float RecentRotationsAverage = 0f;
     public float TiltAngle = 0f;
-    public bool IntendedRotationClockwise = false;
-    public float DifferenceAngle = 0f;
     public float IntendedAngle = 0f;
-    public float MaxRotationSpeed = 5f;
+    public float MaxRotationSpeed = 0.1f;
     public float LastShotFireTime = 0f;
     public bool WeaponOnCooldown = false;
     public float ImpulseEngineAudioStep = 0.05f;
@@ -83,15 +85,23 @@ public class Ship
     public float WarpEnergyCost;
     public float ShotEnergyCost;
 
+    // AI fields
+    public Ship CurrentTarget;
+    public float MaxTargetAcquisitionRange;
+    public float MaxOrbitRange;
+    public float MaxWeaponsRange;
+
     // Identification fields
     public uint ID;
     public GameController.IFF IFF;
     public bool Alive;
+    public bool IsPlayer;
 
 
     // Start is called before the first frame update
     public virtual void Start()
     {
+        // Set up universal ship fields
         this.ShipObject.name = $@"{this.ID}";
         this.ShipRigidbody = this.ShipObject.GetComponent<Rigidbody>();
         this.ShipRigidbody = this.ShipObject.GetComponent<Rigidbody>();
@@ -106,12 +116,12 @@ public class Ship
         this.ImpulseAudio = this.ImpulseEngineObject.GetComponent<AudioSource>();
         this.WarpAudio = this.WarpEngineObject.GetComponent<AudioSource>();
         this.GunAudio = this.GunBarrelObject.GetComponent<AudioSource>();
-        this.RecentRotations = new float[RecentRotationsIndexMax];
         this.Alive = true;
         this.Health = this.MaxHealth;
         this.Armor = this.MaxArmor;
         this.Shields = this.MaxShields;
         this.Energy = this.MaxEnergy;
+        this.RecentRotations = new float[RecentRotationsIndexMax];
     }
 
     // Update is called once per frame
@@ -120,13 +130,15 @@ public class Ship
         this.ProcessInputs();
     }
 
-    // Fixed Update is called a fixed number of times per second
+    // Fixed Update is called a fixed number of times per second, Physics updates should be done in FixedUpdate
     public virtual void FixedUpdate()
     {
+        // If ship is alive, accept inputs from player input or AI
         if(this.Alive)
         {
             this.UpdateShipState();
         }
+        // If ship health has reached 0, run Kill method
         if(this.Health <= 0)
         {
             this.Kill();
@@ -136,7 +148,7 @@ public class Ship
     // Processes inputs
     public virtual void ProcessInputs()
     {
-
+        // Each subclass has its own AI for this method
     }
 
     // Updates the state of the ship, turning, accelerating, using weapons etc.
@@ -158,63 +170,27 @@ public class Ship
     // Gets intended rotation
     public virtual void GetIntendedRotation()
     {
-        
+        // Each subclass has its own AI for this method
     }
 
     // Turns the ship
     public virtual void TurnShip()
     {
         // Get current rotation
-        this.CurrentRotation = this.ShipObject.transform.rotation.eulerAngles;
-        this.CurrentRotation.y += 360;
-        // Check if the turn should be clockwise or anti-cw
-        this.DifferenceAngle = MathOps.Modulo(this.CurrentRotation.y - this.IntendedRotation.y, 360);
-        if(this.DifferenceAngle > 180)
-        {
-            this.DifferenceAngle -= 180;
-            this.IntendedRotationClockwise = true;
-        }
-        else
-        {
-            this.IntendedRotationClockwise = false;
-        }
-        // If turning angle is greater than max rotation speed allows, rotate by max rot speed
-        if(this.DifferenceAngle >= this.MaxRotationSpeed)
-        {
-            // If clockwise, add rotation speed
-            if(this.IntendedRotationClockwise == true)
-            {
-                this.NextRotation.y = MathOps.Modulo(this.CurrentRotation.y + this.MaxRotationSpeed, 360);
-                this.ShipObject.transform.rotation = Quaternion.Euler(this.NextRotation);
-                this.RecentRotations[this.RecentRotationsIndex] = this.MaxRotationSpeed;
-            }
-            // If anticlockwise, subtract rotation speed
-            else
-            {
-                this.NextRotation.y = MathOps.Modulo(this.CurrentRotation.y - this.MaxRotationSpeed, 360);
-                this.ShipObject.transform.rotation = Quaternion.Euler(this.NextRotation);
-                this.RecentRotations[this.RecentRotationsIndex] = -this.MaxRotationSpeed;
-            }
-        }
-        // If turning angle is less than max rotation speed limit, immediately rotate to intended rotation
-        else if(this.DifferenceAngle < this.MaxRotationSpeed && this.DifferenceAngle > 0)
-        {
-            this.ShipObject.transform.rotation = Quaternion.Euler(this.IntendedRotation);
-            // Add or subtract recent rotation for less than a max rot amount
-            if(this.CurrentRotation.y - this.IntendedRotation.y - 180 < 0)
-            {
-                this.RecentRotations[this.RecentRotationsIndex] = 2.5f;
-            }
-            else
-            {
-                this.RecentRotations[this.RecentRotationsIndex] = -2.5f;
-            }
-        }
-        // If turning angle is 0, set the recent rotation to 0
-        else
-        {
-            this.RecentRotations[this.RecentRotationsIndex] = 0;
-        }
+        this.CurrentRotation = this.ShipObject.transform.rotation;
+        // Get next rotation by using intended rotation and max rotation speed
+        this.NextRotation = Quaternion.Lerp(this.CurrentRotation, this.IntendedRotation, this.MaxRotationSpeed);
+        // Rotate to next rotation
+        this.ShipObject.transform.rotation = this.NextRotation;
+        // Get recent rotation angle amount for tilting
+        // Get forward vector for each rotation
+        this.CurrentRotationForwardVector = this.CurrentRotation * Vector3.forward;
+        this.NextRotationForwardVector = this.NextRotation * Vector3.forward;
+        // Get a numeric angle for each vector on the X-Z plane
+        this.CurrentRotationAngle = Mathf.Atan2(this.CurrentRotationForwardVector.x, this.CurrentRotationForwardVector.z) * Mathf.Rad2Deg;
+        this.NextRotationAngle = Mathf.Atan2(this.NextRotationForwardVector.x, this.NextRotationForwardVector.z) * Mathf.Rad2Deg;
+        // Store recent rotation amount to be used for leaning ship
+        this.RecentRotations[this.RecentRotationsIndex] = Mathf.DeltaAngle(this.CurrentRotationAngle, this.NextRotationAngle);
         // Go to next recent rotation index
         this.RecentRotationsIndex++;
         // If recent rotation index has hit the end of the array, go back to the start
@@ -227,55 +203,75 @@ public class Ship
     // Lean the ship during turns
     public virtual void LeanShip()
     {
+        // Reset recent rotations average
         this.RecentRotationsAverage = 0;
+        // Loop through recent rotations and add them together
         for(int i = 0; i < RecentRotationsIndexMax; i++)
         {
             this.RecentRotationsAverage += this.RecentRotations[i];
         }
+        // Divide recent rotations by max index to get average
         this.RecentRotationsAverage /= RecentRotationsIndexMax;
-        this.CurrentRotation = this.ShipObject.transform.rotation.eulerAngles;
+        // Get current rotation
+        this.CurrentRotation = this.ShipObject.transform.rotation;
+        // Amplify tilt angle by average multiplied by some amount
         this.TiltAngle = -(this.RecentRotationsAverage * 5);
-        this.TiltRotation = new Vector3(this.CurrentRotation.x, this.CurrentRotation.y, this.TiltAngle);
-        this.ShipObject.transform.rotation = Quaternion.Euler(this.TiltRotation);
+        // Get next tilt rotation
+        this.TiltRotation = Quaternion.Euler(0, this.CurrentRotation.eulerAngles.y, this.TiltAngle);
+        // Rotate ship to new tilt rotation
+        this.ShipObject.transform.rotation = this.TiltRotation;
     }
 
     // Accelerates the ship
     public virtual void AccelerateShip()
     {
+        // If impulse engine is activated by player input or AI and warp engine is not activated
         if(this.ImpulseInput && !this.WarpInput)
         {
+            // Check if at speed limit
             if(this.ShipRigidbody.velocity.magnitude < this.MaxImpulseSpeed)
             {
+                // Accelerate forward
                 this.ShipRigidbody.AddRelativeForce(new Vector3(0, 0, this.ImpulseAcceleration));
+                // Modify particle effects
                 this.ImpulseParticleMain.startSpeed = 2.8f;
                 this.WarpParticleMain.startLifetime = 0f;
+                // Fade in/out audio
                 AudioController.FadeIn(this.ImpulseAudio, this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMaxVol);
                 AudioController.FadeOut(this.WarpAudio, this.WarpEngineAudioStep, this.WarpEngineAudioMinVol);
             }
         }
+        // If warp engine is activated by player input or AI
         else if(this.WarpInput)
         {
+            // Check if at speed limit
             if(this.ShipRigidbody.velocity.magnitude < this.MaxWarpSpeed)
             {
+                // Accelerate at warp speed
                 this.ShipRigidbody.AddRelativeForce(new Vector3(0, 0, this.ImpulseAcceleration * this.WarpAccelMultiplier));
+                // Modify particle effects
                 this.ImpulseParticleMain.startSpeed = 5f;
                 this.WarpParticleMain.startSpeed = 10f;
                 this.WarpParticleMain.startLifetime = 1f;
+                // Fade in/out audio
                 AudioController.FadeIn(this.WarpAudio, this.WarpEngineAudioStep, this.WarpEngineAudioMaxVol);
                 AudioController.FadeOut(this.ImpulseAudio, this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMinVol);
             }
         }
+        // If no engines are active
         else
         {
+            // Turn particles back to default
             this.ImpulseParticleMain.startSpeed = 1f;
             this.WarpParticleMain.startSpeed = 1f;
             this.WarpParticleMain.startLifetime = 0f;
+            // Fade out audio
             AudioController.FadeOut(this.ImpulseAudio, this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMinVol);
             AudioController.FadeOut(this.WarpAudio, this.WarpEngineAudioStep, this.WarpEngineAudioMinVol);
         }
     }
 
-    // Uses abilities: fire weapons, bombs, use shield and scanner
+    // Uses ship abilities
     public virtual void UseAbilities()
     {
         this.FireMainGun();
@@ -284,27 +280,35 @@ public class Ship
     // Fires main guns
     public virtual void FireMainGun()
     {
+        // Take weapon off cooldown if it has been long enough since last fired
         if(Time.time - this.LastShotFireTime >= this.ShotCooldownTime)
         {
             this.WeaponOnCooldown = false;
         }
+        // If weapons fire input is active by player input or AI
         if(this.FireInput)
         {
-            if(!this.WeaponOnCooldown)
+            // Check if weapon is on cooldown
+            if(this.WeaponOnCooldown == false)
             {
+                // Turn on gun lights and spawn a projectile, set last fire time, put weapon on cooldown, and play gun audio
                 this.GunBarrelLightsObject.SetActive(true);
-                GameController.SpawnProjectile(GameController.IFF.friend, this.ShotDamage, this.GunBarrelObject.transform.position, this.GunBarrelObject.transform.rotation, this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                GameController.SpawnProjectile(this.IFF, this.ShotDamage, this.GunBarrelObject.transform.position, Quaternion.Euler(0, this.GunBarrelObject.transform.rotation.eulerAngles.y, 0), this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
                 this.LastShotFireTime = Time.time;
                 this.WeaponOnCooldown = true;
                 this.GunAudio.Play();
             }
+            // If weapon is on cooldown
             else
             {
+                // Turn gun lights off
                 this.GunBarrelLightsObject.SetActive(false);
             }
         }
+        // If weapons fire input is not active
         else
         {
+            // Turn gun lights off
             this.GunBarrelLightsObject.SetActive(false);
         }
     }
@@ -312,12 +316,22 @@ public class Ship
     // Called when receiving collision from projectile
     public virtual void ReceivedCollision(float _damage)
     {
+        // Subtract projectile damage from health
         this.Health -= _damage;
     }
 
-    // Called when entity is destroyed
+    // Called when ship is destroyed by damage
     public virtual void Kill()
     {
+        // Set to not alive and destroy GameObject
+        this.Alive = false;
+        GameObject.Destroy(this.ShipObject);
+    }
+
+    // Called when ship is too far away from player
+    public virtual void Despawn()
+    {
+        // Set to not alive and destroy GameObject
         this.Alive = false;
         GameObject.Destroy(this.ShipObject);
     }

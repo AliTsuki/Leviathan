@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
         GameController.Update();
     }
 
-    // Fixed Update is called a fixed number of times per second
+    // Fixed Update is called a fixed number of times per second, Physics updates should be done in FixedUpdate
     public void FixedUpdate()
     {
         GameController.FixedUpdate();

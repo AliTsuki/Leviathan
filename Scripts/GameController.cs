@@ -1,6 +1,6 @@
-﻿using Cinemachine;
+﻿using System.Collections.Generic;
 
-using System.Collections.Generic;
+using Cinemachine;
 
 using UnityEngine;
 
@@ -9,22 +9,22 @@ public static class GameController
 {
     // GameObjects and Components
     public static Ship Player;
-    private static CinemachineVirtualCamera followCamera;
+    private static CinemachineVirtualCamera FollowCamera;
     private static System.Random r = new System.Random();
 
-    // Entity List and Dicts
-    public static readonly Dictionary<uint, Ship> entities = new Dictionary<uint, Ship>();
-    public static readonly Dictionary<uint, Projectile> projectiles = new Dictionary<uint, Projectile>();
-    private static readonly List<uint> entitiesToRemove = new List<uint>();
-    private static readonly List<uint> projectilesToRemove = new List<uint>();
+    // Entity Lists and Dicts
+    public static readonly Dictionary<uint, Ship> Ships = new Dictionary<uint, Ship>();
+    public static readonly Dictionary<uint, Projectile> Projectiles = new Dictionary<uint, Projectile>();
+    private static readonly List<uint> ShipsToRemove = new List<uint>();
+    private static readonly List<uint> ProjectilesToRemove = new List<uint>();
 
     // Enemy spawn fields
-    private static uint enemyCount = 0;
-    private static uint maxEnemyCount = 10;
-    private static int maxEnemySpawnDistance = 50;
-    private static Vector3 nextEnemySpawnPosition;
+    private static uint EnemyCount = 0;
+    private static uint MaxEnemyCount = 5;
+    private static int MaxEnemySpawnDistance = 100;
+    private static Vector3 NextEnemySpawnPosition;
 
-    // Constants
+    // Constant references to Prefab filenames
     public const string FollowCameraName = "Follow Camera";
     public const string BackgroundPrefabName = "Background";
     public const string PlayerPrefabName = "Player Ship";
@@ -33,14 +33,15 @@ public static class GameController
     public const string ProjectilePrefabName = "Projectile";
 
     // Entity IDs
-    private static uint entityID = 0;
-    private static uint projectileID = 0;
-    private static bool entityIDPassedMax = false;
+    private static uint ShipID = 0;
+    private static uint ProjectileID = 0;
+    private static bool ShipIDPassedMax = false;
 
+    // Identify Friend or Foe
     public enum IFF
     {
-        friend,
-        enemy
+        Friend,
+        Enemy
     };
 
 
@@ -50,8 +51,8 @@ public static class GameController
         // Spawn player
         SpawnPlayer();
         // Set up follow camera
-        followCamera = GameObject.Find(FollowCameraName).GetComponent<CinemachineVirtualCamera>();
-        followCamera.Follow = Player.ShipObject.transform;
+        FollowCamera = GameObject.Find(FollowCameraName).GetComponent<CinemachineVirtualCamera>();
+        FollowCamera.Follow = Player.ShipObject.transform;
         // Initialize background
         Background.Start();
         // Initialize UI
@@ -61,18 +62,23 @@ public static class GameController
     // Update is called once per frame
     public static void Update()
     {
-        // Update all entities
-        foreach(KeyValuePair<uint, Ship> entity in entities)
+        // Update all ships
+        foreach(KeyValuePair<uint, Ship> ship in Ships)
         {
-            if(entity.Value.Alive)
+            // Checks if ship is alive
+            if(ship.Value.Alive)
             {
-                entity.Value.Update();
+                // Update ship
+                ship.Value.Update();
             }
         }
+        // Checks if enemies should be spawned and calls SpawnEnemy if so
         if(ShouldSpawnEnemies())
         {
-            nextEnemySpawnPosition = new Vector3(Player.ShipObject.transform.position.x + r.Next(-maxEnemySpawnDistance, maxEnemySpawnDistance), 0, Player.ShipObject.transform.position.z + r.Next(-maxEnemySpawnDistance, maxEnemySpawnDistance));
-            SpawnEnemy(nextEnemySpawnPosition);
+            // Get next random spawn position for enemy ship
+            NextEnemySpawnPosition = new Vector3(Player.ShipObject.transform.position.x + r.Next(-MaxEnemySpawnDistance, MaxEnemySpawnDistance), 0, Player.ShipObject.transform.position.z + r.Next(-MaxEnemySpawnDistance, MaxEnemySpawnDistance));
+            // Spawn enemy ship at specified position
+            SpawnEnemy(NextEnemySpawnPosition);
         }
         // Update Background
         Background.Update();
@@ -80,101 +86,122 @@ public static class GameController
         UIController.Update();
     }
 
-    // Fixed Update is called a fixed number of times per second
+    // Fixed Update is called a fixed number of times per second, Physics updates should be done in FixedUpdate
     public static void FixedUpdate()
     {
-        // FixedUpdate all entities
-        foreach(KeyValuePair<uint, Ship> entity in entities)
+        // FixedUpdate all ships
+        foreach(KeyValuePair<uint, Ship> ship in Ships)
         {
-            if(entity.Value.Alive)
+            // Checks if ship is alive
+            if(ship.Value.Alive)
             {
-                entity.Value.FixedUpdate();
+                // Physics update ship
+                ship.Value.FixedUpdate();
             }
+            // If ship is dead
             else
             {
-                entitiesToRemove.Add(entity.Key);
-                if(entity.Value.IFF == IFF.enemy)
+                // Don't ever remove player from ship list
+                if(ship.Value.IsPlayer == false)
                 {
-                    enemyCount--;
+                    // Add dead ship to removal list
+                    ShipsToRemove.Add(ship.Key);
+                    // If ship to remove is an enemy
+                    if(ship.Value.IFF == IFF.Enemy)
+                    {
+                        // Lower the enemy count
+                        EnemyCount--;
+                    }
                 }
             }
         }
-        foreach(KeyValuePair<uint, Projectile> projectile in projectiles)
+        // FixedUpdate all projectiles
+        foreach(KeyValuePair<uint, Projectile> projectile in Projectiles)
         {
+            // Checks if projectile is alive
             if(projectile.Value.Alive)
             {
+                // Physics update projectile
                 projectile.Value.FixedUpdate();
             }
+            // If projectile is dead
             else
             {
-                projectilesToRemove.Add(projectile.Key);
+                // Add projectile to removal list
+                ProjectilesToRemove.Add(projectile.Key);
             }
         }
-        // Remove dead entities
-        if(entitiesToRemove.Count > 0)
+        // Remove dead ships
+        if(ShipsToRemove.Count > 0)
         {
-            foreach(uint ID in entitiesToRemove)
+            // Loop through ship removal list
+            foreach(uint ID in ShipsToRemove)
             {
-                entities.Remove(ID);
+                // Remove ship
+                Ships.Remove(ID);
             }
-            entitiesToRemove.Clear();
+            // Clear ship removal list
+            ShipsToRemove.Clear();
         }
-        if(projectilesToRemove.Count > 0)
+        // Remove dead projectiles
+        if(ProjectilesToRemove.Count > 0)
         {
-            foreach(uint ID in projectilesToRemove)
+            // Loop through projectile removal list
+            foreach(uint ID in ProjectilesToRemove)
             {
-                projectiles.Remove(ID);
+                // Remove projectile
+                Projectiles.Remove(ID);
             }
-            projectilesToRemove.Clear();
+            // Clear projectile removal list
+            ProjectilesToRemove.Clear();
         }
-        UIController.FixedUpdate();
     }
 
     // Initialize player ship in world
     public static void SpawnPlayer()
     {
-        entities.Add(entityID, new PlayerShip(entityID));
-        Player = entities[entityID];
-        entityID++;
+        Ships.Add(ShipID, new PlayerShip(ShipID));
+        Player = Ships[ShipID];
+        ShipID++;
         GetNextEntityID();
     }
 
     // Spawn friendly ships
     public static void SpawnFriendly()
     {
-        entities.Add(entityID, new FriendlyShip(entityID));
-        entityID++;
+        Ships.Add(ShipID, new FriendlyShip(ShipID));
+        ShipID++;
         GetNextEntityID();
     }
 
-    // Spawn enemies
+    // Spawn enemy ships
     public static void SpawnEnemy(Vector3 _startingPosition)
     {
-        entities.Add(entityID, new EnemyShip(entityID, _startingPosition));
-        enemyCount++;
-        entityID++;
+        Ships.Add(ShipID, new EnemyShip(ShipID, _startingPosition));
+        EnemyCount++;
+        ShipID++;
         GetNextEntityID();
     }
 
     // Spawn projectiles
     public static void SpawnProjectile(IFF _iff, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
-        projectiles.Add(projectileID, new Projectile(projectileID, _iff, _damage, _position, _rotation, _velocity, _speed, _lifetime));
-        projectileID++;
+        Projectiles.Add(ProjectileID, new Projectile(ProjectileID, _iff, _damage, _position, _rotation, _velocity, _speed, _lifetime));
+        ProjectileID++;
     }
 
-    // Once entityID has passed max value and overflowed, since we are starting from 
+    // Once entityID has passed max value and overflowed, check each ID to see if already exists recursively
     public static void GetNextEntityID()
     {
-        if(entityID == uint.MaxValue)
+        if(ShipID == uint.MaxValue)
         {
-            entityIDPassedMax = true;
+            ShipIDPassedMax = true;
         }
-        else if(entityIDPassedMax == true)
+        else if(ShipIDPassedMax == true)
         {
-            if(entities.ContainsKey(entityID))
+            if(Ships.ContainsKey(ShipID))
             {
-                entityID++;
+                ShipID++;
                 GetNextEntityID();
             }
         }
@@ -183,25 +210,39 @@ public static class GameController
     // Recieve Collision info and propogate
     public static void Collide(GameObject _collisionReporter, GameObject _collidedWith)
     {
+        // Checks if the object reporting collision is a projectile
         if(_collisionReporter.tag == "Projectile")
         {
-            Projectile projectile = projectiles[uint.Parse(_collisionReporter.name)];
-            if(projectile.IFF == IFF.friend && _collidedWith.tag == "Enemy")
+            // Get the projectile
+            Projectile projectile = Projectiles[uint.Parse(_collisionReporter.name)];
+            // If projectile is friendly and has collided with an enemy
+            if(projectile.IFF == IFF.Friend && _collidedWith.tag == "Enemy")
             {
-                Ship enemy = entities[uint.Parse(_collidedWith.name)];
+                // Get the enemy ship
+                Ship enemy = Ships[uint.Parse(_collidedWith.name)];
+                // Run ReceivedCollision for projectile
                 projectile.ReceivedCollision();
+                // Run ReceivedCollision for enemy
                 enemy.ReceivedCollision(projectile.Damage);
             }
-            else if(projectile.IFF == IFF.enemy && _collidedWith.tag == "Player")
+            // If projectile is enemy and has collided with a player
+            else if(projectile.IFF == IFF.Enemy && _collidedWith.tag == "Player")
             {
-                Ship player = entities[uint.Parse(_collidedWith.name)];
+                // Get player ship
+                Ship player = Ships[uint.Parse(_collidedWith.name)];
+                // Run ReceivedCollision for projectile
                 projectile.ReceivedCollision();
+                // Run ReceivedCollision for player
                 player.ReceivedCollision(projectile.Damage);
             }
-            else if(projectile.IFF == IFF.enemy && _collidedWith.tag == "Friend")
+            // If projectile is enemy and has collided with a friendly ship
+            else if(projectile.IFF == IFF.Enemy && _collidedWith.tag == "Friend")
             {
-                Ship friend = entities[uint.Parse(_collidedWith.name)];
+                // Get friendly ship
+                Ship friend = Ships[uint.Parse(_collidedWith.name)];
+                // Run ReceivedCollision for projectile
                 projectile.ReceivedCollision();
+                // Run ReceivedCollision for friendly ship
                 friend.ReceivedCollision(projectile.Damage);
             }
         }
@@ -210,7 +251,8 @@ public static class GameController
     // Checks if enemies should be spawned
     private static bool ShouldSpawnEnemies()
     {
-        if(enemyCount < maxEnemyCount)
+        // If current enemy count is below max allowed return true, otherwise false
+        if(EnemyCount < MaxEnemyCount)
         {
             return true;
         }
