@@ -85,13 +85,21 @@ public class PlayerShip : Ship
     public override void UseAbilities()
     {
         this.FireMainGun();
+        this.FireBomb();
         this.ActivateShields();
         this.ActivateScanner();
+    }
+
+    // Fires bombs
+    public void FireBomb()
+    {
+        // TODO: Make this do something, maybe shoots out a projectile, and when the bomb button is pressed a second time it explodes for massive damage to wide area
     }
 
     // Activates shields
     public void ActivateShields()
     {
+        // TODO: Make Shield actually do something, maybe it runs for a short time and blocks all incoming damage or something
         if(this.playerInput.Shield == true)
         {
             this.ShieldObject.SetActive(true);
@@ -105,6 +113,7 @@ public class PlayerShip : Ship
     // Activates scanner
     public void ActivateScanner()
     {
+        // TODO: Make Scanner actually do something, maybe send out a circular wave and have it identify something about the enemies nearby
         if(this.playerInput.Scanner == true)
         {
             this.ScannerObject.SetActive(true);
@@ -118,6 +127,7 @@ public class PlayerShip : Ship
     // Called when entity is destroyed
     public override void Kill()
     {
+        // TODO: Make a proper kill method for player, like set up a save system and respawn or something
         this.Alive = false;
     }
 }

@@ -228,6 +228,7 @@ public class Ship
         // If impulse engine is activated by player input or AI and warp engine is not activated
         if(this.ImpulseInput && !this.WarpInput)
         {
+            // TODO: Fix speed limit check
             // Check if at speed limit
             if(this.ShipRigidbody.velocity.magnitude < this.MaxImpulseSpeed)
             {

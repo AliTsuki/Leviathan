@@ -41,7 +41,9 @@ public static class UIController
     public static void Update()
     {
         // Get UIOffset again, in case user has changed screen size during play
-        UIOffset = new Vector2((float)rectTransform.sizeDelta.x / 2f, (float)rectTransform.sizeDelta.y / 2f - 60); //-30 puts it above
+        UIOffset = new Vector2((float)rectTransform.sizeDelta.x / 2f, (float)rectTransform.sizeDelta.y / 2f - 60);
+        // TODO: Seperate Player healthbar from enemy healthbars
+        // TODO: Make healthbars hidden on enemies until they take damage
         foreach(KeyValuePair<uint, Ship> ship in GameController.Ships)
         {
             // If ship doesn't currently have a healthbar
