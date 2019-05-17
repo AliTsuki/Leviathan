@@ -4,7 +4,7 @@
 public class PlayerShip : Ship
 {
     // Input script intialization
-    private PlayerInput playerInput = new PlayerInput();
+    private readonly PlayerInput playerInput = new PlayerInput();
 
     // Player-only GameObjects
     private GameObject ShieldObject;
@@ -21,10 +21,10 @@ public class PlayerShip : Ship
         // Health/Armor/Shields
         this.Health = 100f;
         this.MaxHealth = 100f;
-        this.Armor = 100f;
-        this.MaxArmor = 100f;
+        this.Armor = 1f;
         this.Shields = 100f;
         this.MaxShields = 100f;
+        this.ShieldRegenSpeed = 1f;
         // Current/Max energy
         this.Energy = 100f;
         this.MaxEnergy = 100f;
@@ -43,6 +43,7 @@ public class PlayerShip : Ship
         this.ShotCurvature = 0f;
         // Cooldowns
         this.ShotCooldownTime = 0.25f;
+        this.RegenShieldCooldownTime = 2.5f;
         this.ShieldCooldownTime = 10f;
         this.BombCooldownTime = 10f;
         this.ScannerCooldownTime = 10f;

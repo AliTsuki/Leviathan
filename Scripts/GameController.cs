@@ -22,9 +22,10 @@ public static class GameController
 
     // Enemy spawn fields
     private static uint EnemyCount = 0;
-    private static uint MaxEnemyCount = 5;
-    private static int MaxEnemySpawnDistance = 50;
-    private static int EnemyDespawnDistance = 100;
+    private readonly static uint MaxEnemyCount = 5;
+    private readonly static int MinEnemySpawnDistance = 25;
+    private readonly static int MaxEnemySpawnDistance = 50;
+    private readonly static int EnemyDespawnDistance = 100;
     private static Vector3 NextEnemySpawnPosition;
 
     // Constant references to Prefab filenames
@@ -34,16 +35,22 @@ public static class GameController
     public const string CanvasName = "Canvas";
     public const string PlayerUIPrefabName = "Player UI";
     public const string NPCUIPrefabName = "NPC UI";
+    public const string InfoLabelName = "Info Label";
     public const string BackgroundPrefabName = "Background";
     public const string PlayerPrefabName = "Player Ship";
     public const string FriendPrefabName = "Player Ship";
     public const string EnemyPrefabName = "Enemy Ship";
     public const string ProjectilePrefabName = "Projectile";
+    public const string ProjectileShieldStrikePrefabName = "ProjectileShieldStrike";
+    public const string ProjectileHullStrikePrefabName = "ProjectileHullStrike";
 
     // Entity IDs
     private static uint ShipID = 0;
     private static uint ProjectileID = 0;
     private static bool ShipIDPassedMax = false;
+
+    // Score
+    public static uint Score;
 
     // Identify Friend or Foe
     public enum IFF
@@ -84,11 +91,21 @@ public static class GameController
                 ship.Value.Update();
             }
         }
-        // Checks if enemies should be spawned and calls SpawnEnemy if so
+        // Checks if enemies should be spawned and calls SpawnEnemy
         if(ShouldSpawnEnemies())
         {
             // Get next random spawn position for enemy ship
-            NextEnemySpawnPosition = new Vector3(Player.ShipObject.transform.position.x + r.Next(-MaxEnemySpawnDistance, MaxEnemySpawnDistance), 0, Player.ShipObject.transform.position.z + r.Next(-MaxEnemySpawnDistance, MaxEnemySpawnDistance));
+            int nextXSpawn = r.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance);
+            int nextZSpawn = r.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance);
+            if(r.Next(0, 1) == 1)
+            {
+                nextXSpawn *= -1;
+            }
+            if(r.Next(0, 1) == 1)
+            {
+                nextZSpawn *= -1;
+            }
+            NextEnemySpawnPosition = new Vector3(Player.ShipObject.transform.position.x + nextXSpawn, 0, Player.ShipObject.transform.position.z + nextZSpawn);
             // Spawn enemy ship at specified position
             SpawnEnemy(NextEnemySpawnPosition);
         }
@@ -236,7 +253,7 @@ public static class GameController
                 // Run ReceivedCollision for projectile
                 projectile.ReceivedCollision();
                 // Run ReceivedCollision for enemy
-                enemy.ReceivedCollisionFromProjectile(projectile.Damage);
+                enemy.ReceivedCollisionFromProjectile(projectile.Damage, projectile.ProjectileObject.transform.position);
             }
             // If projectile is enemy and has collided with a player
             else if(projectile.IFF == IFF.Enemy && _collidedWith.tag == "Player")
@@ -246,7 +263,7 @@ public static class GameController
                 // Run ReceivedCollision for projectile
                 projectile.ReceivedCollision();
                 // Run ReceivedCollision for player
-                player.ReceivedCollisionFromProjectile(projectile.Damage);
+                player.ReceivedCollisionFromProjectile(projectile.Damage, projectile.ProjectileObject.transform.position);
             }
             // If projectile is enemy and has collided with a friendly ship
             else if(projectile.IFF == IFF.Enemy && _collidedWith.tag == "Friend")
@@ -256,17 +273,18 @@ public static class GameController
                 // Run ReceivedCollision for projectile
                 projectile.ReceivedCollision();
                 // Run ReceivedCollision for friendly ship
-                friend.ReceivedCollisionFromProjectile(projectile.Damage);
+                friend.ReceivedCollisionFromProjectile(projectile.Damage, projectile.ProjectileObject.transform.position);
             }
         }
         // If two ships collided
         else if(_collisionReporter.tag != "Projectile" && _collidedWith.tag != "Projectile")
         {
-            // Send report of collision to each ship
+            // Get ships
             Ship reporter = Ships[uint.Parse(_collisionReporter.name)];
             Ship collidedWith = Ships[uint.Parse(_collidedWith.name)];
-            reporter.ReceivedCollisionFromShip(collidedWith.ShipRigidbody.velocity);
-            collidedWith.ReceivedCollisionFromShip(reporter.ShipRigidbody.velocity);
+            // Send collision report
+            reporter.ReceivedCollisionFromShip(collidedWith.ShipRigidbody.velocity, collidedWith.IFF);
+            collidedWith.ReceivedCollisionFromShip(reporter.ShipRigidbody.velocity, reporter.IFF);
         }
     }
 

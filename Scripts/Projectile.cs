@@ -5,7 +5,7 @@ public class Projectile
 {
     // GameObjects and Components
     private GameObject ProjectilePrefab;
-    private GameObject ProjectileObject;
+    public GameObject ProjectileObject;
     private Rigidbody ProjectileRigidbody;
 
     // Constructor criteria

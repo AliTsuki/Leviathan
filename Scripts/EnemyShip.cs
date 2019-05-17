@@ -14,8 +14,7 @@ public class EnemyShip : Ship
         // Health/Armor/Shields
         this.Health = 100f;
         this.MaxHealth = 100f;
-        this.Armor = 100f;
-        this.MaxArmor = 100f;
+        this.Armor = 1f;
         this.Shields = 100f;
         this.MaxShields = 100f;
         // Current/Max energy
@@ -29,19 +28,22 @@ public class EnemyShip : Ship
         this.MaxWarpSpeed = 150f;
         // Weapon stats
         this.ProjectileType = 1;
-        this.ShotDamage = 2f;
+        this.ShotDamage = 5f;
         this.ShotAccuracy = 1f;
         this.ShotSpeed = 10f;
         this.ShotLifetime = 2.5f;
         this.ShotCurvature = 0f;
         // Cooldowns
         this.ShotCooldownTime = 1f;
+        this.RegenShieldCooldownTime = 10f;
         this.ShieldCooldownTime = 10f;
         this.BombCooldownTime = 10f;
         this.ScannerCooldownTime = 10f;
         // Energy cost
         this.WarpEnergyCost = 3f;
         this.ShotEnergyCost = 17f;
+        // Experience
+        this.XP = (uint)(this.MaxHealth + this.MaxShields);
         // AI fields
         this.MaxTargetAcquisitionRange = 50f;
         this.MaxOrbitRange = 25f;
@@ -56,22 +58,17 @@ public class EnemyShip : Ship
     // Processes inputs
     public override void ProcessInputs()
     {
-        // TODO: Enemy ship AI is bugged and keeps firing weapons even when target is dead, need to fix
         // If there is no current target or current target is dead
         if(this.CurrentTarget == null || this.CurrentTarget.Alive == false)
         {
             // Acquire new target
             this.CurrentTarget = AIController.AcquireTarget(this.ShipObject.transform.position, this.IFF, this.MaxTargetAcquisitionRange);
-            // If a new target can't be acquired
-            if(this.CurrentTarget == null)
-            {
-                // Wander around until finding a target
-                this.Wander();
-            }
         }
         // If there is a current target and it is alive
         if(this.CurrentTarget != null && this.CurrentTarget.Alive == true)
         {
+            // Stop wandering as currently have target
+            this.IsWandering = false;
             // Use AI to figure out if ship should accelerate
             if(AIController.ShouldAccelerate(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
             {
@@ -101,6 +98,15 @@ public class EnemyShip : Ship
             {
                 this.FireInput = false;
             }
+        }
+        // If unable to acquire target set wandering to true
+        else
+        {
+            this.IsWandering = true;
+        }
+        if(this.IsWandering == true)
+        {
+            this.Wander();
         }
     }
 

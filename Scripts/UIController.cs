@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using TMPro;
+
 using UnityEngine;
 
 using UnityEngine.UI;
@@ -15,6 +17,7 @@ public static class UIController
     private static GameObject PlayerUIPrefab;
     private static GameObject NPCUIPrefab;
     private static GameObject HealthbarUI;
+    private static TextMeshProUGUI InfoLabel;
 
     // Dictionary of Healthbar UIs
     private static Dictionary<uint, GameObject> HealthbarUIs = new Dictionary<uint, GameObject>();
@@ -32,6 +35,7 @@ public static class UIController
         UI.name = "UI";
         canvas = GameObject.Find(GameController.CanvasName);
         rectTransform = canvas.GetComponent<RectTransform>();
+        InfoLabel = GameObject.Find(GameController.InfoLabelName).GetComponent<TextMeshProUGUI>();
         // Get the Player UI prefab
         PlayerUIPrefab = Resources.Load(GameController.PlayerUIPrefabName, typeof(GameObject)) as GameObject;
         // Get the NPC UI prefab
@@ -43,6 +47,9 @@ public static class UIController
     // Update is called once per frame
     public static void Update()
     {
+        // TODO: Add a vignette effect around the edges of the screen when player takes damage
+        // TODO: \r\n doesn't seem to work with TMPro, switch to a label or something else maybe
+        InfoLabel.text = $@"Timer: {Time.time} \r\nScore: {GameController.Score}";
         // Get UIOffset again, in case user has changed screen size during play, subtract 60 relative pixels from y to have healthbar appear above ship
         UIOffset = new Vector2(rectTransform.sizeDelta.x / 2f, (rectTransform.sizeDelta.y / 2f) - 60);
         // Loop through all ships to determine if healthbar UIs need to be added or moved
@@ -77,9 +84,15 @@ public static class UIController
                 // Set the position and remove the screen offset
                 HealthbarUI.GetComponent<RectTransform>().localPosition = ProportionalPosition - UIOffset;
                 // Fill the healthbar relative to ship's health value
-                Image HealthbarFillImage = HealthbarUI.transform.GetChild(0).transform.GetChild(0).transform.GetChild(0).GetComponent<Image>();
+                Image ShieldbarFillImageBackground =    HealthbarUI.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>();
+                Image ShieldbarFillImage =              HealthbarUI.transform.GetChild(0).transform.GetChild(0).transform.GetChild(0).GetComponent<Image>();
+                Image HealthbarFillImageBackground =    HealthbarUI.transform.GetChild(0).transform.GetChild(2).GetComponent<Image>();
+                Image HealthbarFillImage =              HealthbarUI.transform.GetChild(0).transform.GetChild(2).transform.GetChild(0).GetComponent<Image>();
+                ShieldbarFillImageBackground.fillAmount = 1 - (ship.Value.Shields / ship.Value.MaxShields);
+                ShieldbarFillImage.fillAmount = ship.Value.Shields / ship.Value.MaxShields;
+                HealthbarFillImageBackground.fillAmount = 1 - (ship.Value.Health / ship.Value.MaxHealth);
                 HealthbarFillImage.fillAmount = ship.Value.Health / ship.Value.MaxHealth;
-                if(HealthbarFillImage.fillAmount < 1)
+                if(HealthbarFillImage.fillAmount < 1 || ShieldbarFillImage.fillAmount < 1)
                 {
                     HealthbarUI.SetActive(true);
                 }

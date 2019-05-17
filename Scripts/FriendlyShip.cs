@@ -14,7 +14,6 @@ public class FriendlyShip : Ship
         this.Health = 0f;
         this.MaxHealth = 100f;
         this.Armor = 0f;
-        this.MaxArmor = 100f;
         this.Shields = 0f;
         this.MaxShields = 100f;
         // Current/Max energy
