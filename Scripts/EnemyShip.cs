@@ -12,37 +12,40 @@ public class EnemyShip : Ship
         this.IsPlayer = false;
         // Ship stats
         // Health/Armor/Shields
-        this.Health = 0f;
+        this.Health = 100f;
         this.MaxHealth = 100f;
-        this.Armor = 0f;
+        this.Armor = 100f;
         this.MaxArmor = 100f;
-        this.Shields = 0f;
+        this.Shields = 100f;
         this.MaxShields = 100f;
         // Current/Max energy
-        this.Energy = 0f;
+        this.Energy = 100f;
         this.MaxEnergy = 100f;
+        this.EnergyRegenSpeed = 1.5f;
         // Speed/Acceleration
-        this.ImpulseAcceleration = 15f;
+        this.ImpulseAcceleration = 30f;
         this.WarpAccelMultiplier = 3f;
-        this.MaxImpulseSpeed = 20f;
-        this.MaxWarpSpeed = 0f;
+        this.MaxImpulseSpeed = 40f;
+        this.MaxWarpSpeed = 150f;
         // Weapon stats
-        this.ShotDamage = 1f;
-        this.ShotSpeed = 5f;
+        this.ProjectileType = 1;
+        this.ShotDamage = 2f;
+        this.ShotAccuracy = 1f;
+        this.ShotSpeed = 10f;
         this.ShotLifetime = 2.5f;
         this.ShotCurvature = 0f;
         // Cooldowns
-        this.ShotCooldownTime = 0.5f;
+        this.ShotCooldownTime = 1f;
         this.ShieldCooldownTime = 10f;
         this.BombCooldownTime = 10f;
         this.ScannerCooldownTime = 10f;
         // Energy cost
-        this.WarpEnergyCost = 5f;
-        this.ShotEnergyCost = 5f;
+        this.WarpEnergyCost = 3f;
+        this.ShotEnergyCost = 17f;
         // AI fields
         this.MaxTargetAcquisitionRange = 50f;
-        this.MaxOrbitRange = 20f;
-        this.MaxWeaponsRange = 25f;
+        this.MaxOrbitRange = 25f;
+        this.MaxWeaponsRange = 30f;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load(GameController.EnemyPrefabName, typeof(GameObject)) as GameObject;
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
@@ -53,6 +56,7 @@ public class EnemyShip : Ship
     // Processes inputs
     public override void ProcessInputs()
     {
+        // TODO: Enemy ship AI is bugged and keeps firing weapons even when target is dead, need to fix
         // If there is no current target or current target is dead
         if(this.CurrentTarget == null || this.CurrentTarget.Alive == false)
         {
@@ -76,6 +80,17 @@ public class EnemyShip : Ship
             else
             {
                 this.ImpulseInput = false;
+            }
+            // Use AI to figure out if ship should strafe target
+            if(AIController.ShouldStrafe(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
+            {
+                this.StrafeInput = true;
+                this.ResetStrafeDirection = false;
+            }
+            else
+            {
+                this.StrafeInput = false;
+                this.ResetStrafeDirection = true;
             }
             // Use AI to figure out if ship should fire weapons
             if(AIController.ShouldFireGun(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxWeaponsRange) == true)

@@ -19,22 +19,25 @@ public class PlayerShip : Ship
         this.IsPlayer = true;
         // Ship stats
         // Health/Armor/Shields
-        this.Health = 0f;
+        this.Health = 100f;
         this.MaxHealth = 100f;
-        this.Armor = 0f;
+        this.Armor = 100f;
         this.MaxArmor = 100f;
-        this.Shields = 0f;
+        this.Shields = 100f;
         this.MaxShields = 100f;
         // Current/Max energy
-        this.Energy = 0f;
+        this.Energy = 100f;
         this.MaxEnergy = 100f;
+        this.EnergyRegenSpeed = 1.5f;
         // Speed/Acceleration
         this.ImpulseAcceleration = 40f;
         this.WarpAccelMultiplier = 3f;
         this.MaxImpulseSpeed = 50f;
         this.MaxWarpSpeed = 150f;
         // Weapon stats
-        this.ShotDamage = 50f;
+        this.ProjectileType = 0;
+        this.ShotDamage = 35f;
+        this.ShotAccuracy = 1f;
         this.ShotSpeed = 10f;
         this.ShotLifetime = 2.5f;
         this.ShotCurvature = 0f;
@@ -44,8 +47,8 @@ public class PlayerShip : Ship
         this.BombCooldownTime = 10f;
         this.ScannerCooldownTime = 10f;
         // Energy cost
-        this.WarpEnergyCost = 5f;
-        this.ShotEnergyCost = 5f;
+        this.WarpEnergyCost = 3f;
+        this.ShotEnergyCost = 17f;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load(GameController.PlayerPrefabName, typeof(GameObject)) as GameObject;
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
@@ -129,5 +132,6 @@ public class PlayerShip : Ship
     {
         // TODO: Make a proper kill method for player, like set up a save system and respawn or something
         this.Alive = false;
+        this.ShipRigidbody.velocity = Vector3.zero;
     }
 }

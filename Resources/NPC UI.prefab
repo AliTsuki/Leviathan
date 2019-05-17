@@ -86,12 +86,12 @@ GameObject:
   - component: {fileID: 5746445340345618224}
   - component: {fileID: 234198973171074489}
   m_Layer: 5
-  m_Name: Health Bar UI
+  m_Name: NPC UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5746445340345618224
 RectTransform:
   m_ObjectHideFlags: 0

@@ -41,6 +41,19 @@ public static class AIController
         }
     }
 
+    // Checks if the ship should strafe based on its distance to its target
+    public static bool ShouldStrafe(Vector3 _userPosition, Vector3 _targetPosition, float _maxOrbitRange)
+    {
+        if(Vector3.Distance(_userPosition, _targetPosition) <= _maxOrbitRange)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     // Checks if the ship should fire main weapons based on its distance to its target
     public static bool ShouldFireGun(Vector3 _userPosition, Vector3 _targetPosition, float _maxWeaponsRange)
     {

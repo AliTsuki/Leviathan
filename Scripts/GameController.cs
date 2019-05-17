@@ -12,7 +12,7 @@ public static class GameController
     private static GameObject CamerasPrefab;
     private static GameObject Cameras;
     private static CinemachineVirtualCamera FollowCamera;
-    private static System.Random r = new System.Random();
+    public static System.Random r = new System.Random();
 
     // Entity Lists and Dicts
     public static readonly Dictionary<uint, Ship> Ships = new Dictionary<uint, Ship>();
@@ -32,7 +32,8 @@ public static class GameController
     public const string FollowCameraName = "Follow Camera";
     public const string UIPrefabName = "UI";
     public const string CanvasName = "Canvas";
-    public const string HealthbarPrefabName = "Health Bar UI";
+    public const string PlayerUIPrefabName = "Player UI";
+    public const string NPCUIPrefabName = "NPC UI";
     public const string BackgroundPrefabName = "Background";
     public const string PlayerPrefabName = "Player Ship";
     public const string FriendPrefabName = "Player Ship";
@@ -196,9 +197,9 @@ public static class GameController
     }
 
     // Spawn projectiles
-    public static void SpawnProjectile(IFF _iff, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public static void SpawnProjectile(IFF _iff, uint _type, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
-        Projectiles.Add(ProjectileID, new Projectile(ProjectileID, _iff, _damage, _position, _rotation, _velocity, _speed, _lifetime));
+        Projectiles.Add(ProjectileID, new Projectile(ProjectileID, _iff, _type, _damage, _position, _rotation, _velocity, _speed, _lifetime));
         ProjectileID++;
     }
 
@@ -235,7 +236,7 @@ public static class GameController
                 // Run ReceivedCollision for projectile
                 projectile.ReceivedCollision();
                 // Run ReceivedCollision for enemy
-                enemy.ReceivedCollision(projectile.Damage);
+                enemy.ReceivedCollisionFromProjectile(projectile.Damage);
             }
             // If projectile is enemy and has collided with a player
             else if(projectile.IFF == IFF.Enemy && _collidedWith.tag == "Player")
@@ -245,7 +246,7 @@ public static class GameController
                 // Run ReceivedCollision for projectile
                 projectile.ReceivedCollision();
                 // Run ReceivedCollision for player
-                player.ReceivedCollision(projectile.Damage);
+                player.ReceivedCollisionFromProjectile(projectile.Damage);
             }
             // If projectile is enemy and has collided with a friendly ship
             else if(projectile.IFF == IFF.Enemy && _collidedWith.tag == "Friend")
@@ -255,8 +256,17 @@ public static class GameController
                 // Run ReceivedCollision for projectile
                 projectile.ReceivedCollision();
                 // Run ReceivedCollision for friendly ship
-                friend.ReceivedCollision(projectile.Damage);
+                friend.ReceivedCollisionFromProjectile(projectile.Damage);
             }
+        }
+        // If two ships collided
+        else if(_collisionReporter.tag != "Projectile" && _collidedWith.tag != "Projectile")
+        {
+            // Send report of collision to each ship
+            Ship reporter = Ships[uint.Parse(_collisionReporter.name)];
+            Ship collidedWith = Ships[uint.Parse(_collidedWith.name)];
+            reporter.ReceivedCollisionFromShip(collidedWith.ShipRigidbody.velocity);
+            collidedWith.ReceivedCollisionFromShip(reporter.ShipRigidbody.velocity);
         }
     }
 

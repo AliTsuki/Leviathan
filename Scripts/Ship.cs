@@ -28,6 +28,7 @@ public class Ship
     public bool ShieldInput;
     public bool ScannerInput;
     public bool PauseInput;
+    public bool StrafeInput;
 
     // Fields not modified by player equipment/level
     public Vector3 StartingPosition;
@@ -66,13 +67,18 @@ public class Ship
     // Current/Max energy
     public float Energy;
     public float MaxEnergy;
+    public float EnergyRegenSpeed;
     // Speed/Acceleration
     public float ImpulseAcceleration;
     public float WarpAccelMultiplier;
+    public float StrafeAcceleration;
     public float MaxImpulseSpeed;
     public float MaxWarpSpeed;
+    public float MaxStrafeSpeed;
     // Weapon stats
+    public uint ProjectileType;
     public float ShotDamage;
+    public float ShotAccuracy;
     public float ShotSpeed;
     public float ShotLifetime;
     public float ShotCurvature;
@@ -90,6 +96,8 @@ public class Ship
     public float MaxTargetAcquisitionRange;
     public float MaxOrbitRange;
     public float MaxWeaponsRange;
+    public bool StrafeRight;
+    public bool ResetStrafeDirection;
 
     // Identification fields
     public uint ID;
@@ -155,7 +163,9 @@ public class Ship
     public virtual void UpdateShipState()
     {
         this.RotateShip();
+        this.EnergyRegen();
         this.AccelerateShip();
+        this.StrafeShip();
         this.UseAbilities();
     }
 
@@ -222,15 +232,31 @@ public class Ship
         this.ShipObject.transform.rotation = this.TiltRotation;
     }
 
+    // Regenerates energy
+    public virtual void EnergyRegen()
+    {
+        // Prevent energy from going below 0
+        if(this.Energy < 0)
+        {
+            this.Energy = 0f;
+        }
+        // Add energy regen
+        this.Energy += this.EnergyRegenSpeed;
+        // Prevent energy from going above max
+        if(this.Energy > this.MaxEnergy)
+        {
+            this.Energy = this.MaxEnergy;
+        }
+    }
+
     // Accelerates the ship
     public virtual void AccelerateShip()
     {
         // If impulse engine is activated by player input or AI and warp engine is not activated
         if(this.ImpulseInput && !this.WarpInput)
         {
-            // TODO: Fix speed limit check
             // Check if at speed limit
-            if(this.ShipRigidbody.velocity.magnitude < this.MaxImpulseSpeed)
+            if(this.ShipRigidbody.velocity.magnitude < this.MaxImpulseSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.7f)
             {
                 // Accelerate forward
                 this.ShipRigidbody.AddRelativeForce(new Vector3(0, 0, this.ImpulseAcceleration));
@@ -246,10 +272,12 @@ public class Ship
         else if(this.WarpInput)
         {
             // Check if at speed limit
-            if(this.ShipRigidbody.velocity.magnitude < this.MaxWarpSpeed)
+            if(this.ShipRigidbody.velocity.magnitude < this.MaxWarpSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.5f)
             {
                 // Accelerate at warp speed
                 this.ShipRigidbody.AddRelativeForce(new Vector3(0, 0, this.ImpulseAcceleration * this.WarpAccelMultiplier));
+                // Subtract warp energy cost
+                this.Energy -= this.WarpEnergyCost;
                 // Modify particle effects
                 this.ImpulseParticleMain.startSpeed = 5f;
                 this.WarpParticleMain.startSpeed = 10f;
@@ -272,6 +300,41 @@ public class Ship
         }
     }
 
+    // Strafe ship if within weapons range, strafe input is only set by NPCs
+    public virtual void StrafeShip()
+    {
+        // If strafe direction should be reset
+        if(this.ResetStrafeDirection == true)
+        {
+            // Get random number 0 or 1, if 1 strafe right, if 0 strafe left
+            if(GameController.r.Next(0, 1) == 1)
+            {
+                this.StrafeRight = true;
+            }
+            else
+            {
+                this.StrafeRight = false;
+            }
+        }
+        // If strafe is activated by AI and ship is below max strafing speed
+        if(this.StrafeInput == true && this.ShipRigidbody.velocity.magnitude < this.MaxStrafeSpeed)
+        {
+            // If strafe right add positive strafe acceleration
+            if(this.StrafeRight == true)
+            {
+                // Strafe
+                this.ShipRigidbody.AddRelativeForce(new Vector3(this.StrafeAcceleration, 0, 0));
+            }
+            // If strafe left add negative strafe acceleration
+            else
+            {
+                // Strafe
+                this.ShipRigidbody.AddRelativeForce(new Vector3(-this.StrafeAcceleration, 0, 0));
+            }
+            
+        }
+    }
+
     // Uses ship abilities
     public virtual void UseAbilities()
     {
@@ -290,13 +353,19 @@ public class Ship
         if(this.FireInput)
         {
             // Check if weapon is on cooldown
-            if(this.WeaponOnCooldown == false)
+            if(this.WeaponOnCooldown == false && this.Energy >= this.ShotEnergyCost)
             {
-                // Turn on gun lights and spawn a projectile, set last fire time, put weapon on cooldown, and play gun audio
-                this.GunBarrelLightsObject.SetActive(true);
-                GameController.SpawnProjectile(this.IFF, this.ShotDamage, this.GunBarrelObject.transform.position, Quaternion.Euler(0, this.GunBarrelObject.transform.rotation.eulerAngles.y, 0), this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                // Spawn a projectile
+                GameController.SpawnProjectile(this.IFF, this.ProjectileType, this.ShotDamage, this.GunBarrelObject.transform.position, Quaternion.Euler(0, this.GunBarrelObject.transform.rotation.eulerAngles.y, 0), this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                // Set last shot time
                 this.LastShotFireTime = Time.time;
+                // Put weapon on cooldown
                 this.WeaponOnCooldown = true;
+                // Subtract energy for shot
+                this.Energy -= this.ShotEnergyCost;
+                // Turn on gun lights
+                this.GunBarrelLightsObject.SetActive(true);
+                // Play gun audio
                 this.GunAudio.Play();
             }
             // If weapon is on cooldown
@@ -315,10 +384,21 @@ public class Ship
     }
 
     // Called when receiving collision from projectile
-    public virtual void ReceivedCollision(float _damage)
+    public virtual void ReceivedCollisionFromProjectile(float _damage)
     {
+        // TODO: Add regenerating shields
+        // TODO: Add TakeDamage() method that handles whether damage should be applied to shield/health etc
         // Subtract projectile damage from health
         this.Health -= _damage;
+    }
+
+    // Called when receiving collision from ship
+    public virtual void ReceivedCollisionFromShip(Vector3 _collisionVelocity)
+    {
+        // Apply velocity received from collision
+        this.ShipRigidbody.AddRelativeForce(_collisionVelocity * 0.35f, ForceMode.Impulse);
+        // Take impact damage
+        this.Health -= _collisionVelocity.magnitude * 0.1f;
     }
 
     // Called when ship is destroyed by damage
