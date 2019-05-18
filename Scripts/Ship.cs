@@ -17,10 +17,13 @@ public class Ship
     public AudioSource ImpulseAudio;
     public AudioSource WarpAudio;
     public AudioSource GunAudio;
+    public AudioSource ShieldRegenAudio;
     private GameObject ProjectileShieldStrikePrefab;
     private GameObject ProjectileHullStrikePrefab;
     private GameObject ProjectileShieldStrike;
     private GameObject ProjectileHullStrike;
+    private GameObject ExplosionPrefab;
+    private GameObject Explosion;
 
     // Inputs
     public float HorizontalInput;
@@ -50,7 +53,6 @@ public class Ship
     public float RecentRotationsAverage = 0f;
     public float TiltAngle = 0f;
     public float IntendedAngle = 0f;
-    public float MaxRotationSpeed = 0.1f;
     public float LastShotFireTime = 0f;
     public float LastTakenDamageTime = 0f;
     public float DamageShaderCooldownTime = 0.5f;
@@ -81,9 +83,11 @@ public class Ship
     public float StrafeAcceleration;
     public float MaxImpulseSpeed;
     public float MaxWarpSpeed;
+    public float MaxRotationSpeed;
     public float MaxStrafeSpeed;
     // Weapon stats
     public uint ProjectileType;
+    public float ShotAmount;
     public float ShotDamage;
     public float ShotAccuracy;
     public float ShotSpeed;
@@ -141,8 +145,10 @@ public class Ship
         this.ImpulseAudio = this.ImpulseEngineObject.GetComponent<AudioSource>();
         this.WarpAudio = this.WarpEngineObject.GetComponent<AudioSource>();
         this.GunAudio = this.GunBarrelObject.GetComponent<AudioSource>();
+        this.ShieldRegenAudio = this.ShipObject.GetComponent<AudioSource>();
         this.ProjectileShieldStrikePrefab = Resources.Load(GameController.ProjectileShieldStrikePrefabName, typeof(GameObject)) as GameObject;
         this.ProjectileHullStrikePrefab = Resources.Load(GameController.ProjectileHullStrikePrefabName, typeof(GameObject)) as GameObject;
+        this.ExplosionPrefab = Resources.Load(GameController.ExplosionPrefabName, typeof(GameObject)) as GameObject;
         this.Alive = true;
         this.Health = this.MaxHealth;
         this.Shields = this.MaxShields;
@@ -170,15 +176,17 @@ public class Ship
         {
             this.UpdateShipState();
         }
+        // If health is less than half, spawn fire particles on ship
+        if(this.Health <= this.MaxHealth * 0.5f)
+        {
+            this.ProjectileHullStrike = GameObject.Instantiate(this.ProjectileHullStrikePrefab, this.ShipObject.transform.position, Quaternion.identity);
+            this.ProjectileHullStrike.GetComponent<AudioSource>().Stop();
+            GameObject.Destroy(this.ProjectileHullStrike, 1f);
+        }
         // If ship health has reached 0, run Kill method
         if(this.Health <= 0)
         {
             this.Kill();
-        }
-        // If health is less than half, spawn fire particles on ship
-        if(this.Health <= this.MaxHealth * 0.5f)
-        {
-            // TODO: Spawn fire particles when ship is damaged
         }
     }
 
@@ -275,6 +283,10 @@ public class Ship
         {
             this.Energy -= Mathf.Min(this.MaxShields - this.Shields, this.ShieldRegenSpeed);
             this.Shields += this.ShieldRegenSpeed;
+            if(this.IsPlayer == true)
+            {
+                this.ShieldRegenAudio.Play();
+            }
         }
         // Prevent shield from going over max
         if(this.Shields > this.MaxShields)
@@ -406,8 +418,31 @@ public class Ship
             // Check if weapon is on cooldown
             if(this.WeaponOnCooldown == false && this.Energy >= this.ShotEnergyCost)
             {
-                // Spawn a projectile
-                GameController.SpawnProjectile(this.IFF, this.ProjectileType, this.ShotDamage, this.GunBarrelObject.transform.position, Quaternion.Euler(0, this.GunBarrelObject.transform.rotation.eulerAngles.y, 0), this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                // Spawn number of projectiles in shot amount
+                for(int i = 0; i < this.ShotAmount; i++)
+                {
+                    // If shot accuracy percentage is above 100, set to 100
+                    if(this.ShotAccuracy > 100)
+                    {
+                        this.ShotAccuracy = 100;
+                    }
+                    // Get accuracy of current projectile as random number from negative shot accuracy to positive shot accuracy
+                    float accuracy = GameController.r.Next(-(int)(100 - this.ShotAccuracy), (int)(100 - this.ShotAccuracy));
+                    Quaternion shotRotation;
+                    // If player
+                    if(this.IsPlayer == true)
+                    {
+                        // Shot rotation is affected by accuracy and the rotation of the gun barrel
+                        shotRotation = Quaternion.Euler(0, this.GunBarrelObject.transform.rotation.eulerAngles.y + accuracy, 0);
+                    }
+                    // If NPC
+                    else
+                    {
+                        // Shot rotation is affected by accuracy and the rotation to its target (NPCs need a little aiming boost)
+                        shotRotation = Quaternion.Euler(0, this.IntendedRotation.eulerAngles.y + accuracy, 0);
+                    }
+                    GameController.SpawnProjectile(this.IFF, this.ProjectileType, this.ShotDamage, this.GunBarrelObject.transform.position, shotRotation, this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                }
                 // Set last shot time
                 this.LastShotFireTime = Time.time;
                 // Put weapon on cooldown
@@ -456,11 +491,16 @@ public class Ship
     public virtual void ReceivedCollisionFromShip(Vector3 _collisionVelocity, GameController.IFF _iff)
     {
         // Apply velocity received from collision
-        this.ShipRigidbody.AddRelativeForce(_collisionVelocity * 0.35f, ForceMode.Impulse);
+        this.ShipRigidbody.AddRelativeForce(_collisionVelocity * 0.25f, ForceMode.Impulse);
         if(_iff != this.IFF)
         {
+            // If armor percentage is above 100, cap it at 100
+            if(this.Armor > 100)
+            {
+                this.Armor = 100;
+            }
             // Take impact damage
-            this.TakeDamage(_collisionVelocity.magnitude * (this.Armor / 100));
+            this.TakeDamage(_collisionVelocity.magnitude * ((100 - this.Armor) / 100));
         }
     }
 
@@ -473,11 +513,27 @@ public class Ship
         {
             this.Health += this.Shields;
             this.Shields = 0f;
+            if(this.IsPlayer == true)
+            {
+                UIController.ShowHealthDamageEffect();
+            }
+        }
+        else
+        {
+            if(this.IsPlayer == true)
+            {
+                UIController.ShowShieldDamageEffect();
+            }
         }
         // Set last damage taken time
         this.LastTakenDamageTime = Time.time;
         // Put shield regen on cooldown
         this.RegenShieldOnCooldown = true;
+        // Fade out shield regen audio
+        if(this.IsPlayer == true)
+        {
+            AudioController.FadeOut(this.ShieldRegenAudio, 0.15f, 0f);
+        }
         // Show damage shader effect
         this.ShowDamageShaderEffect(true);
     }
@@ -509,6 +565,8 @@ public class Ship
         {
             GameController.Score += this.XP;
         }
+        this.Explosion = GameObject.Instantiate(this.ExplosionPrefab, this.ShipObject.transform.position, Quaternion.identity);
+        GameObject.Destroy(this.Explosion, 1f);
     }
 
     // Called when ship is too far away from player, doesn't grant XP

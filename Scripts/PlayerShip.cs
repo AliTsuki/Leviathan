@@ -19,37 +19,39 @@ public class PlayerShip : Ship
         this.IsPlayer = true;
         // Ship stats
         // Health/Armor/Shields
-        this.Health = 100f;
-        this.MaxHealth = 100f;
-        this.Armor = 1f;
-        this.Shields = 100f;
-        this.MaxShields = 100f;
+        this.Health = 100;
+        this.MaxHealth = 100;
+        this.Armor = 75;
+        this.Shields = 50;
+        this.MaxShields = 50;
         this.ShieldRegenSpeed = 1f;
         // Current/Max energy
-        this.Energy = 100f;
-        this.MaxEnergy = 100f;
+        this.Energy = 100;
+        this.MaxEnergy = 100;
         this.EnergyRegenSpeed = 1.5f;
         // Speed/Acceleration
-        this.ImpulseAcceleration = 40f;
-        this.WarpAccelMultiplier = 3f;
-        this.MaxImpulseSpeed = 50f;
-        this.MaxWarpSpeed = 150f;
+        this.ImpulseAcceleration = 50;
+        this.WarpAccelMultiplier = 3;
+        this.MaxImpulseSpeed = 50;
+        this.MaxWarpSpeed = 150;
+        this.MaxRotationSpeed = 0.1f;
         // Weapon stats
         this.ProjectileType = 0;
-        this.ShotDamage = 35f;
-        this.ShotAccuracy = 1f;
-        this.ShotSpeed = 10f;
+        this.ShotAmount = 1;
+        this.ShotDamage = 30;
+        this.ShotAccuracy = 99;
+        this.ShotSpeed = 10;
         this.ShotLifetime = 2.5f;
-        this.ShotCurvature = 0f;
+        this.ShotCurvature = 0;
         // Cooldowns
         this.ShotCooldownTime = 0.25f;
-        this.RegenShieldCooldownTime = 2.5f;
-        this.ShieldCooldownTime = 10f;
-        this.BombCooldownTime = 10f;
-        this.ScannerCooldownTime = 10f;
+        this.RegenShieldCooldownTime = 3;
+        this.ShieldCooldownTime = 10;
+        this.BombCooldownTime = 10;
+        this.ScannerCooldownTime = 10;
         // Energy cost
-        this.WarpEnergyCost = 3f;
-        this.ShotEnergyCost = 17f;
+        this.WarpEnergyCost = 3;
+        this.ShotEnergyCost = 17;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load(GameController.PlayerPrefabName, typeof(GameObject)) as GameObject;
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
@@ -128,11 +130,11 @@ public class PlayerShip : Ship
         }
     }
 
+    // TODO: Make a proper kill method for player, like set up a save system and respawn or something
     // Called when entity is destroyed
-    public override void Kill()
-    {
-        // TODO: Make a proper kill method for player, like set up a save system and respawn or something
-        this.Alive = false;
-        this.ShipRigidbody.velocity = Vector3.zero;
-    }
+    //public override void Kill()
+    //{
+    //    this.Alive = false;
+    //    this.ShipRigidbody.velocity = Vector3.zero;
+    //}
 }

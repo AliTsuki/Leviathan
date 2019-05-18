@@ -65,7 +65,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture2D:
-        m_Texture: {fileID: 2800000, guid: 777be0946b414394e8803108a4e0034b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 01854eb4d45bec347a1c85f0f903633a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ToonShade:

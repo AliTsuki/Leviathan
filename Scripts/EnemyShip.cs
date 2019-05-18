@@ -12,45 +12,50 @@ public class EnemyShip : Ship
         this.IsPlayer = false;
         // Ship stats
         // Health/Armor/Shields
-        this.Health = 100f;
-        this.MaxHealth = 100f;
-        this.Armor = 1f;
-        this.Shields = 100f;
-        this.MaxShields = 100f;
+        this.Health = 50;
+        this.MaxHealth = 50;
+        this.Armor = 75;
+        this.Shields = 15;
+        this.MaxShields = 15;
+        this.ShieldRegenSpeed = 0.5f;
         // Current/Max energy
-        this.Energy = 100f;
-        this.MaxEnergy = 100f;
+        this.Energy = 100;
+        this.MaxEnergy = 100;
         this.EnergyRegenSpeed = 1.5f;
         // Speed/Acceleration
-        this.ImpulseAcceleration = 30f;
-        this.WarpAccelMultiplier = 3f;
-        this.MaxImpulseSpeed = 40f;
-        this.MaxWarpSpeed = 150f;
+        this.ImpulseAcceleration = 40;
+        this.WarpAccelMultiplier = 3;
+        this.StrafeAcceleration = 10;
+        this.MaxImpulseSpeed = 40;
+        this.MaxWarpSpeed = 150;
+        this.MaxRotationSpeed = 0.1f;
+        this.MaxStrafeSpeed = 10;
         // Weapon stats
         this.ProjectileType = 1;
-        this.ShotDamage = 5f;
-        this.ShotAccuracy = 1f;
-        this.ShotSpeed = 10f;
+        this.ShotAmount = 1;
+        this.ShotDamage = 4;
+        this.ShotAccuracy = 90;
+        this.ShotSpeed = 10;
         this.ShotLifetime = 2.5f;
-        this.ShotCurvature = 0f;
+        this.ShotCurvature = 0;
         // Cooldowns
-        this.ShotCooldownTime = 1f;
-        this.RegenShieldCooldownTime = 10f;
-        this.ShieldCooldownTime = 10f;
-        this.BombCooldownTime = 10f;
-        this.ScannerCooldownTime = 10f;
+        this.ShotCooldownTime = 1;
+        this.RegenShieldCooldownTime = 3;
+        this.ShieldCooldownTime = 10;
+        this.BombCooldownTime = 10;
+        this.ScannerCooldownTime = 10;
         // Energy cost
-        this.WarpEnergyCost = 3f;
-        this.ShotEnergyCost = 17f;
+        this.WarpEnergyCost = 3;
+        this.ShotEnergyCost = 17;
         // Experience
         this.XP = (uint)(this.MaxHealth + this.MaxShields);
         // AI fields
-        this.MaxTargetAcquisitionRange = 50f;
-        this.MaxOrbitRange = 25f;
-        this.MaxWeaponsRange = 30f;
+        this.MaxTargetAcquisitionRange = 75;
+        this.MaxOrbitRange = 25;
+        this.MaxWeaponsRange = 30;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load(GameController.EnemyPrefabName, typeof(GameObject)) as GameObject;
-        this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
+        this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.Euler(0, GameController.r.Next(0, 360), 0));
         this.Start();
     }
 
@@ -114,7 +119,7 @@ public class EnemyShip : Ship
     public override void GetIntendedRotation()
     {
         // If there is a current target
-        if(this.CurrentTarget != null)
+        if(this.CurrentTarget != null && this.CurrentTarget.Alive == true)
         {
             // Get rotation to face target
             this.IntendedRotation = AIController.GetRotationToTarget(this.ShipObject.transform, this.CurrentTarget.ShipObject.transform.position);

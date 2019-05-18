@@ -22,10 +22,10 @@ public static class GameController
 
     // Enemy spawn fields
     private static uint EnemyCount = 0;
-    private readonly static uint MaxEnemyCount = 5;
-    private readonly static int MinEnemySpawnDistance = 25;
-    private readonly static int MaxEnemySpawnDistance = 50;
-    private readonly static int EnemyDespawnDistance = 100;
+    private readonly static uint MaxEnemyCount = 10;
+    private readonly static int MinEnemySpawnDistance = 40;
+    private readonly static int MaxEnemySpawnDistance = 100;
+    private readonly static int EnemyDespawnDistance = 200;
     private static Vector3 NextEnemySpawnPosition;
 
     // Constant references to Prefab filenames
@@ -33,6 +33,8 @@ public static class GameController
     public const string FollowCameraName = "Follow Camera";
     public const string UIPrefabName = "UI";
     public const string CanvasName = "Canvas";
+    public const string ShieldDamageEffectName = "Shield Damage Effect";
+    public const string HealthDamageEffectName = "Health Damage Effect";
     public const string PlayerUIPrefabName = "Player UI";
     public const string NPCUIPrefabName = "NPC UI";
     public const string InfoLabelName = "Info Label";
@@ -43,6 +45,7 @@ public static class GameController
     public const string ProjectilePrefabName = "Projectile";
     public const string ProjectileShieldStrikePrefabName = "ProjectileShieldStrike";
     public const string ProjectileHullStrikePrefabName = "ProjectileHullStrike";
+    public const string ExplosionPrefabName = "Explosion";
 
     // Entity IDs
     private static uint ShipID = 0;
@@ -130,17 +133,13 @@ public static class GameController
             // If ship is dead
             else
             {
-                // Don't ever remove player from ship list
-                if(ship.Value.IsPlayer == false)
+                // Add dead ship to removal list
+                ShipsToRemove.Add(ship.Key);
+                // If ship to remove is an enemy
+                if(ship.Value.IFF == IFF.Enemy)
                 {
-                    // Add dead ship to removal list
-                    ShipsToRemove.Add(ship.Key);
-                    // If ship to remove is an enemy
-                    if(ship.Value.IFF == IFF.Enemy)
-                    {
-                        // Lower the enemy count
-                        EnemyCount--;
-                    }
+                    // Lower the enemy count
+                    EnemyCount--;
                 }
             }
         }
@@ -184,7 +183,11 @@ public static class GameController
             // Clear projectile removal list
             ProjectilesToRemove.Clear();
         }
-        DespawnEnemies();
+        if(Player.Alive == true)
+        {
+            // Check if any enemies are too far away and despawn them
+            DespawnEnemies();
+        }
     }
 
     // Initialize player ship in world
@@ -292,7 +295,7 @@ public static class GameController
     private static bool ShouldSpawnEnemies()
     {
         // If current enemy count is below max allowed return true, otherwise false
-        if(EnemyCount < MaxEnemyCount)
+        if(EnemyCount < MaxEnemyCount && Player.Alive == true)
         {
             return true;
         }
@@ -309,7 +312,7 @@ public static class GameController
         foreach(KeyValuePair<uint, Ship> ship in Ships)
         {
             // If ship is enemy and further from player than despawn distance
-            if(ship.Value.IFF == IFF.Enemy && Vector3.Distance(Player.ShipObject.transform.position, ship.Value.ShipObject.transform.position) >= EnemyDespawnDistance)
+            if(ship.Value.Alive && ship.Value.IFF == IFF.Enemy && Vector3.Distance(Player.ShipObject.transform.position, ship.Value.ShipObject.transform.position) >= EnemyDespawnDistance)
             {
                 // Despawn enemy ship
                 ship.Value.Despawn();
