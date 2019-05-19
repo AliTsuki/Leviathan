@@ -21,6 +21,7 @@ public static class UIController
     private static TextMeshProUGUI InfoLabel;
     private static GameObject ShieldDamageEffect;
     private static GameObject HealthDamageEffect;
+    private static GameObject GameOverScreen;
 
     // Dictionary of Healthbar UIs
     private static Dictionary<uint, GameObject> HealthbarUIs = new Dictionary<uint, GameObject>();
@@ -32,6 +33,10 @@ public static class UIController
     private static float ShieldDamageEffectStartTime = 0f;
     private static float HealthDamageEffectStartTime = 0f;
     private readonly static float ShowDamageEffectDuration = 0.25f;
+    private static int Seconds = 0;
+    private static int Minutes = 0;
+    private static int Hours = 0;
+    private static string TimeString = "";
 
 
     // Start is called before the first frame update
@@ -45,7 +50,11 @@ public static class UIController
         rectTransform = canvas.GetComponent<RectTransform>();
         InfoLabel = GameObject.Find(GameController.InfoLabelName).GetComponent<TextMeshProUGUI>();
         ShieldDamageEffect = GameObject.Find(GameController.ShieldDamageEffectName);
+        ShieldDamageEffect.SetActive(false);
         HealthDamageEffect = GameObject.Find(GameController.HealthDamageEffectName);
+        HealthDamageEffect.SetActive(false);
+        GameOverScreen = GameObject.Find(GameController.GameOverScreenName);
+        GameOverScreen.SetActive(false);
         // Get the Player UI prefab
         PlayerUIPrefab = Resources.Load(GameController.PlayerUIPrefabName, typeof(GameObject)) as GameObject;
         // Get the NPC UI prefab
@@ -59,11 +68,11 @@ public static class UIController
     {
         // Add info to info label
         deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        FPS = Mathf.RoundToInt(1.0f / deltaTime);
-        int seconds = Mathf.RoundToInt(Time.time % 60);
-        int minutes = Mathf.RoundToInt(Time.time / 60 % 60);
-        int hours = Mathf.RoundToInt(Time.time / 3600);
-        string TimeString = $@"{hours}:{(minutes < 10 ? "0" + minutes.ToString() : minutes.ToString())}:{(seconds < 10 ? "0" + seconds.ToString() : seconds.ToString())}";
+        FPS = Mathf.FloorToInt(1.0f / deltaTime);
+        Seconds = Mathf.FloorToInt(Time.time % 60);
+        Minutes = Mathf.FloorToInt(Time.time / 60 % 60);
+        Hours = Mathf.FloorToInt(Time.time / 3600);
+        TimeString = $@"{Hours}:{(Minutes < 10 ? "0" + Minutes.ToString() : Minutes.ToString())}:{(Seconds < 10 ? "0" + Seconds.ToString() : Seconds.ToString())}";
         InfoLabel.text = $@"FPS: {FPS}{Environment.NewLine}Timer: {TimeString}{Environment.NewLine}Score: {GameController.Score}";
         // Get UIOffset again, in case user has changed screen size during play, subtract 60 relative pixels from y to have healthbar appear above ship
         UIOffset = new Vector2(rectTransform.sizeDelta.x / 2f, (rectTransform.sizeDelta.y / 2f) - 60);
@@ -106,10 +115,10 @@ public static class UIController
                     HealthbarUI.GetComponent<RectTransform>().localPosition = ProportionalPosition - UIOffset;
                 }
                 // Fill the healthbar relative to ship's health value
-                Image ShieldbarFillImageBackground = HealthbarUI.transform.GetChild(0).transform.GetChild(0).GetComponent<Image>();
-                Image ShieldbarFillImage = HealthbarUI.transform.GetChild(0).transform.GetChild(0).transform.GetChild(0).GetComponent<Image>();
-                Image HealthbarFillImageBackground = HealthbarUI.transform.GetChild(0).transform.GetChild(2).GetComponent<Image>();
-                Image HealthbarFillImage = HealthbarUI.transform.GetChild(0).transform.GetChild(2).transform.GetChild(0).GetComponent<Image>();
+                Image ShieldbarFillImageBackground =    HealthbarUI.transform.GetChild(0).GetChild(0).GetComponent<Image>();
+                Image ShieldbarFillImage =              HealthbarUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
+                Image HealthbarFillImageBackground =    HealthbarUI.transform.GetChild(0).GetChild(2).GetComponent<Image>();
+                Image HealthbarFillImage =              HealthbarUI.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Image>();
                 ShieldbarFillImageBackground.fillAmount = 1 - (ship.Value.Shields / ship.Value.MaxShields);
                 ShieldbarFillImage.fillAmount = ship.Value.Shields / ship.Value.MaxShields;
                 HealthbarFillImageBackground.fillAmount = 1 - (ship.Value.Health / ship.Value.MaxHealth);
@@ -121,7 +130,26 @@ public static class UIController
                 // If ship is player, also fill energy bar relative to player energy
                 if(ship.Value.IsPlayer)
                 {
-                    HealthbarUI.transform.GetChild(1).transform.GetChild(0).transform.GetChild(0).GetComponent<Image>().fillAmount = ship.Value.Energy / ship.Value.MaxEnergy;
+                    HealthbarUI.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = ship.Value.Energy / ship.Value.MaxEnergy;
+                    if(ship.Value.BombOnCooldown == true)
+                    {
+                        HealthbarUI.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
+                        HealthbarUI.transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastBombActivatedTime) / ship.Value.BombCooldownTime);
+                    }
+                    else
+                    {
+                        HealthbarUI.transform.GetChild(2).GetComponent<Image>().fillAmount = 1;
+                    }
+                    if(ship.Value.ShieldOnCooldown == true || ship.Value.ShieldActive)
+                    {
+                        HealthbarUI.transform.GetChild(3).GetComponent<Image>().fillAmount = 0;
+                        HealthbarUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastShieldCooldownStartedTime) / ship.Value.ShieldCooldownTime);
+                    }
+                    else
+                    {
+                        HealthbarUI.transform.GetChild(3).GetComponent<Image>().fillAmount = 1;
+                    }
+
                 }
             }
             // Remove healthbar if healthbar currently exists on a ship that is dead or has no GameObject
@@ -159,5 +187,12 @@ public static class UIController
     {
         HealthDamageEffect.SetActive(true);
         HealthDamageEffectStartTime = Time.time;
+    }
+
+    // Game over screen
+    public static void GameOver()
+    {
+        GameOverScreen.GetComponent<TextMeshProUGUI>().text = $@"GAME OVER{Environment.NewLine}{Environment.NewLine}TIME: {TimeString}{Environment.NewLine}SCORE: {GameController.Score}";
+        GameOverScreen.SetActive(true);
     }
 }

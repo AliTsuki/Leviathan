@@ -4,6 +4,20 @@ using Cinemachine;
 
 using UnityEngine;
 
+// GENERAL STUFF TO DO
+// TODO: Add a main menu with a new game button, a load game button, a settings button to configure inputs and maybe graphics, and a quit button
+// TODO: Add a game state, (MainMenu, Playing, Paused, etc) and change GameController.Update to depend on game state
+// TODO: Add an inventory system for player and update player stats based on what inventory is equipped
+// TODO: Add different player ship types to pick at beginning of game
+// TODO: Add more enemy types and behaviours
+// TODO: Add more projectile types and behaviours
+// TODO: Add new backgrounds/areas, make maybe a map system, it loads the background specified in maybe a csv *shrug* map it out in excel
+// TODO: Add enemy type based on which background tile it is generated on
+// TODO: Add space stations where you can purchase inventory items
+// TODO: Add gameover conditions
+// TODO: Add story stuff
+// TODO: Eventualllly add multiplayer support
+
 // Keeps track of all entites and updates all systems in the game
 public static class GameController
 {
@@ -35,6 +49,7 @@ public static class GameController
     public const string CanvasName = "Canvas";
     public const string ShieldDamageEffectName = "Shield Damage Effect";
     public const string HealthDamageEffectName = "Health Damage Effect";
+    public const string GameOverScreenName = "Game Over Screen";
     public const string PlayerUIPrefabName = "Player UI";
     public const string NPCUIPrefabName = "NPC UI";
     public const string InfoLabelName = "Info Label";
@@ -43,8 +58,10 @@ public static class GameController
     public const string FriendPrefabName = "Player Ship";
     public const string EnemyPrefabName = "Enemy Ship";
     public const string ProjectilePrefabName = "Projectile";
+    public const string BombPrefabName = "Bomb";
     public const string ProjectileShieldStrikePrefabName = "ProjectileShieldStrike";
     public const string ProjectileHullStrikePrefabName = "ProjectileHullStrike";
+    public const string BombExplostionPrefabName = "Bomb Explosion";
     public const string ExplosionPrefabName = "Explosion";
 
     // Entity IDs
@@ -100,11 +117,11 @@ public static class GameController
             // Get next random spawn position for enemy ship
             int nextXSpawn = r.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance);
             int nextZSpawn = r.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance);
-            if(r.Next(0, 1) == 1)
+            if(r.Next(0, 2) == 1)
             {
                 nextXSpawn *= -1;
             }
-            if(r.Next(0, 1) == 1)
+            if(r.Next(0, 2) == 1)
             {
                 nextZSpawn *= -1;
             }
@@ -133,13 +150,16 @@ public static class GameController
             // If ship is dead
             else
             {
-                // Add dead ship to removal list
-                ShipsToRemove.Add(ship.Key);
-                // If ship to remove is an enemy
-                if(ship.Value.IFF == IFF.Enemy)
+                if(ship.Value.IsPlayer == false)
                 {
-                    // Lower the enemy count
-                    EnemyCount--;
+                    // Add dead ship to removal list
+                    ShipsToRemove.Add(ship.Key);
+                    // If ship to remove is an enemy
+                    if(ship.Value.IFF == IFF.Enemy)
+                    {
+                        // Lower the enemy count
+                        EnemyCount--;
+                    }
                 }
             }
         }
@@ -219,8 +239,17 @@ public static class GameController
     // Spawn projectiles
     public static void SpawnProjectile(IFF _iff, uint _type, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
-        Projectiles.Add(ProjectileID, new Projectile(ProjectileID, _iff, _type, _damage, _position, _rotation, _velocity, _speed, _lifetime));
+        Projectiles.Add(ProjectileID, new Bolt(ProjectileID, _iff, _type, _damage, _position, _rotation, _velocity, _speed, _lifetime));
         ProjectileID++;
+    }
+
+    // Spawn bombs
+    public static Bomb SpawnBomb(PlayerShip _player, IFF _iff, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    {
+        Projectiles.Add(ProjectileID, new Bomb(_player, ProjectileID, _iff, _damage, _radius, _position, _rotation, _velocity, _speed, _lifetime));
+        Bomb bomb = Projectiles[ProjectileID] as Bomb;
+        ProjectileID++;
+        return bomb;
     }
 
     // Once entityID has passed max value and overflowed, check each ID to see if already exists recursively

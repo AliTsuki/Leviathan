@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 3772922626137151514}
   - component: {fileID: 5519970298499903818}
   - component: {fileID: 6353049606936802146}
-  - component: {fileID: 4547060386046562460}
   - component: {fileID: 5357744204484063471}
+  - component: {fileID: 4547060386046562460}
   m_Layer: 10
   m_Name: Projectile1
   m_TagString: Projectile
@@ -65,18 +65,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 1
---- !u!114 &4547060386046562460
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2293899602000209426}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be72676091332ca44bc2c920b68b390f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!108 &5357744204484063471
 Light:
   m_ObjectHideFlags: 0
@@ -137,6 +125,18 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &4547060386046562460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2293899602000209426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be72676091332ca44bc2c920b68b390f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7399352619326475156
 GameObject:
   m_ObjectHideFlags: 0

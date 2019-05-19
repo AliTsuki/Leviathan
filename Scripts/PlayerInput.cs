@@ -46,6 +46,6 @@ public class PlayerInput
         this.Bomb = Input.GetButton("Bomb");
         this.Shield = Input.GetButton("Shield");
         this.Scanner = Input.GetButton("Scanner");
-        this.Pause = Input.GetButton("Pause");
+        this.Pause = Input.GetButtonDown("Pause");
     }
 }
