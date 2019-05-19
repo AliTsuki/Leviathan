@@ -173,12 +173,15 @@ public class Ship
     // Update is called once per frame
     public void Update()
     {
-        // Process inputs
-        this.ProcessInputs();
-        // If damage shader has been playing long enough, turn it off
-        if(Time.time - this.LastTakenDamageTime >= this.DamageShaderCooldownTime)
+        if(this.Alive == true)
         {
-            this.ShowDamageShaderEffect(false);
+            // Process inputs
+            this.ProcessInputs();
+            // If damage shader has been playing long enough, turn it off
+            if(Time.time - this.LastTakenDamageTime >= this.DamageShaderCooldownTime)
+            {
+                this.ShowDamageShaderEffect(false);
+            }
         }
     }
 
@@ -189,22 +192,22 @@ public class Ship
         if(this.Alive == true)
         {
             this.UpdateShipState();
-        }
-        // If health is less than half, spawn fire particles on ship
-        if(this.Health <= this.MaxHealth * 0.5f)
-        {
-            this.ProjectileHullStrike = GameObject.Instantiate(this.ProjectileHullStrikePrefab, this.ShipObject.transform.position, Quaternion.identity);
-            this.ProjectileHullStrike.GetComponent<AudioSource>().Stop();
-            GameObject.Destroy(this.ProjectileHullStrike, 1f);
-            if(this.IsPlayer == true)
+            // If health is less than half, spawn fire particles on ship
+            if(this.Health <= this.MaxHealth * 0.5f)
             {
-                UIController.ShowHealthDamageEffect();
+                this.ProjectileHullStrike = GameObject.Instantiate(this.ProjectileHullStrikePrefab, this.ShipObject.transform.position, Quaternion.identity);
+                this.ProjectileHullStrike.GetComponent<AudioSource>().Stop();
+                GameObject.Destroy(this.ProjectileHullStrike, 1f);
+                if(this.IsPlayer == true)
+                {
+                    UIController.ShowHealthDamageEffect();
+                }
             }
-        }
-        // If ship health has reached 0, run Kill method
-        if(this.Health <= 0)
-        {
-            this.Kill();
+            // If ship health has reached 0, run Kill method
+            if(this.Health <= 0)
+            {
+                this.Kill();
+            }
         }
     }
 

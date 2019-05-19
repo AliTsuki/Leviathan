@@ -37,19 +37,22 @@ public class Projectile
     // Fixed Update is called a fixed number of times per second, Physics updates should be done in FixedUpdate
     public virtual void FixedUpdate()
     {
-        // If projectile still exists
-        if(this.ProjectileObject != null)
+        if(this.Alive == true)
         {
-            // Accelerate forward
-            this.ProjectileRigidbody.velocity += this.ProjectileObject.transform.forward * this.Speed;
-            // Set timer for projectile to burn out
-            GameObject.Destroy(this.ProjectileObject, this.Lifetime);
-        }
-        // If projectile has burnt out
-        else
-        {
-            // Set to dead
-            this.Alive = false;
+            // If projectile still exists
+            if(this.ProjectileObject != null)
+            {
+                // Accelerate forward
+                this.ProjectileRigidbody.velocity += this.ProjectileObject.transform.forward * this.Speed;
+                // Set timer for projectile to burn out
+                GameObject.Destroy(this.ProjectileObject, this.Lifetime);
+            }
+            // If projectile has burnt out
+            else
+            {
+                // Set to dead
+                this.Alive = false;
+            }
         }
     }
 
