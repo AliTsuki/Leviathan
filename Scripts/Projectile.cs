@@ -7,9 +7,11 @@ public class Projectile
     public GameObject ProjectilePrefab;
     public GameObject ProjectileObject;
     public Rigidbody ProjectileRigidbody;
+    public Ship Target;
 
     // Constructor criteria
     public uint ProjectileType;
+    public float Curvature;
     public float Damage;
     public Vector3 Position;
     public Quaternion Rotation;
@@ -24,8 +26,8 @@ public class Projectile
     public bool Alive = false;
 
 
-    // Start is called before the first frame update
-    public void Start()
+    // Initialize is called before the first frame update
+    public void Initialize()
     {
         // Set up universal projectile fields
         this.ProjectileObject.name = $@"{this.ID}";
@@ -42,18 +44,46 @@ public class Projectile
             // If projectile still exists
             if(this.ProjectileObject != null)
             {
+                // If shot has curvature
+                if(this.Curvature > 0)
+                {
+                    // If there is no current target or current target is dead
+                    if(this.Target == null || this.Target.Alive == false)
+                    {
+                        // Acquire new target
+                        this.Target = AIController.AcquireForwardTarget(this.ProjectileObject.transform, this.IFF, 30);
+                    }
+                    // If there is a target and it is alive
+                    else if(this.Target != null && this.Target.Alive == true)
+                    {
+                        this.RotateToTarget();
+                    }
+                }
                 // Accelerate forward
-                this.ProjectileRigidbody.velocity += this.ProjectileObject.transform.forward * this.Speed;
-                // Set timer for projectile to burn out
-                GameObject.Destroy(this.ProjectileObject, this.Lifetime);
+                this.ProjectileRigidbody.velocity = this.ProjectileObject.transform.forward * this.Speed;
             }
             // If projectile has burnt out
             else
             {
                 // Set to dead
                 this.Alive = false;
+                // Add to projectile removal list
+                GameController.ProjectilesToRemove.Add(this.ID);
             }
         }
+    }
+
+    // Rotate toward target
+    public void RotateToTarget()
+    {
+        // Get rotation to face target
+        Quaternion IntendedRotation = AIController.GetRotationToTarget(this.ProjectileObject.transform, this.Target.ShipObject.transform.position);
+        // Get current rotation
+        Quaternion CurrentRotation = this.ProjectileObject.transform.rotation;
+        // Get next rotation by using intended rotation and max rotation speed
+        Quaternion NextRotation = Quaternion.Lerp(CurrentRotation, IntendedRotation, this.Curvature);
+        // Rotate to next rotation
+        this.ProjectileObject.transform.rotation = NextRotation;
     }
 
     // Called when receiving collision
@@ -64,8 +94,6 @@ public class Projectile
         {
             // Destroy projectile object on collision
             GameObject.Destroy(this.ProjectileObject);
-            // Set to dead
-            this.Alive = false;
         }
     }
 }

@@ -21,7 +21,7 @@ public class FriendlyShip : Ship
         this.MaxEnergy = 100f;
         // Speed/Acceleration
         this.ImpulseAcceleration = 40f;
-        this.WarpAccelMultiplier = 3f;
+        this.WarpAccelerationMultiplier = 3f;
         this.MaxImpulseSpeed = 50f;
         this.MaxWarpSpeed = 150f;
         // Weapon stats
@@ -30,17 +30,17 @@ public class FriendlyShip : Ship
         this.ShotLifetime = 2.5f;
         this.ShotCurvature = 0f;
         // Cooldowns
-        this.ShotCooldownTime = 0.25f;
-        this.ShieldCooldownTime = 10f;
+        this.GunCooldownTime = 0.25f;
+        this.BarrierCooldownTime = 10f;
         this.BombCooldownTime = 10f;
         this.ScannerCooldownTime = 10f;
         // Energy cost
         this.WarpEnergyCost = 5f;
-        this.ShotEnergyCost = 5f;
+        this.GunEnergyCost = 5f;
         // GameObject Instantiation
-        this.ShipObjectPrefab = Resources.Load(GameController.EnemyPrefabName, typeof(GameObject)) as GameObject;
+        //this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.EnemyPrefabName);
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
-        this.Start();
+        this.Initialize();
     }
 
 

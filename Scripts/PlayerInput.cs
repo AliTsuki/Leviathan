@@ -10,7 +10,7 @@ public class PlayerInput
     public bool Warp;
     public bool Fire;
     public bool Bomb;
-    public bool Shield;
+    public bool Barrier;
     public bool Scanner;
     public bool Pause;
 
@@ -30,7 +30,7 @@ public class PlayerInput
         this.Warp = false;
         this.Fire = false;
         this.Bomb = false;
-        this.Shield = false;
+        this.Barrier = false;
         this.Scanner = false;
         this.Pause = false;
     }
@@ -44,7 +44,7 @@ public class PlayerInput
         this.Warp = Input.GetButton("Warp");
         this.Fire = Input.GetButton("Fire");
         this.Bomb = Input.GetButton("Bomb");
-        this.Shield = Input.GetButton("Shield");
+        this.Barrier = Input.GetButton("Barrier");
         this.Scanner = Input.GetButton("Scanner");
         this.Pause = Input.GetButtonDown("Pause");
     }

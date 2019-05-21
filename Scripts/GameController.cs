@@ -31,17 +31,18 @@ public static class GameController
     // Entity Lists and Dicts
     public static readonly Dictionary<uint, Ship> Ships = new Dictionary<uint, Ship>();
     public static readonly Dictionary<uint, Projectile> Projectiles = new Dictionary<uint, Projectile>();
-    private static readonly List<uint> ShipsToRemove = new List<uint>();
-    private static readonly List<uint> ProjectilesToRemove = new List<uint>();
+    public static readonly List<uint> ShipsToRemove = new List<uint>();
+    public static readonly List<uint> ProjectilesToRemove = new List<uint>();
 
     // Enemy spawn fields
     private static uint EnemyCount = 0;
-    private readonly static uint MaxEnemyCount = 10;
+    private readonly static uint MaxEnemyCount = 20;
     private readonly static int MinEnemySpawnDistance = 40;
-    private readonly static int MaxEnemySpawnDistance = 100;
-    private readonly static int EnemyDespawnDistance = 200;
+    private readonly static int MaxEnemySpawnDistance = 200;
+    private readonly static int EnemyDespawnDistance = 300;
 
     // Constant references to Prefab filenames
+    public const string MainMenuPrefabName = "Main Menu";
     public const string CamerasPrefabName = "Cameras";
     public const string FollowCameraName = "Follow Camera";
     public const string UIPrefabName = "UI";
@@ -49,24 +50,31 @@ public static class GameController
     public const string ShieldDamageEffectName = "Shield Damage Effect";
     public const string HealthDamageEffectName = "Health Damage Effect";
     public const string GameOverScreenName = "Game Over Screen";
-    public const string PlayerUIPrefabName = "Player UI";
+    public const string PlayerUIName = "Player UI";
     public const string NPCUIPrefabName = "NPC UI";
     public const string InfoLabelName = "Info Label";
     public const string BackgroundPrefabName = "Background";
     public const string PlayerPrefabName = "Player Ship";
     public const string FriendPrefabName = "Player Ship";
-    public const string EnemyPrefabName = "Enemy Ship";
+    public const string EnemyStandardPrefabName = "Enemy Ship 0";
+    public const string EnemyRammingPrefabName = "Enemy Ship 1";
+    public const string EnemyBroadsidePrefabName = "Enemy Ship 2";
+    public const string ImpulseEngineName = "Impulse Engine";
+    public const string WarpEngineName = "Warp Engine";
+    public const string GunBarrelName = "Gun Barrel";
+    public const string GunBarrelLightsName = "Gun Barrel Lights";
+    public const string ShieldName = "Barrier";
+    public const string ScannerName = "Scanner";
     public const string ProjectilePrefabName = "Projectile";
     public const string BombPrefabName = "Bomb";
-    public const string ProjectileShieldStrikePrefabName = "ProjectileShieldStrike";
-    public const string ProjectileHullStrikePrefabName = "ProjectileHullStrike";
+    public const string ProjectileShieldStrikePrefabName = "Projectile Shield Strike";
+    public const string ProjectileHullStrikePrefabName = "Projectile Hull Strike";
     public const string BombExplostionPrefabName = "Bomb Explosion";
     public const string ExplosionPrefabName = "Explosion";
 
     // Entity IDs
     private static uint ShipID = 0;
     private static uint ProjectileID = 0;
-    private static bool ShipIDPassedMax = false;
 
     // Score
     public static uint Score;
@@ -86,29 +94,46 @@ public static class GameController
         Paused
     }
     public static GameState CurrentGameState;
-    public static bool GameInitialized = false;
+    public static bool GameplayInitialized = false;
 
 
-    // Start is called before the first frame update
-    public static void Start()
+    // Initialize is called before the first frame update
+    public static void Initialize()
     {
         CurrentGameState = GameState.Playing;
+        if(CurrentGameState == GameState.MainMenu)
+        {
+            UIController.ShowMainMenu();
+        }
+        InitializeCamera();
+        UIController.Initialize();
     }
 
     // Update is called once per frame
     public static void Update()
     {
-        if(CurrentGameState == GameState.Playing)
+        if(CurrentGameState == GameState.MainMenu)
         {
-            if(GameInitialized == false)
+            UIController.ShowMainMenu();
+        }
+        else if(CurrentGameState == GameState.Playing)
+        {
+            UIController.HideMainMenu();
+            if(GameplayInitialized == false)
             {
-                InitializeGameState();
-                GameInitialized = true;
+                SpawnPlayer();
+                InitializeFollowCamera();
+                Background.Initialize();
+                GameplayInitialized = true;
             }
             ProcessShipUpdate();
             EnemySpawnUpdate();
             Background.Update();
             UIController.Update();
+        }
+        else if(CurrentGameState == GameState.Paused)
+        {
+            //UIController.ShowPauseMenu();
         }
     }
 
@@ -125,24 +150,21 @@ public static class GameController
         }
     }
 
-    // Initialize game state
-    public static void InitializeGameState()
+    // Initialize camera
+    private static void InitializeCamera()
     {
-        SpawnPlayer();
-        InitializeCamera();
-        Background.Start();
-        UIController.Start();
+        // Spawn camera
+        CamerasPrefab = Resources.Load<GameObject>(CamerasPrefabName);
+        Cameras = GameObject.Instantiate(CamerasPrefab);
+        Cameras.name = "Cameras";
     }
 
-    private static void InitializeCamera()
+    // Initialize follow camera
+    private static void InitializeFollowCamera()
     {
         // If player has been instantiated
         if(Player != null)
         {
-            // Spawn camera
-            CamerasPrefab = Resources.Load(CamerasPrefabName, typeof(GameObject)) as GameObject;
-            Cameras = GameObject.Instantiate(CamerasPrefab);
-            Cameras.name = "Cameras";
             // Set up follow camera
             FollowCamera = GameObject.Find(FollowCameraName).GetComponent<CinemachineVirtualCamera>();
             FollowCamera.Follow = Player.ShipObject.transform;
@@ -152,72 +174,62 @@ public static class GameController
     // Initialize player ship in world
     private static void SpawnPlayer()
     {
+        NextShipID();
         Ships.Add(ShipID, new PlayerShip(ShipID));
         Player = Ships[ShipID];
-        GetNextShipID();
     }
 
     // Spawn friendly ship
     private static void SpawnFriendly()
     {
+        NextShipID();
         Ships.Add(ShipID, new FriendlyShip(ShipID));
-        GetNextShipID();
     }
 
     // Spawn enemy ship
     private static void SpawnEnemy(Vector3 _startingPosition)
     {
-        Ships.Add(ShipID, new EnemyShip(ShipID, _startingPosition));
+        NextShipID();
+        int enemyTypeSelector = r.Next(0, 100);
+        if(enemyTypeSelector <= 80)
+        {
+            Ships.Add(ShipID, new EnemyShipStandard(ShipID, _startingPosition));
+        }
+        else if(enemyTypeSelector > 80 && enemyTypeSelector <= 90)
+        {
+            Ships.Add(ShipID, new EnemyShipRamming(ShipID, _startingPosition));
+        }
+        else if(enemyTypeSelector > 90)
+        {
+            Ships.Add(ShipID, new EnemyShipBroadside(ShipID, _startingPosition));
+        }
         EnemyCount++;
-        GetNextShipID();
     }
 
     // Spawn projectile
-    public static void SpawnProjectile(IFF _iff, uint _type, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public static void SpawnProjectile(IFF _iff, uint _type, float _curvature, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
-        Projectiles.Add(ProjectileID, new Bolt(ProjectileID, _iff, _type, _damage, _position, _rotation, _velocity, _speed, _lifetime));
-        GetNextProjectileID();
+        NextProjectileID();
+        Projectiles.Add(ProjectileID, new Bolt(ProjectileID, _iff, _type, _curvature, _damage, _position, _rotation, _velocity, _speed, _lifetime));
     }
 
     // Spawn bomb
-    public static Bomb SpawnBomb(PlayerShip _player, IFF _iff, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public static Bomb SpawnBomb(PlayerShip _player, IFF _iff, float _curvature, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
-        Projectiles.Add(ProjectileID, new Bomb(_player, ProjectileID, _iff, _damage, _radius, _position, _rotation, _velocity, _speed, _lifetime));
-        Bomb bomb = Projectiles[ProjectileID] as Bomb;
-        GetNextProjectileID();
-        return bomb;
+        NextProjectileID();
+        Projectiles.Add(ProjectileID, new Bomb(_player, ProjectileID, _iff, _curvature, _damage, _radius, _position, _rotation, _velocity, _speed, _lifetime));
+        return Projectiles[ProjectileID] as Bomb;
     }
 
-    // Gets next ship ID. Shouln't ever need to be used, is only applicable if play session is long enough that 4 billion ships have been spawned... consider removing
-    private static void GetNextShipID()
+    // Gets next ship ID.
+    private static void NextShipID()
     {
-        // If ship ID is equal to max value
-        if(ShipID == uint.MaxValue)
-        {
-            // Mark that ship ID has hit maximum
-            ShipIDPassedMax = true;
-        }
-        // If ship ID has not yet passed max value
-        if(ShipIDPassedMax == false)
-        {
-            // Increment ship ID
-            ShipID++;
-        }
-        // If ship ID has passed max value
-        else if(ShipIDPassedMax == true)
-        {
-            // Check if current ID is being used, if so...
-            if(Ships.ContainsKey(ShipID))
-            {
-                // Increment ship ID and recursively rerun this method until finding an unused ship ID
-                ShipID++;
-                GetNextShipID();
-            }
-        }
+        // Increment ship ID
+        ShipID++;
     }
 
-    // Gets next projectile ID. Doesn't really do anything but increment projectile ID... consider removing
-    private static void GetNextProjectileID()
+    // Gets next projectile ID.
+    private static void NextProjectileID()
     {
         // Increment projectile ID
         ProjectileID++;
@@ -259,28 +271,18 @@ public static class GameController
     // Cleans up ship list
     private static void CleanupShipList()
     {
-        // Loop through all ships
-        foreach(KeyValuePair<uint, Ship> ship in Ships)
-        {
-            // If ship is dead and not a player
-            if(ship.Value.Alive == false && ship.Value.IsPlayer == false)
-            {
-                // Add dead ship to removal list
-                ShipsToRemove.Add(ship.Key);
-                // If ship to remove is an enemy
-                if(ship.Value.IFF == IFF.Enemy)
-                {
-                    // Lower the enemy count
-                    EnemyCount--;
-                }
-            }
-        }
-        // Remove dead ships
+        // If ships to remove has values
         if(ShipsToRemove.Count > 0)
         {
             // Loop through ship removal list
             foreach(uint ID in ShipsToRemove)
             {
+                // If ship is enemy
+                if(Ships[ID].IFF == IFF.Enemy)
+                {
+                    // Decrement enemy count
+                    EnemyCount--;
+                }
                 // Remove ship
                 Ships.Remove(ID);
             }
@@ -292,16 +294,6 @@ public static class GameController
     // Clean up projectile list
     private static void CleanupProjectileList()
     {
-        // Loop through all projectiles
-        foreach(KeyValuePair<uint, Projectile> projectile in Projectiles)
-        {
-            // If projectile is dead
-            if(projectile.Value.Alive == false)
-            {
-                // Add projectile to removal list
-                ProjectilesToRemove.Add(projectile.Key);
-            }
-        }
         // Remove dead projectiles
         if(ProjectilesToRemove.Count > 0)
         {
@@ -334,8 +326,8 @@ public static class GameController
     private static Vector3 GetNextEnemySpawnPosition()
     {
         // Get a random number between min enemy spawn distance and max for X and Z values
-        int nextXSpawn = r.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance);
-        int nextZSpawn = r.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance);
+        int nextXSpawn = r.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance + 1);
+        int nextZSpawn = r.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance + 1);
         // 50% chance that X or Z value is negative instead of positive
         if(r.Next(0, 2) == 1)
         {
@@ -363,18 +355,14 @@ public static class GameController
     // Enemy despawn update
     private static void EnemyDespawnUpdate()
     {
-        // If player is currently alive
-        //if(Player.Alive == true) // TODO: FIX THIS
+        // Loop through all ships
+        foreach(KeyValuePair<uint, Ship> ship in Ships)
         {
-            // Loop through all ships
-            foreach(KeyValuePair<uint, Ship> ship in Ships)
+            // If ship is alive, is an enemy, and is further from player than despawn distance
+            if(ship.Value.Alive && ship.Value.IFF == IFF.Enemy && Vector3.Distance(Player.ShipObject.transform.position, ship.Value.ShipObject.transform.position) >= EnemyDespawnDistance)
             {
-                // If ship is alive, is an enemy, and is further from player than despawn distance
-                if(ship.Value.Alive && ship.Value.IFF == IFF.Enemy && Vector3.Distance(Player.ShipObject.transform.position, ship.Value.ShipObject.transform.position) >= EnemyDespawnDistance)
-                {
-                    // Despawn enemy ship
-                    ship.Value.Despawn();
-                }
+                // Despawn enemy ship
+                ship.Value.Despawn();
             }
         }
     }
@@ -418,9 +406,13 @@ public static class GameController
             // Get ships
             Ship reporter = Ships[uint.Parse(_collisionReporter.name)];
             Ship collidedWith = Ships[uint.Parse(_collidedWith.name)];
-            // Send collision report
-            reporter.ReceivedCollisionFromShip(collidedWith.ShipRigidbody.velocity, collidedWith.IFF);
-            collidedWith.ReceivedCollisionFromShip(reporter.ShipRigidbody.velocity, reporter.IFF);
+            // If both ships are alive
+            if(reporter.Alive == true && collidedWith.Alive == true)
+            {
+                // Send collision report
+                reporter.ReceivedCollisionFromShip(collidedWith.ShipRigidbody.velocity, collidedWith.IFF);
+                collidedWith.ReceivedCollisionFromShip(reporter.ShipRigidbody.velocity, reporter.IFF);
+            }
         }
     }
 }

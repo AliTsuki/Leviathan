@@ -22,8 +22,8 @@ public static class Background
     private const int backgroundMaxDistance = 500;
 
 
-    // Start is called before the first frame update
-    public static void Start()
+    // Initialize is called before the first frame update
+    public static void Initialize()
     {
         // Load background prefab
         BackgroundPrefab = Resources.Load(GameController.BackgroundPrefabName, typeof(GameObject)) as GameObject;

@@ -1,62 +1,63 @@
 ﻿using UnityEngine;
 
 // Controls the enemy ships
-public class EnemyShip : Ship
+public class EnemyShipStandard : Ship
 {
     // Enemy ship constructor
-    public EnemyShip(uint _id, Vector3 _startingPosition)
+    public EnemyShipStandard(uint _id, Vector3 _startingPosition)
     {
         this.ID = _id;
         this.StartingPosition = _startingPosition;
         this.IFF = GameController.IFF.Enemy;
+        this.AItype = AIType.Standard;
         this.IsPlayer = false;
         // Ship stats
         // Health/Armor/Shields
-        this.Health = 50;
-        this.MaxHealth = 50;
-        this.Armor = 75;
-        this.Shields = 15;
-        this.MaxShields = 15;
+        this.Health = 50f;
+        this.MaxHealth = 50f;
+        this.Armor = 75f;
+        this.Shields = 15f;
+        this.MaxShields = 15f;
         this.ShieldRegenSpeed = 0.5f;
         // Current/Max energy
-        this.Energy = 100;
-        this.MaxEnergy = 100;
+        this.Energy = 100f;
+        this.MaxEnergy = 100f;
         this.EnergyRegenSpeed = 1.5f;
         // Speed/Acceleration
-        this.ImpulseAcceleration = 40;
-        this.WarpAccelMultiplier = 3;
-        this.StrafeAcceleration = 10;
-        this.MaxImpulseSpeed = 40;
-        this.MaxWarpSpeed = 150;
+        this.ImpulseAcceleration = 60f;
+        this.WarpAccelerationMultiplier = 3f;
+        this.StrafeAcceleration = 20f;
+        this.MaxImpulseSpeed = 50f;
+        this.MaxWarpSpeed = 150f;
         this.MaxRotationSpeed = 0.1f;
-        this.MaxStrafeSpeed = 10;
+        this.MaxStrafeSpeed = 20f;
         // Weapon stats
         this.ProjectileType = 1;
-        this.ShotAmount = 1;
-        this.ShotDamage = 4;
-        this.ShotAccuracy = 90;
-        this.ShotSpeed = 10;
-        this.ShotLifetime = 2.5f;
-        this.ShotCurvature = 0;
+        this.GunShotAmount = 1f;
+        this.ShotCurvature = 0f;
+        this.ShotDamage = 4f;
+        this.GunShotAccuracy = 95f;
+        this.ShotSpeed = 120f;
+        this.ShotLifetime = 1f;
         // Cooldowns
-        this.ShotCooldownTime = 1;
-        this.RegenShieldCooldownTime = 3;
-        this.ShieldCooldownTime = 10;
-        this.BombCooldownTime = 10;
-        this.ScannerCooldownTime = 10;
+        this.GunCooldownTime = 1f;
+        this.ShieldCooldownTime = 3f;
+        this.BarrierCooldownTime = 10f;
+        this.BombCooldownTime = 10f;
+        this.ScannerCooldownTime = 10f;
         // Energy cost
-        this.WarpEnergyCost = 3;
-        this.ShotEnergyCost = 17;
+        this.WarpEnergyCost = 3f;
+        this.GunEnergyCost = 17f;
         // Experience
         this.XP = (uint)(this.MaxHealth + this.MaxShields);
         // AI fields
-        this.MaxTargetAcquisitionRange = 75;
-        this.MaxOrbitRange = 25;
-        this.MaxWeaponsRange = 30;
+        this.MaxTargetAcquisitionRange = 90f;
+        this.MaxOrbitRange = 30f;
+        this.MaxWeaponsRange = 40f;
         // GameObject Instantiation
-        this.ShipObjectPrefab = Resources.Load(GameController.EnemyPrefabName, typeof(GameObject)) as GameObject;
+        this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.EnemyStandardPrefabName);
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.Euler(0, GameController.r.Next(0, 360), 0));
-        this.Start();
+        this.Initialize();
     }
 
 
@@ -75,7 +76,7 @@ public class EnemyShip : Ship
             // Stop wandering as currently have target
             this.IsWandering = false;
             // Use AI to figure out if ship should accelerate
-            if(AIController.ShouldAccelerate(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
+            if(AIController.ShouldAccelerate(this.AItype, this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
             {
                 this.ImpulseInput = true;
             }
@@ -83,7 +84,7 @@ public class EnemyShip : Ship
             {
                 this.ImpulseInput = false;
             }
-            // Use AI to figure out if ship should strafe target
+            // Use AI to figure out if ship should strafe target, resets strafe direction each time strafing is cancelled
             if(AIController.ShouldStrafe(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
             {
                 this.StrafeInput = true;
@@ -97,11 +98,11 @@ public class EnemyShip : Ship
             // Use AI to figure out if ship should fire weapons
             if(AIController.ShouldFireGun(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxWeaponsRange) == true)
             {
-                this.FireInput = true;
+                this.GunInput = true;
             }
             else
             {
-                this.FireInput = false;
+                this.GunInput = false;
             }
         }
         // If unable to acquire target set wandering to true
@@ -109,8 +110,10 @@ public class EnemyShip : Ship
         {
             this.IsWandering = true;
         }
+        // If wandering
         if(this.IsWandering == true)
         {
+            // Wander
             this.Wander();
         }
     }
