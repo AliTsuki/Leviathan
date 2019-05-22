@@ -106,7 +106,6 @@ GameObject:
   - component: {fileID: 7993388084443904706}
   - component: {fileID: 7993388084443904707}
   - component: {fileID: 7993388084443904704}
-  - component: {fileID: 7993388084443904709}
   - component: {fileID: 7993388084443904710}
   - component: {fileID: 461210132289177771}
   - component: {fileID: 7009329791226377044}
@@ -142,7 +141,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 1
@@ -212,14 +211,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Cinemachine.CinemachineBrain+VcamActivatedEvent, Cinemachine, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!81 &7993388084443904709
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7993388084443904705}
-  m_Enabled: 0
 --- !u!124 &7993388084443904710
 Behaviour:
   m_ObjectHideFlags: 0
@@ -263,7 +254,7 @@ MonoBehaviour:
     m_Bits: 256
   stopNaNPropagation: 0
   finalBlitToCameraTarget: 1
-  antialiasingMode: 0
+  antialiasingMode: 2
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25

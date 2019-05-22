@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-// Controls the enemy ships
-public class EnemyShipRamming : Ship
+// Suicide Bomber enemy ship
+public class EnemyShipRamming : EnemyShip
 {
     // Ramming ship-only GameObjects
     private readonly GameObject BombExplosionPrefab;
@@ -56,7 +56,7 @@ public class EnemyShipRamming : Ship
         // Experience
         this.XP = (uint)(this.MaxHealth + this.MaxShields);
         // AI fields
-        this.MaxTargetAcquisitionRange = 90f;
+        this.MaxTargetAcquisitionRange = 80f;
         this.MaxOrbitRange = 0f;
         this.MaxWeaponsRange = 0f;
         // GameObject Instantiation
@@ -101,17 +101,6 @@ public class EnemyShipRamming : Ship
         {
             // Wander
             this.Wander();
-        }
-    }
-
-    // Gets intended rotation
-    public override void GetIntendedRotation()
-    {
-        // If there is a current target
-        if(this.CurrentTarget != null && this.CurrentTarget.Alive == true)
-        {
-            // Get rotation to face target
-            this.IntendedRotation = AIController.GetRotationToTarget(this.ShipObject.transform, this.CurrentTarget.ShipObject.transform.position);
         }
     }
 
