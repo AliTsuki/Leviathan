@@ -20,4 +20,10 @@ public class GameManager : MonoBehaviour
     {
         GameController.FixedUpdate();
     }
+
+    // On application quit
+    public void OnApplicationQuit()
+    {
+        GameController.OnApplicationQuit();
+    }
 }

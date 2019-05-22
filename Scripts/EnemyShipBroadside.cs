@@ -44,19 +44,19 @@ public class EnemyShipBroadside : Ship
         this.MaxRotationSpeed = 0.15f;
         this.MaxStrafeSpeed = 10f;
         // Weapon stats
-        this.ProjectileType = 4;
+        this.GunShotProjectileType = 4;
         this.GunShotAmount = 2f;
-        this.ShotCurvature = 0f;
-        this.ShotDamage = 4f;
+        this.GunShotCurvature = 0f;
+        this.GunShotDamage = 4f;
         this.GunShotAccuracy = 75f;
-        this.ShotSpeed = 120f;
-        this.ShotLifetime = 1f;
+        this.GunShotSpeed = 120f;
+        this.GunShotLifetime = 1f;
         // Cooldowns
         this.GunCooldownTime = 1f;
         this.ShieldCooldownTime = 3f;
         this.BarrierCooldownTime = 10f;
         this.BombCooldownTime = 10f;
-        this.ScannerCooldownTime = 10f;
+        this.BarrageCooldownTime = 10f;
         // Energy cost
         this.WarpEnergyCost = 3f;
         this.GunEnergyCost = 17f;
@@ -72,7 +72,7 @@ public class EnemyShipBroadside : Ship
         this.Initialize();
     }
 
-    // Initialize is called before the first frame update
+    // Initialize
     public override void Initialize()
     {
         // Set up universal ship fields
@@ -244,22 +244,22 @@ public class EnemyShipBroadside : Ship
                 // Shot rotation is affected by accuracy and the rotation to its target (NPCs need a little aiming boost)
                 Quaternion shotRotation = Quaternion.Euler(0, this.GunBarrelObject.transform.rotation.eulerAngles.y + accuracy, 0);
                 // Spawn projectile
-                GameController.SpawnProjectile(this.IFF, this.ProjectileType, this.ShotCurvature, this.ShotDamage, this.GunBarrelObject.transform.position, shotRotation, this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                GameController.SpawnProjectile(this.IFF, this.GunShotProjectileType, this.GunShotCurvature, this.GunShotDamage, this.GunBarrelObject.transform.position, shotRotation, this.ShipRigidbody.velocity, this.GunShotSpeed, this.GunShotLifetime);
                 accuracy = GameController.r.Next(-(int)(100 - this.GunShotAccuracy), (int)(100 - this.GunShotAccuracy) + 1);
                 shotRotation = Quaternion.Euler(0, this.GunBarrelObject1.transform.rotation.eulerAngles.y + accuracy, 0);
-                GameController.SpawnProjectile(this.IFF, this.ProjectileType, this.ShotCurvature, this.ShotDamage, this.GunBarrelObject1.transform.position, shotRotation, this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                GameController.SpawnProjectile(this.IFF, this.GunShotProjectileType, this.GunShotCurvature, this.GunShotDamage, this.GunBarrelObject1.transform.position, shotRotation, this.ShipRigidbody.velocity, this.GunShotSpeed, this.GunShotLifetime);
                 accuracy = GameController.r.Next(-(int)(100 - this.GunShotAccuracy), (int)(100 - this.GunShotAccuracy) + 1);
                 shotRotation = Quaternion.Euler(0, this.GunBarrelObject2.transform.rotation.eulerAngles.y + accuracy, 0);
-                GameController.SpawnProjectile(this.IFF, this.ProjectileType, this.ShotCurvature, this.ShotDamage, this.GunBarrelObject2.transform.position, shotRotation, this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                GameController.SpawnProjectile(this.IFF, this.GunShotProjectileType, this.GunShotCurvature, this.GunShotDamage, this.GunBarrelObject2.transform.position, shotRotation, this.ShipRigidbody.velocity, this.GunShotSpeed, this.GunShotLifetime);
                 accuracy = GameController.r.Next(-(int)(100 - this.GunShotAccuracy), (int)(100 - this.GunShotAccuracy) + 1);
                 shotRotation = Quaternion.Euler(0, this.GunBarrelObject3.transform.rotation.eulerAngles.y + accuracy, 0);
-                GameController.SpawnProjectile(this.IFF, this.ProjectileType, this.ShotCurvature, this.ShotDamage, this.GunBarrelObject3.transform.position, shotRotation, this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                GameController.SpawnProjectile(this.IFF, this.GunShotProjectileType, this.GunShotCurvature, this.GunShotDamage, this.GunBarrelObject3.transform.position, shotRotation, this.ShipRigidbody.velocity, this.GunShotSpeed, this.GunShotLifetime);
                 accuracy = GameController.r.Next(-(int)(100 - this.GunShotAccuracy), (int)(100 - this.GunShotAccuracy) + 1);
                 shotRotation = Quaternion.Euler(0, this.GunBarrelObject4.transform.rotation.eulerAngles.y + accuracy, 0);
-                GameController.SpawnProjectile(this.IFF, this.ProjectileType, this.ShotCurvature, this.ShotDamage, this.GunBarrelObject4.transform.position, shotRotation, this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                GameController.SpawnProjectile(this.IFF, this.GunShotProjectileType, this.GunShotCurvature, this.GunShotDamage, this.GunBarrelObject4.transform.position, shotRotation, this.ShipRigidbody.velocity, this.GunShotSpeed, this.GunShotLifetime);
                 accuracy = GameController.r.Next(-(int)(100 - this.GunShotAccuracy), (int)(100 - this.GunShotAccuracy) + 1);
                 shotRotation = Quaternion.Euler(0, this.GunBarrelObject5.transform.rotation.eulerAngles.y + accuracy, 0);
-                GameController.SpawnProjectile(this.IFF, this.ProjectileType, this.ShotCurvature, this.ShotDamage, this.GunBarrelObject5.transform.position, shotRotation, this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                GameController.SpawnProjectile(this.IFF, this.GunShotProjectileType, this.GunShotCurvature, this.GunShotDamage, this.GunBarrelObject5.transform.position, shotRotation, this.ShipRigidbody.velocity, this.GunShotSpeed, this.GunShotLifetime);
             }
             // Set last shot time
             this.LastGunFireTime = Time.time;

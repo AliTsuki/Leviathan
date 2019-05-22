@@ -8,7 +8,6 @@ public class PlayerShip : Ship
 
     // Player-only GameObjects
     private readonly GameObject BarrierObject;
-    private readonly GameObject ScannerObject;
     private Bomb bomb;
 
     // Player ship constructor
@@ -19,53 +18,64 @@ public class PlayerShip : Ship
         this.IFF = GameController.IFF.Friend;
         this.IsPlayer = true;
         // Ship stats
-        // Health/Armor/Shields
+        // --Health/Armor/Shields
         this.Health = 200f;
         this.MaxHealth = 200f;
         this.Armor = 75f;
         this.Shields = 100f;
         this.MaxShields = 100f;
         this.ShieldRegenSpeed = 1f;
-        // Current/Max energy
+        // --Current/Max energy
         this.Energy = 100f;
         this.MaxEnergy = 100f;
         this.EnergyRegenSpeed = 1.5f;
-        // Speed/Acceleration
+        // --Energy costs
+        this.WarpEnergyCost = 3f;
+        this.GunEnergyCost = 17f;
+        this.BarrierEnergyDrainCost = 10f;
+        // --Acceleration
         this.ImpulseAcceleration = 100f;
         this.WarpAccelerationMultiplier = 3f;
+        this.StrafeAcceleration = 0f;
+        // --Max Speed
         this.MaxImpulseSpeed = 50f;
         this.MaxWarpSpeed = 150f;
+        this.MaxStrafeSpeed = 0f;
         this.MaxRotationSpeed = 0.1f;
-        // Weapon stats
-        this.ProjectileType = 0;
-        this.GunShotAmount = 1f;
-        this.ShotCurvature = 0.05f;
-        this.ShotDamage = 30f;
+        // --Weapon stats
+        // ----Main gun
+        this.GunShotProjectileType = 5;
+        this.GunCooldownTime = 0.25f;
+        this.GunShotAmount = 1;
+        this.GunShotCurvature = 0.05f;
+        this.GunShotDamage = 30f;
         this.GunShotAccuracy = 99f;
-        this.ShotSpeed = 75f;
-        this.ShotLifetime = 1f;
+        this.GunShotSpeed = 75f;
+        this.GunShotLifetime = 1f;
+        // ----Bombs
         this.BombCurvature = 0f;
         this.BombDamage = 120f;
         this.BombRadius = 35f;
         this.BombSpeed = 30f;
         this.BombLiftime = 3f;
         this.BombPrimerTime = 0.25f;
-        // Cooldowns
-        this.GunCooldownTime = 0.25f;
+        // ----Barrage
+        this.BarrageGunCooldownTimeMultiplier = 0.5f;
+        this.BarrageShotAmountIncrease = 1;
+        this.BarrageDamageMultiplier = 0.70f;
+        this.BarrageAccuracyMultiplier = 0.70f;
+        this.BarrageEnergyCostMultiplier = 0.70f;
+        // --Cooldowns
         this.ShieldCooldownTime = 3f;
         this.BarrierDuration = 5f;
         this.BarrierCooldownTime = 10f;
         this.BombCooldownTime = 15f;
-        this.ScannerCooldownTime = 10f;
-        // Energy cost
-        this.WarpEnergyCost = 3f;
-        this.GunEnergyCost = 17f;
-        this.BarrierEnergyDrainCost = 10f;
+        this.BarrageDuration = 5f;
+        this.BarrageCooldownTime = 10f;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.PlayerPrefabName);
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         this.BarrierObject = this.ShipObject.transform.GetChild(0).Find(GameController.ShieldName).gameObject;
-        this.ScannerObject = this.ShipObject.transform.GetChild(0).Find(GameController.ScannerName).gameObject;
         this.Initialize();
     }
 
@@ -81,7 +91,7 @@ public class PlayerShip : Ship
         this.GunInput = this.playerInput.Fire;
         this.BombInput = this.playerInput.Bomb;
         this.BarrierInput = this.playerInput.Barrier;
-        this.ScannerInput = this.playerInput.Scanner;
+        this.BarrageInput = this.playerInput.Barrage;
         this.PauseInput = this.playerInput.Pause;
     }
 
@@ -104,7 +114,7 @@ public class PlayerShip : Ship
         this.CheckMainGun();
         this.CheckBomb();
         this.CheckBarrier();
-        this.CheckScanner();
+        this.CheckBarrage();
     }
 
     // Fires bombs
@@ -166,17 +176,44 @@ public class PlayerShip : Ship
         }
     }
 
-    // Activates scanner
-    public void CheckScanner()
+    // Activates barrage
+    public void CheckBarrage()
     {
-        // TODO: Make Scanner actually do something, maybe send out a circular wave and have it identify something about the enemies nearby
-        if(this.playerInput.Scanner == true)
+        // If barrage input is active, barrage is not on cooldown, and barrage is not currently active
+        if(this.playerInput.Barrage == true && this.BarrageOnCooldown == false && this.BarrageActive == false)
         {
-            this.ScannerObject.SetActive(true);
+            // Set barrage to active
+            this.BarrageActive = true;
+            // Record last barrage activated time
+            this.LastBarrageActivatedTime = Time.time;
+            // Apply barrage multipliers
+            this.GunCooldownTime *= this.BarrageGunCooldownTimeMultiplier;
+            this.GunShotAmount += this.BarrageShotAmountIncrease;
+            this.GunShotDamage *= this.BarrageDamageMultiplier;
+            this.GunShotAccuracy *= this.BarrageAccuracyMultiplier;
+            this.GunEnergyCost *= this.BarrageEnergyCostMultiplier;
         }
-        else
+        // If barrage is currently active and last barrage activated time is greater than barrage duration
+        if(this.BarrageActive == true && Time.time - this.LastBarrageActivatedTime > this.BarrageDuration)
         {
-            this.ScannerObject.SetActive(false);
+            // Set barrage to off
+            this.BarrageActive = false;
+            // Set barrage on cooldown
+            this.BarrageOnCooldown = true;
+            // Record barrage cooldown started time
+            this.LastBarrageCooldownStartedTime = Time.time;
+            // Remove barrage multipliers
+            this.GunCooldownTime = this.DefaultGunCooldownTime;
+            this.GunShotAmount = this.DefaultGunShotAmount;
+            this.GunShotDamage = this.DefaultGunShotDamage;
+            this.GunShotAccuracy = this.DefaultGunShotAccuracy;
+            this.GunEnergyCost = this.DefaultGunEnergyCost;
+        }
+        // If barrage is on cooldown and last barrage cooldown started time is greater than barrage cooldown time
+        if(this.BarrageOnCooldown == true && Time.time - this.LastBarrageCooldownStartedTime > this.BarrageCooldownTime)
+        {
+            // Take barrage off cooldown
+            this.BarrageOnCooldown = false;
         }
     }
 }

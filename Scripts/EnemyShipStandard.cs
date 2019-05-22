@@ -32,19 +32,19 @@ public class EnemyShipStandard : Ship
         this.MaxRotationSpeed = 0.1f;
         this.MaxStrafeSpeed = 20f;
         // Weapon stats
-        this.ProjectileType = 1;
+        this.GunShotProjectileType = 1;
         this.GunShotAmount = 1f;
-        this.ShotCurvature = 0f;
-        this.ShotDamage = 4f;
+        this.GunShotCurvature = 0f;
+        this.GunShotDamage = 4f;
         this.GunShotAccuracy = 95f;
-        this.ShotSpeed = 120f;
-        this.ShotLifetime = 1f;
+        this.GunShotSpeed = 120f;
+        this.GunShotLifetime = 1f;
         // Cooldowns
         this.GunCooldownTime = 1f;
         this.ShieldCooldownTime = 3f;
         this.BarrierCooldownTime = 10f;
         this.BombCooldownTime = 10f;
-        this.ScannerCooldownTime = 10f;
+        this.BarrageCooldownTime = 10f;
         // Energy cost
         this.WarpEnergyCost = 3f;
         this.GunEnergyCost = 17f;

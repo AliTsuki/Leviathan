@@ -8,7 +8,7 @@
                 {
                     "name": "Aim",
                     "id": "7224a5d2-30a9-4f28-afe4-37708f40b23f",
-                    "expectedControlLayout": "Vector2",
+                    "expectedControlLayout": "Stick",
                     "continuous": true,
                     "passThrough": false,
                     "initialStateCheck": false,
@@ -30,7 +30,7 @@
                 {
                     "name": "FireBomb",
                     "id": "2a5a75b8-8e45-4175-b0cb-192b95da8654",
-                    "expectedControlLayout": "",
+                    "expectedControlLayout": "Button",
                     "continuous": true,
                     "passThrough": false,
                     "initialStateCheck": false,
@@ -41,7 +41,7 @@
                 {
                     "name": "ActivateBarrier",
                     "id": "c4b6bbb7-17a7-4141-b15c-837ae131813f",
-                    "expectedControlLayout": "",
+                    "expectedControlLayout": "Button",
                     "continuous": true,
                     "passThrough": false,
                     "initialStateCheck": false,
@@ -50,9 +50,9 @@
                     "bindings": []
                 },
                 {
-                    "name": "ActivateScanner",
+                    "name": "ActivateBarrage",
                     "id": "de6c26f9-bd4e-4b7f-8c2c-ee7c2da9ab44",
-                    "expectedControlLayout": "",
+                    "expectedControlLayout": "Button",
                     "continuous": true,
                     "passThrough": false,
                     "initialStateCheck": false,
@@ -63,7 +63,7 @@
                 {
                     "name": "ImpulseEngine",
                     "id": "76ac3142-f7a8-4211-a1d7-a7d01b35f9fe",
-                    "expectedControlLayout": "",
+                    "expectedControlLayout": "Button",
                     "continuous": true,
                     "passThrough": false,
                     "initialStateCheck": false,
@@ -74,7 +74,7 @@
                 {
                     "name": "WarpEngine",
                     "id": "aea0853b-56b3-4401-906d-c90447276950",
-                    "expectedControlLayout": "",
+                    "expectedControlLayout": "Button",
                     "continuous": true,
                     "passThrough": false,
                     "initialStateCheck": false,
@@ -85,7 +85,7 @@
                 {
                     "name": "Pause",
                     "id": "8b83b777-5829-41e5-80b1-fb8880080647",
-                    "expectedControlLayout": "",
+                    "expectedControlLayout": "Button",
                     "continuous": true,
                     "passThrough": false,
                     "initialStateCheck": false,
@@ -98,7 +98,7 @@
                 {
                     "name": "",
                     "id": "978bfe49-cc26-4a3d-ab7b-7d7a29327403",
-                    "path": "<Gamepad>/leftStick",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/Stick",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -110,8 +110,8 @@
                 {
                     "name": "",
                     "id": "143bb1cd-cc10-4eca-a2f0-a3664166fe91",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/button2",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "FireGun",
@@ -122,7 +122,7 @@
                 {
                     "name": "",
                     "id": "56c63ce9-9df5-4125-9e8a-6f1367670a3d",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/button3",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -134,7 +134,7 @@
                 {
                     "name": "",
                     "id": "a6e0d8f9-2fd8-4771-90ef-a70aebddb800",
-                    "path": "<Gamepad>/buttonWest",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/button1",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -146,11 +146,11 @@
                 {
                     "name": "",
                     "id": "e3472de3-26a1-4db7-b870-f957c683d1fb",
-                    "path": "<Gamepad>/buttonNorth",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/button4",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "ActivateScanner",
+                    "action": "ActivateBarrage",
                     "isComposite": false,
                     "isPartOfComposite": false,
                     "modifiers": ""
@@ -158,7 +158,7 @@
                 {
                     "name": "",
                     "id": "7e39a500-f41d-4245-9fca-fd59963daf59",
-                    "path": "<Gamepad>/rightTrigger",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/button8",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -170,7 +170,7 @@
                 {
                     "name": "",
                     "id": "5035c1d9-f036-46c2-9edc-82d43efe064b",
-                    "path": "<Gamepad>/leftTrigger",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/button7",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -182,7 +182,7 @@
                 {
                     "name": "",
                     "id": "6b9487c8-3813-4d85-8a60-09e1a5e362fe",
-                    "path": "<Gamepad>/start",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/button10",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -302,8 +302,8 @@
                 {
                     "name": "up",
                     "id": "14a5d6e8-4aaf-4119-a9ef-34b8c2c548bf",
-                    "path": "<Gamepad>/leftStick/up",
-                    "interactions": "",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/dpad/up",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "Navigate",
@@ -314,8 +314,8 @@
                 {
                     "name": "down",
                     "id": "2db08d65-c5fb-421b-983f-c71163608d67",
-                    "path": "<Gamepad>/leftStick/down",
-                    "interactions": "",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/dpad/down",
+                    "interactions": "Press",
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "Navigate",
@@ -326,7 +326,7 @@
                 {
                     "name": "left",
                     "id": "8ba04515-75aa-45de-966d-393d9bbd1c14",
-                    "path": "<Gamepad>/leftStick/left",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/dpad/left",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -338,7 +338,7 @@
                 {
                     "name": "right",
                     "id": "fcd248ae-a788-4676-a12e-f4d81205600b",
-                    "path": "<Gamepad>/leftStick/right",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/dpad/right",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -350,7 +350,7 @@
                 {
                     "name": "",
                     "id": "9e92bb26-7e3b-4ec4-b06b-3c8f8e498ddc",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/button2",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -362,7 +362,7 @@
                 {
                     "name": "",
                     "id": "82627dcc-3b13-4ba9-841d-e4b746d6553e",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<HID::Logitech Logitech Dual Action Joystick>/button3",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",

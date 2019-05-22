@@ -26,7 +26,7 @@ public class Projectile
     public bool Alive = false;
 
 
-    // Initialize is called before the first frame update
+    // Initialize
     public void Initialize()
     {
         // Set up universal projectile fields

@@ -30,8 +30,8 @@ public class Ship
     public float ImpulseEngineAudioMinVol = 0.1f;
     public float ImpulseEngineAudioMaxVol = 0.5f;
     public float WarpEngineAudioStep = 0.05f;
-    public float WarpEngineAudioMinVol = 0;
-    public float WarpEngineAudioMaxVol = 1;
+    public float WarpEngineAudioMinVol = 0f;
+    public float WarpEngineAudioMaxVol = 1f;
 
     // Inputs
     public float HorizontalInput;
@@ -41,7 +41,7 @@ public class Ship
     public bool GunInput;
     public bool BombInput;
     public bool BarrierInput;
-    public bool ScannerInput;
+    public bool BarrageInput;
     public bool PauseInput;
     public bool StrafeInput;
 
@@ -58,23 +58,34 @@ public class Ship
     public int RecentRotationsIndex = 0;
     public static int RecentRotationsIndexMax = 30;
     public float[] RecentRotations;
-    public float RecentRotationsAverage = 0;
-    public float TiltAngle = 0;
-    public float IntendedAngle = 0;
+    public float RecentRotationsAverage = 0f;
+    public float TiltAngle = 0f;
+    public float IntendedAngle = 0f;
 
-    // Cooldown fields
-    public float LastGunFireTime = 0;
-    public float LastDamageTakenTime = 0;
-    public float LastBarrierActivatedTime = 0;
-    public float LastBarrierCooldownStartedTime = 0;
-    public float LastBombActivatedTime = 0;
+    // Cooldown times
+    public float LastGunFireTime = 0f;
+    public float LastDamageTakenTime = 0f;
+    public float LastBarrierActivatedTime = 0f;
+    public float LastBarrierCooldownStartedTime = 0f;
+    public float LastBombActivatedTime = 0f;
+    public float LastBarrageActivatedTime = 0f;
+    public float LastBarrageCooldownStartedTime = 0f;
     public float DamageShaderCooldownTime = 0.5f;
+    // On cooldown bools
     public bool GunOnCooldown = false;
     public bool BombOnCooldown = false;
     public bool BombInFlight = false;
     public bool ShieldOnCooldown = false;
     public bool BarrierOnCooldown = false;
     public bool BarrierActive = false;
+    public bool BarrageOnCooldown = false;
+    public bool BarrageActive = false;
+    // Misc cooldown related
+    public float DefaultGunCooldownTime;
+    public float DefaultGunShotAmount;
+    public float DefaultGunShotDamage;
+    public float DefaultGunShotAccuracy;
+    public float DefaultGunEnergyCost;
 
     // Ship stats
     // --Health/Armor/Shields
@@ -88,23 +99,29 @@ public class Ship
     public float Energy;
     public float MaxEnergy;
     public float EnergyRegenSpeed;
-    // --Speed/Acceleration
+    // --Energy costs
+    public float WarpEnergyCost;
+    public float GunEnergyCost;
+    public float BarrierEnergyDrainCost;
+    // --Acceleration
     public float ImpulseAcceleration;
     public float WarpAccelerationMultiplier;
     public float StrafeAcceleration;
+    // --Max Speed
     public float MaxImpulseSpeed;
     public float MaxWarpSpeed;
     public float MaxStrafeSpeed;
     public float MaxRotationSpeed;
     // --Weapon stats
     // ----Main gun
-    public uint ProjectileType;
+    public uint GunShotProjectileType;
+    public float GunCooldownTime;
     public float GunShotAmount;
-    public float ShotCurvature;
-    public float ShotDamage;
+    public float GunShotCurvature;
+    public float GunShotDamage;
     public float GunShotAccuracy;
-    public float ShotSpeed;
-    public float ShotLifetime;
+    public float GunShotSpeed;
+    public float GunShotLifetime;
     // ----Bombs
     public float BombCurvature;
     public float BombDamage;
@@ -112,17 +129,20 @@ public class Ship
     public float BombSpeed;
     public float BombLiftime;
     public float BombPrimerTime;
+    // ----Barrage
+    public float BarrageGunCooldownTimeMultiplier;
+    public float BarrageShotAmountIncrease;
+    public float BarrageDamageMultiplier;
+    public float BarrageAccuracyMultiplier;
+    public float BarrageEnergyCostMultiplier;
     // --Cooldowns
-    public float GunCooldownTime;
     public float ShieldCooldownTime;
     public float BarrierDuration;
     public float BarrierCooldownTime;
     public float BombCooldownTime;
-    public float ScannerCooldownTime;
-    // --Energy cost
-    public float WarpEnergyCost;
-    public float GunEnergyCost;
-    public float BarrierEnergyDrainCost;
+    public float BarrageDuration;
+    public float BarrageCooldownTime;
+    
     // --Experience worth
     public uint XP;
 
@@ -155,7 +175,7 @@ public class Ship
     public bool IsPlayer;
 
 
-    // Initialize is called before the first frame update
+    // Initialize
     public virtual void Initialize()
     {
         // Set up universal ship fields
@@ -181,6 +201,11 @@ public class Ship
         this.Health = this.MaxHealth;
         this.Shields = this.MaxShields;
         this.Energy = this.MaxEnergy;
+        this.DefaultGunCooldownTime = this.GunCooldownTime;
+        this.DefaultGunShotAmount = this.GunShotAmount;
+        this.DefaultGunShotDamage = this.GunShotDamage;
+        this.DefaultGunShotAccuracy = this.GunShotAccuracy;
+        this.DefaultGunEnergyCost = this.GunEnergyCost;
         this.RecentRotations = new float[RecentRotationsIndexMax];
     }
 
@@ -251,7 +276,7 @@ public class Ship
             }
         }
         // If health has reached 0
-        if(this.Health <= 0)
+        if(this.Health <= 0f)
         {
             // Kill ship
             this.Kill();
@@ -262,11 +287,21 @@ public class Ship
     public void EnergyRegen()
     {
         // Prevent energy from going below 0
-        Mathf.Clamp(this.Energy, 0, this.MaxEnergy);
-        // Add energy regen
-        this.Energy += this.EnergyRegenSpeed;
-        // Prevent energy from going over max
-        Mathf.Clamp(this.Energy, 0, this.MaxEnergy);
+        if(this.Energy < 0f)
+        {
+            this.Energy = 0f;
+        }
+        // If energy is below maximum
+        if(this.Energy < this.MaxEnergy)
+        {
+            // Add energy regen
+            this.Energy += this.EnergyRegenSpeed;
+        }
+        // Prevent energy from going over maximum
+        if(this.Energy > this.MaxEnergy)
+        {
+            this.Energy = this.MaxEnergy;
+        }
     }
 
     // Regenerates shield
@@ -289,7 +324,7 @@ public class Ship
             if(this.IsPlayer == true && this.ShieldRegenAudio.isPlaying == false)
             {
                 // Set shield regen audio to max volume
-                this.ShieldRegenAudio.volume = 1;
+                this.ShieldRegenAudio.volume = 1f;
                 // Play shield regen audio
                 this.ShieldRegenAudio.Play();
             }
@@ -363,9 +398,9 @@ public class Ship
         // Get current rotation
         this.CurrentRotation = this.ShipObject.transform.rotation;
         // Amplify tilt angle by average multiplied by some amount
-        this.TiltAngle = -(this.RecentRotationsAverage * 5);
+        this.TiltAngle = -(this.RecentRotationsAverage * 5f);
         // Get next tilt rotation
-        this.TiltRotation = Quaternion.Euler(0, this.CurrentRotation.eulerAngles.y, this.TiltAngle);
+        this.TiltRotation = Quaternion.Euler(0f, this.CurrentRotation.eulerAngles.y, this.TiltAngle);
         // Rotate ship to new tilt rotation
         this.ShipObject.transform.rotation = this.TiltRotation;
     }
@@ -380,7 +415,7 @@ public class Ship
             if(this.ShipRigidbody.velocity.magnitude < this.MaxImpulseSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.7f)
             {
                 // Accelerate forward
-                this.ShipRigidbody.AddRelativeForce(new Vector3(0, 0, this.ImpulseAcceleration));
+                this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.ImpulseAcceleration));
             }
             // Modify particle effects
             this.ImpulseParticleMain.startSpeed = 2.8f;
@@ -396,7 +431,7 @@ public class Ship
             if(this.ShipRigidbody.velocity.magnitude < this.MaxWarpSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.5f)
             {
                 // Accelerate forward with warp multiplier to speed
-                this.ShipRigidbody.AddRelativeForce(new Vector3(0, 0, this.ImpulseAcceleration * this.WarpAccelerationMultiplier));
+                this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.ImpulseAcceleration * this.WarpAccelerationMultiplier));
             }
             // Subtract warp energy cost
             this.Energy -= this.WarpEnergyCost;
@@ -444,13 +479,13 @@ public class Ship
             if(this.StrafeRight == true)
             {
                 // Strafe
-                this.ShipRigidbody.AddRelativeForce(new Vector3(this.StrafeAcceleration, 0, 0));
+                this.ShipRigidbody.AddRelativeForce(new Vector3(this.StrafeAcceleration, 0f, 0f));
             }
             // If strafe left add negative strafe acceleration
             else
             {
                 // Strafe
-                this.ShipRigidbody.AddRelativeForce(new Vector3(-this.StrafeAcceleration, 0, 0));
+                this.ShipRigidbody.AddRelativeForce(new Vector3(-this.StrafeAcceleration, 0f, 0f));
             }
             
         }
@@ -478,24 +513,24 @@ public class Ship
             for(int i = 0; i < this.GunShotAmount; i++)
             {
                 // If shot accuracy percentage is above 100, set to 100
-                Mathf.Clamp(this.GunShotAccuracy, 0, 100);
+                Mathf.Clamp(this.GunShotAccuracy, 0f, 100f);
                 // Get accuracy of current projectile as random number from negative shot accuracy to positive shot accuracy
-                float accuracy = GameController.r.Next(-(int)(100 - this.GunShotAccuracy), (int)(100 - this.GunShotAccuracy) + 1);
+                float accuracy = GameController.r.Next(-(int)(100f - this.GunShotAccuracy), (int)(100f - this.GunShotAccuracy) + 1);
                 Quaternion shotRotation;
                 // If this is player
                 if(this.IsPlayer == true)
                 {
                     // Shot rotation is affected by accuracy and the rotation of the gun barrel
-                    shotRotation = Quaternion.Euler(0, this.GunBarrelObject.transform.rotation.eulerAngles.y + accuracy, 0);
+                    shotRotation = Quaternion.Euler(0f, this.GunBarrelObject.transform.rotation.eulerAngles.y + accuracy, 0f);
                 }
                 // If this is NPC
                 else
                 {
                     // Shot rotation is affected by accuracy and the rotation to its target (NPCs need a little aiming boost)
-                    shotRotation = Quaternion.Euler(0, this.IntendedRotation.eulerAngles.y + accuracy, 0);
+                    shotRotation = Quaternion.Euler(0f, this.IntendedRotation.eulerAngles.y + accuracy, 0f);
                 }
                 // Spawn a projectile
-                GameController.SpawnProjectile(this.IFF, this.ProjectileType, this.ShotCurvature, this.ShotDamage, this.GunBarrelObject.transform.position, shotRotation, this.ShipRigidbody.velocity, this.ShotSpeed, this.ShotLifetime);
+                GameController.SpawnProjectile(this.IFF, this.GunShotProjectileType, this.GunShotCurvature, this.GunShotDamage, this.GunBarrelObject.transform.position, shotRotation, this.ShipRigidbody.velocity, this.GunShotSpeed, this.GunShotLifetime);
             }
             // Set last shot time
             this.LastGunFireTime = Time.time;
@@ -520,7 +555,7 @@ public class Ship
     public void ReceivedCollisionFromProjectile(float _damage, Vector3 _projectileStrikeLocation)
     {
         // If shields are above 0 or barrier is active
-        if(this.Shields > 0 || this.BarrierActive == true)
+        if(this.Shields > 0f || this.BarrierActive == true)
         {
             // Spawn a shield strike particle effect
             this.ProjectileShieldStrike = GameObject.Instantiate(this.ProjectileShieldStrikePrefab, _projectileStrikeLocation, Quaternion.identity);
@@ -543,14 +578,14 @@ public class Ship
     public virtual void ReceivedCollisionFromShip(Vector3 _collisionVelocity, GameController.IFF _iff)
     {
         // Apply velocity received from collision
-        this.ShipRigidbody.AddRelativeForce(_collisionVelocity * 0.25f, ForceMode.Impulse);
+        this.ShipRigidbody.AddRelativeForce(_collisionVelocity * 0.20f, ForceMode.Impulse);
         // If ship is different faction
         if(_iff != this.IFF)
         {
             // If armor percentage is above 100, cap it at 100
-            Mathf.Clamp(this.Armor, 0, 100);
+            Mathf.Clamp(this.Armor, 0f, 100f);
             // Take impact damage less armor percentage
-            this.TakeDamage(_collisionVelocity.magnitude * ((100 - this.Armor) / 100));
+            this.TakeDamage(_collisionVelocity.magnitude * ((100f - this.Armor) / 100f));
         }
     }
 
@@ -563,12 +598,12 @@ public class Ship
             // Apply damage to shields
             this.Shields -= _damage;
             // If shields are knocked below 0
-            if(this.Shields < 0)
+            if(this.Shields < 0f)
             {
                 // Add negative shield amount to health
                 this.Health += this.Shields;
                 // Reset shield to 0
-                this.Shields = 0;
+                this.Shields = 0f;
                 // If this is player
                 if(this.IsPlayer == true)
                 {
@@ -617,12 +652,12 @@ public class Ship
         if(_show == true)
         {
             // Turn on damage shader
-            this.ShipObject.transform.GetChild(0).GetComponent<MeshRenderer>().material.SetFloat("_ShowingEffect", 1);
+            this.ShipObject.transform.GetChild(0).GetComponent<MeshRenderer>().material.SetFloat("_ShowingEffect", 1f);
         }
         else
         {
             // Turn off the damage shader
-            this.ShipObject.transform.GetChild(0).GetComponent<MeshRenderer>().material.SetFloat("_ShowingEffect", 0);
+            this.ShipObject.transform.GetChild(0).GetComponent<MeshRenderer>().material.SetFloat("_ShowingEffect", 0f);
         }
     }
 

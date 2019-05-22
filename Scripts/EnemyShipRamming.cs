@@ -41,13 +41,13 @@ public class EnemyShipRamming : Ship
         // Weapon stats
         this.DetonationDamage = 50f;
         this.DetonationRadius = 50f;
-        this.ProjectileType = 0;
+        this.GunShotProjectileType = 0;
         this.GunShotAmount = 0f;
-        this.ShotCurvature = 0f;
-        this.ShotDamage = 0f;
+        this.GunShotCurvature = 0f;
+        this.GunShotDamage = 0f;
         this.GunShotAccuracy = 0f;
-        this.ShotSpeed = 0f;
-        this.ShotLifetime = 0f;
+        this.GunShotSpeed = 0f;
+        this.GunShotLifetime = 0f;
         // Cooldowns
         this.GunCooldownTime = 0f;
         this.ShieldCooldownTime = 3f;
@@ -119,7 +119,7 @@ public class EnemyShipRamming : Ship
     public override void ReceivedCollisionFromShip(Vector3 _collisionVelocity, GameController.IFF _iff)
     {
         // Apply velocity received from collision
-        this.ShipRigidbody.AddRelativeForce(_collisionVelocity * 0.25f, ForceMode.Impulse);
+        this.ShipRigidbody.AddRelativeForce(_collisionVelocity * 0.20f, ForceMode.Impulse);
         // If ship is different faction
         if(_iff != this.IFF)
         {

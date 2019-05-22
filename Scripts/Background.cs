@@ -9,24 +9,27 @@ public static class Background
     private static GameObject BackgroundPrefab;
    
     // Fields
-    private static readonly Dictionary<Vector2Int, GameObject> backgrounds = new Dictionary<Vector2Int, GameObject>();
-    private static List<Vector2Int> backgroundsToRemove = new List<Vector2Int>();
-    private static Vector2Int nextBackgroundKey;
-    private static Vector3 nextBackgroundPosition;
-    private static Vector3 playerPosition;
+    private static readonly Dictionary<Vector2Int, GameObject> Backgrounds = new Dictionary<Vector2Int, GameObject>();
+    private static List<Vector2Int> BackgroundsToRemove = new List<Vector2Int>();
+    private static Vector2Int NextBackgroundKey;
+    private static Vector3 NextBackgroundPosition;
+    private static Vector3 PlayerPosition;
 
     // Constants
-    private const int backgroundInitializationTileAmount = 2;
-    private const int backgroundGenerationTileAmount = 2;
-    private const int backgroundTileSize = 200;
-    private const int backgroundMaxDistance = 500;
+    private const int BackgroundInitializationTileAmount = 2;
+    private const int BackgroundGenerationTileAmount = 2;
+    private const int BackgroundTileSize = 200;
+    private const int BackgroundMaxDistance = 500;
 
 
-    // Initialize is called before the first frame update
+    // Initialize
     public static void Initialize()
     {
+        // Clear lists
+        Backgrounds.Clear();
+        BackgroundsToRemove.Clear();
         // Load background prefab
-        BackgroundPrefab = Resources.Load(GameController.BackgroundPrefabName, typeof(GameObject)) as GameObject;
+        BackgroundPrefab = Resources.Load<GameObject>(GameController.BackgroundPrefabName);
         // Initialize background
         InitializeBackground();
     }
@@ -44,18 +47,18 @@ public static class Background
     private static void InitializeBackground()
     {
         // Loop through x and z coords from negative tile amount to positive
-        for(int x = -backgroundInitializationTileAmount; x < backgroundInitializationTileAmount; x++)
+        for(int x = -BackgroundInitializationTileAmount; x < BackgroundInitializationTileAmount; x++)
         {
-            for(int z = -backgroundInitializationTileAmount; z < backgroundInitializationTileAmount; z++)
+            for(int z = -BackgroundInitializationTileAmount; z < BackgroundInitializationTileAmount; z++)
             {
                 // Set the next background key to be current x and z
-                nextBackgroundKey = new Vector2Int(x, z);
+                NextBackgroundKey = new Vector2Int(x, z);
                 // Set the next background position to x and z multiplied by the size of the tiles
-                nextBackgroundPosition = new Vector3(nextBackgroundKey.x * backgroundTileSize, 0, nextBackgroundKey.y * backgroundTileSize);
+                NextBackgroundPosition = new Vector3(NextBackgroundKey.x * BackgroundTileSize, 0, NextBackgroundKey.y * BackgroundTileSize);
                 // Add a new background prefab at the next background position and add it to backgrounds list
-                backgrounds.Add(nextBackgroundKey, GameObject.Instantiate(BackgroundPrefab, nextBackgroundPosition, Quaternion.identity));
+                Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefab, NextBackgroundPosition, Quaternion.identity));
                 // Set name of GameObject in Unity Editor to the key
-                backgrounds[nextBackgroundKey].name = $@"Background: {nextBackgroundKey.x}, {nextBackgroundKey.y}";
+                Backgrounds[NextBackgroundKey].name = $@"Background: {NextBackgroundKey.x}, {NextBackgroundKey.y}";
             }
         }
     }
@@ -63,59 +66,62 @@ public static class Background
     // Checks for backgrounds distance from player and removes if they are too distant
     private static void RemoveDistantBackgrounds()
     {
-        if(GameController.Player.Alive == true)
+        // Get player position from GameController
+        PlayerPosition = GameController.Player.ShipObject.transform.position;
+        // Loop through all backgrounds currently in game
+        foreach(KeyValuePair<Vector2Int, GameObject> bg in Backgrounds)
         {
-            // Get player position from GameController
-            playerPosition = GameController.Player.ShipObject.transform.position;
-            // Loop through all backgrounds currently in game
-            foreach(KeyValuePair<Vector2Int, GameObject> bg in backgrounds)
+            // Check if background is further away than max distance allowed
+            if(Vector3.Distance(bg.Value.transform.position, PlayerPosition) > BackgroundMaxDistance)
             {
-                // Check if background is further away than max distance allowed
-                if(Vector3.Distance(bg.Value.transform.position, playerPosition) > backgroundMaxDistance)
-                {
-                    // Add background to removal list
-                    backgroundsToRemove.Add(bg.Key);
-                }
+                // Add background to removal list
+                BackgroundsToRemove.Add(bg.Key);
             }
-            // Loop through all backgrounds marked for removal
-            foreach(Vector2Int pos in backgroundsToRemove)
-            {
-                // Destroy the background game object
-                GameObject.Destroy(backgrounds[pos]);
-                // Remove destroyed background from backgrounds list
-                backgrounds.Remove(pos);
-            }
-            // Clear the background marked for removal list
-            backgroundsToRemove.Clear();
         }
+        // Loop through all backgrounds marked for removal
+        foreach(Vector2Int pos in BackgroundsToRemove)
+        {
+            // Destroy the background game object
+            GameObject.Destroy(Backgrounds[pos]);
+            // Remove destroyed background from backgrounds list
+            Backgrounds.Remove(pos);
+        }
+        // Clear the background marked for removal list
+        BackgroundsToRemove.Clear();
     }
 
     // Adds new backgrounds around player as you explore
     private static void AddNewBackgrounds()
     {
-        if(GameController.Player.Alive == true)
+        // Get player position from GameController
+        PlayerPosition = GameController.Player.ShipObject.transform.position;
+        // Loop through x and z coords from negative tile amount to positive
+        for(int x = -BackgroundGenerationTileAmount; x < BackgroundGenerationTileAmount; x++)
         {
-            // Get player position from GameController
-            playerPosition = GameController.Player.ShipObject.transform.position;
-            // Loop through x and z coords from negative tile amount to positive
-            for(int x = -backgroundGenerationTileAmount; x < backgroundGenerationTileAmount; x++)
+            for(int z = -BackgroundGenerationTileAmount; z < BackgroundGenerationTileAmount; z++)
             {
-                for(int z = -backgroundGenerationTileAmount; z < backgroundGenerationTileAmount; z++)
+                // Set next background key while taking into account player position
+                NextBackgroundKey = new Vector2Int(Mathf.RoundToInt(PlayerPosition.x / BackgroundTileSize) + x, Mathf.RoundToInt(PlayerPosition.z / BackgroundTileSize) + z);
+                // Set next background position taking into account tile size
+                NextBackgroundPosition = new Vector3(NextBackgroundKey.x * BackgroundTileSize, 0, NextBackgroundKey.y * BackgroundTileSize);
+                // Check if next background already exists
+                if(Backgrounds.ContainsKey(NextBackgroundKey) == false)
                 {
-                    // Set next background key while taking into account player position
-                    nextBackgroundKey = new Vector2Int(Mathf.RoundToInt(playerPosition.x / backgroundTileSize) + x, Mathf.RoundToInt(playerPosition.z / backgroundTileSize) + z);
-                    // Set next background position taking into account tile size
-                    nextBackgroundPosition = new Vector3(nextBackgroundKey.x * backgroundTileSize, 0, nextBackgroundKey.y * backgroundTileSize);
-                    // Check if next background already exists
-                    if(backgrounds.ContainsKey(nextBackgroundKey) == false)
-                    {
-                        // If background doesn't already exist, add new background into game and into backgrounds list
-                        backgrounds.Add(nextBackgroundKey, GameObject.Instantiate(BackgroundPrefab, nextBackgroundPosition, Quaternion.identity));
-                        // Set name of GameObject in Unity Editor to the key
-                        backgrounds[nextBackgroundKey].name = $@"Background: {nextBackgroundKey.x}, {nextBackgroundKey.y}";
-                    }
+                    // If background doesn't already exist, add new background into game and into backgrounds list
+                    Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefab, NextBackgroundPosition, Quaternion.identity));
+                    // Set name of GameObject in Unity Editor to the key
+                    Backgrounds[NextBackgroundKey].name = $@"Background: {NextBackgroundKey.x}, {NextBackgroundKey.y}";
                 }
             }
+        }
+    }
+
+    // Restart
+    public static void Restart()
+    {
+        foreach(KeyValuePair<Vector2Int, GameObject> background in Backgrounds)
+        {
+            GameObject.Destroy(background.Value);
         }
     }
 }

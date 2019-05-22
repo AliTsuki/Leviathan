@@ -21,6 +21,8 @@ using UnityEngine;
 // Keeps track of all entites and updates all systems in the game
 public static class GameController
 {
+    // Version
+    public static string Version = "0.0.8a";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject CamerasPrefab;
@@ -42,16 +44,19 @@ public static class GameController
     private readonly static int EnemyDespawnDistance = 300;
 
     // Constant references to Prefab filenames
-    public const string MainMenuPrefabName = "Main Menu";
+    public const string MainMenuName = "Main Menu";
     public const string CamerasPrefabName = "Cameras";
     public const string FollowCameraName = "Follow Camera";
-    public const string UIPrefabName = "UI";
-    public const string CanvasName = "Canvas";
+    public const string UIName = "UI";
+    public const string CanvasName = "UI Canvas";
     public const string ShieldDamageEffectName = "Shield Damage Effect";
     public const string HealthDamageEffectName = "Health Damage Effect";
     public const string GameOverScreenName = "Game Over Screen";
+    public const string GameOverTextName = "Game Over Text";
+    public const string GameOverRestartButtonName = "Restart Button";
     public const string PlayerUIName = "Player UI";
     public const string NPCUIPrefabName = "NPC UI";
+    public const string MinimapCoordsName = "Minimap Coords";
     public const string InfoLabelName = "Info Label";
     public const string BackgroundPrefabName = "Background";
     public const string PlayerPrefabName = "Player Ship";
@@ -78,6 +83,7 @@ public static class GameController
 
     // Score
     public static uint Score;
+    public static float TimeStarted;
 
     // Identify Friend or Foe
     public enum IFF
@@ -100,13 +106,9 @@ public static class GameController
     // Initialize is called before the first frame update
     public static void Initialize()
     {
-        CurrentGameState = GameState.Playing;
-        if(CurrentGameState == GameState.MainMenu)
-        {
-            UIController.ShowMainMenu();
-        }
-        InitializeCamera();
+        CurrentGameState = GameState.MainMenu;
         UIController.Initialize();
+        InitializeCamera();
     }
 
     // Update is called once per frame
@@ -116,14 +118,12 @@ public static class GameController
         {
             UIController.ShowMainMenu();
         }
-        else if(CurrentGameState == GameState.Playing)
+        if(CurrentGameState == GameState.Playing)
         {
-            UIController.HideMainMenu();
             if(GameplayInitialized == false)
             {
-                SpawnPlayer();
-                InitializeFollowCamera();
-                Background.Initialize();
+                InitializeGameplay();
+                TimeStarted = Time.time;
                 GameplayInitialized = true;
             }
             ProcessShipUpdate();
@@ -150,6 +150,33 @@ public static class GameController
         }
     }
 
+    // On application quit
+    public static void OnApplicationQuit()
+    {
+
+    }
+
+    // On restart
+    public static void Restart()
+    {
+        foreach(KeyValuePair<uint, Ship> ship in Ships)
+        {
+            GameObject.Destroy(ship.Value.ShipObject);
+        }
+        Player = null;
+        Ships.Clear();
+        ShipsToRemove.Clear();
+        foreach(KeyValuePair<uint, Projectile> projectile in Projectiles)
+        {
+            GameObject.Destroy(projectile.Value.ProjectileObject);
+        }
+        Projectiles.Clear();
+        ProjectilesToRemove.Clear();
+        Background.Restart();
+        UIController.Restart();
+        GameplayInitialized = false;
+    }
+
     // Initialize camera
     private static void InitializeCamera()
     {
@@ -169,6 +196,24 @@ public static class GameController
             FollowCamera = GameObject.Find(FollowCameraName).GetComponent<CinemachineVirtualCamera>();
             FollowCamera.Follow = Player.ShipObject.transform;
         }
+    }
+
+    // Initialize gameplay
+    private static void InitializeGameplay()
+    {
+        // Clear lists
+        Ships.Clear();
+        ShipsToRemove.Clear();
+        Projectiles.Clear();
+        ProjectilesToRemove.Clear();
+        EnemyCount = 0;
+        ShipID = 0;
+        ProjectileID = 0;
+        Score = 0;
+        // Initialize player, follow camera, and backgrounds
+        SpawnPlayer();
+        InitializeFollowCamera();
+        Background.Initialize();
     }
 
     // Initialize player ship in world

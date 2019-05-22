@@ -4,6 +4,7 @@
 public class PlayerInput
 {
     // Inputs
+    public Vector2 Aim;
     public float Horizontal;
     public float Vertical;
     public bool Impulse;
@@ -11,7 +12,7 @@ public class PlayerInput
     public bool Fire;
     public bool Bomb;
     public bool Barrier;
-    public bool Scanner;
+    public bool Barrage;
     public bool Pause;
 
     // Update is called once per frame
@@ -31,7 +32,7 @@ public class PlayerInput
         this.Fire = false;
         this.Bomb = false;
         this.Barrier = false;
-        this.Scanner = false;
+        this.Barrage = false;
         this.Pause = false;
     }
 
@@ -45,7 +46,7 @@ public class PlayerInput
         this.Fire = Input.GetButton("Fire");
         this.Bomb = Input.GetButton("Bomb");
         this.Barrier = Input.GetButton("Barrier");
-        this.Scanner = Input.GetButton("Scanner");
+        this.Barrage = Input.GetButton("Barrage");
         this.Pause = Input.GetButtonDown("Pause");
     }
 }

@@ -25,15 +25,15 @@ public class FriendlyShip : Ship
         this.MaxImpulseSpeed = 50f;
         this.MaxWarpSpeed = 150f;
         // Weapon stats
-        this.ShotDamage = 10f;
-        this.ShotSpeed = 10f;
-        this.ShotLifetime = 2.5f;
-        this.ShotCurvature = 0f;
+        this.GunShotDamage = 10f;
+        this.GunShotSpeed = 10f;
+        this.GunShotLifetime = 2.5f;
+        this.GunShotCurvature = 0f;
         // Cooldowns
         this.GunCooldownTime = 0.25f;
         this.BarrierCooldownTime = 10f;
         this.BombCooldownTime = 10f;
-        this.ScannerCooldownTime = 10f;
+        this.BarrageCooldownTime = 10f;
         // Energy cost
         this.WarpEnergyCost = 5f;
         this.GunEnergyCost = 5f;

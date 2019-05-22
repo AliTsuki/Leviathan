@@ -11,19 +11,19 @@ using UnityEngine.UI;
 public static class UIController
 {
     // GameObjects
-    private static GameObject MainMenuPrefab;
     private static GameObject MainMenu;
-    private static GameObject UIPrefab;
     private static GameObject UI;
     private static GameObject canvas;
     private static RectTransform rectTransform;
     private static GameObject PlayerUI;
     private static GameObject NPCUIPrefab;
     private static GameObject HealthbarUI;
+    private static GameObject MinimapCoords;
     private static TextMeshProUGUI InfoLabel;
     private static GameObject ShieldDamageEffect;
     private static GameObject HealthDamageEffect;
     private static GameObject GameOverScreen;
+    private static GameObject GameOverText;
 
     // Dictionary of Healthbar UIs
     private static Dictionary<uint, GameObject> HealthbarUIs = new Dictionary<uint, GameObject>();
@@ -41,19 +41,15 @@ public static class UIController
     private static string TimeString = "";
 
 
-    // Initialize is called before the first frame update
+    // Initialize
     public static void Initialize()
     {
-        // Instantiate main menu
-        MainMenuPrefab = Resources.Load<GameObject>(GameController.MainMenuPrefabName);
-        MainMenu = GameObject.Instantiate(MainMenuPrefab);
-        MainMenu.name = "Main Menu";
-        // Instantiate UI
-        UIPrefab = Resources.Load<GameObject>(GameController.UIPrefabName);
-        UI = GameObject.Instantiate(UIPrefab);
-        UI.name = "UI";
+        HealthbarUIs.Clear();
+        MainMenu = GameObject.Find(GameController.MainMenuName);
+        UI = GameObject.Find(GameController.UIName);
         canvas = GameObject.Find(GameController.CanvasName);
         rectTransform = canvas.GetComponent<RectTransform>();
+        MinimapCoords = GameObject.Find(GameController.MinimapCoordsName);
         InfoLabel = GameObject.Find(GameController.InfoLabelName).GetComponent<TextMeshProUGUI>();
         ShieldDamageEffect = GameObject.Find(GameController.ShieldDamageEffectName);
         ShieldDamageEffect.SetActive(false);
@@ -61,9 +57,9 @@ public static class UIController
         HealthDamageEffect.SetActive(false);
         GameOverScreen = GameObject.Find(GameController.GameOverScreenName);
         GameOverScreen.SetActive(false);
+        GameOverText = GameObject.Find(GameController.GameOverTextName);
         PlayerUI = GameObject.Find(GameController.PlayerUIName);
         NPCUIPrefab = Resources.Load<GameObject>(GameController.NPCUIPrefabName);
-        HealthbarUIs.Add(1, PlayerUI); // TODO: replace 1 with actual player ID
     }
 
     // Update is called once per frame
@@ -71,21 +67,30 @@ public static class UIController
     {
         if(GameController.CurrentGameState == GameController.GameState.MainMenu)
         {
-
+            ShowMainMenu();
         }
+        // If game state is playing
         else if(GameController.CurrentGameState == GameController.GameState.Playing)
         {
+            HideMainMenu();
+            if(HealthbarUIs.Count < 1)
+            {
+                HealthbarUIs.Add(1, PlayerUI); // TODO: replace 1 with actual player ID
+                HealthbarUIs[1].SetActive(true);
+            }
+            // Minimap coords
+            MinimapCoords.GetComponent<TextMeshProUGUI>().text = $@"X: {Mathf.RoundToInt(GameController.Player.ShipObject.transform.position.z)}{Environment.NewLine}Y: {Mathf.RoundToInt(GameController.Player.ShipObject.transform.position.x)}";
             // Add info to info label
             deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
             FPS = Mathf.FloorToInt(1.0f / deltaTime);
-            Seconds = Mathf.FloorToInt(Time.time % 60);
-            Minutes = Mathf.FloorToInt(Time.time / 60 % 60);
-            Hours = Mathf.FloorToInt(Time.time / 3600);
+            Seconds = Mathf.FloorToInt((Time.time - GameController.TimeStarted) % 60);
+            Minutes = Mathf.FloorToInt((Time.time - GameController.TimeStarted) / 60 % 60);
+            Hours = Mathf.FloorToInt((Time.time - GameController.TimeStarted) / 3600);
             TimeString = $@"{Hours}:{(Minutes < 10 ? "0" + Minutes.ToString() : Minutes.ToString())}:{(Seconds < 10 ? "0" + Seconds.ToString() : Seconds.ToString())}";
             InfoLabel.text = $@"FPS: {FPS}{Environment.NewLine}Timer: {TimeString}{Environment.NewLine}Score: {GameController.Score}";
-            // Get UIOffset again, in case user has changed screen size during play, subtract 60 relative pixels from y to have healthbar appear above ship
+            // Get UIOffset, subtract 60 relative pixels from y to have healthbar appear above ship
             UIOffset = new Vector2(rectTransform.sizeDelta.x / 2f, (rectTransform.sizeDelta.y / 2f) - 60);
-            // Loop through all ships to determine if healthbar UIs need to be added or moved
+            // Loop through all ships
             foreach(KeyValuePair<uint, Ship> ship in GameController.Ships)
             {
                 // If ship doesn't currently have a healthbar and is alive
@@ -106,50 +111,76 @@ public static class UIController
                 if(HealthbarUIs.ContainsKey(ship.Key) == true && ship.Value.Alive == true)
                 {
                     HealthbarUI = HealthbarUIs[ship.Key];
-                    // Set the position of the healthbar UI
-                    Vector2 ViewportPosition = Camera.main.WorldToViewportPoint(ship.Value.ShipObject.transform.position);
-                    Vector2 ProportionalPosition = new Vector2(ViewportPosition.x * rectTransform.sizeDelta.x, ViewportPosition.y * rectTransform.sizeDelta.y);
-                    // If ship is NPC
-                    if(ship.Value.IsPlayer == false)
+                    if(HealthbarUI != null)
                     {
-                        HealthbarUI.GetComponent<RectTransform>().localPosition = ProportionalPosition - UIOffset;
-                    }
-                    // Fill the healthbar relative to ship's health value
-                    Image ShieldbarFillImageBackground = HealthbarUI.transform.GetChild(0).GetChild(0).GetComponent<Image>();
-                    Image ShieldbarFillImage = HealthbarUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
-                    Image HealthbarFillImageBackground = HealthbarUI.transform.GetChild(0).GetChild(2).GetComponent<Image>();
-                    Image HealthbarFillImage = HealthbarUI.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Image>();
-                    ShieldbarFillImageBackground.fillAmount = 1 - (ship.Value.Shields / ship.Value.MaxShields);
-                    ShieldbarFillImage.fillAmount = ship.Value.Shields / ship.Value.MaxShields;
-                    HealthbarFillImageBackground.fillAmount = 1 - (ship.Value.Health / ship.Value.MaxHealth);
-                    HealthbarFillImage.fillAmount = ship.Value.Health / ship.Value.MaxHealth;
-                    // If health is below full
-                    if(HealthbarFillImage.fillAmount < 1 || ShieldbarFillImage.fillAmount < 1)
-                    {
-                        // Show healthbar
-                        HealthbarUI.SetActive(true);
-                    }
-                    // If ship is player
-                    if(ship.Value.IsPlayer)
-                    {
-                        HealthbarUI.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = ship.Value.Energy / ship.Value.MaxEnergy;
-                        if(ship.Value.BombOnCooldown == true)
+                        // Set the position of the healthbar UI
+                        Vector2 ViewportPosition = Camera.main.WorldToViewportPoint(ship.Value.ShipObject.transform.position);
+                        Vector2 ProportionalPosition = new Vector2(ViewportPosition.x * rectTransform.sizeDelta.x, ViewportPosition.y * rectTransform.sizeDelta.y);
+                        // If ship is NPC
+                        if(ship.Value.IsPlayer == false)
                         {
-                            HealthbarUI.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
-                            HealthbarUI.transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastBombActivatedTime) / ship.Value.BombCooldownTime);
+                            // Move healthbar to appear where ship appears on the screen
+                            HealthbarUI.GetComponent<RectTransform>().localPosition = ProportionalPosition - UIOffset;
                         }
-                        else
+                        // Fill the healthbar relative to ship's health value
+                        Image ShieldbarFillImageBackground = HealthbarUI.transform.GetChild(0).GetChild(0).GetComponent<Image>();
+                        Image ShieldbarFillImage = HealthbarUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
+                        Image HealthbarFillImageBackground = HealthbarUI.transform.GetChild(0).GetChild(2).GetComponent<Image>();
+                        Image HealthbarFillImage = HealthbarUI.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Image>();
+                        ShieldbarFillImageBackground.fillAmount = 1 - (ship.Value.Shields / ship.Value.MaxShields);
+                        ShieldbarFillImage.fillAmount = ship.Value.Shields / ship.Value.MaxShields;
+                        HealthbarFillImageBackground.fillAmount = 1 - (ship.Value.Health / ship.Value.MaxHealth);
+                        HealthbarFillImage.fillAmount = ship.Value.Health / ship.Value.MaxHealth;
+                        // If health is below full
+                        if(HealthbarFillImage.fillAmount < 1 || ShieldbarFillImage.fillAmount < 1)
                         {
-                            HealthbarUI.transform.GetChild(2).GetComponent<Image>().fillAmount = 1;
+                            // Show healthbar
+                            HealthbarUI.SetActive(true);
                         }
-                        if(ship.Value.BarrierOnCooldown == true || ship.Value.BarrierActive)
+                        // If ship is player
+                        if(ship.Value.IsPlayer)
                         {
-                            HealthbarUI.transform.GetChild(3).GetComponent<Image>().fillAmount = 0;
-                            HealthbarUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastBarrierCooldownStartedTime) / ship.Value.BarrierCooldownTime);
-                        }
-                        else
-                        {
-                            HealthbarUI.transform.GetChild(3).GetComponent<Image>().fillAmount = 1;
+                            // Fill energy bar accordingly
+                            HealthbarUI.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = ship.Value.Energy / ship.Value.MaxEnergy;
+                            // If barrier is on cooldown or currently active
+                            if(ship.Value.BarrierOnCooldown == true || ship.Value.BarrierActive == true)
+                            {
+                                // Fill barrier cooldown meter accordingly
+                                HealthbarUI.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
+                                HealthbarUI.transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastBarrierCooldownStartedTime) / ship.Value.BarrierCooldownTime);
+                            }
+                            // If barrier is not on cooldown
+                            else
+                            {
+                                // Fill barrier cooldown meter accordingly
+                                HealthbarUI.transform.GetChild(2).GetComponent<Image>().fillAmount = 1;
+                            }
+                            // If barrage is on cooldown
+                            if(ship.Value.BarrageOnCooldown == true || ship.Value.BarrageActive == true)
+                            {
+                                // Fill barrage cooldown meter accordingly
+                                HealthbarUI.transform.GetChild(3).GetComponent<Image>().fillAmount = 0;
+                                HealthbarUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastBarrageActivatedTime) / ship.Value.BarrageCooldownTime);
+                            }
+                            // If barrage is not on cooldown
+                            else
+                            {
+                                // Fill barrage cooldown meter accordingly
+                                HealthbarUI.transform.GetChild(3).GetComponent<Image>().fillAmount = 1;
+                            }
+                            // If bomb is on cooldown
+                            if(ship.Value.BombOnCooldown == true)
+                            {
+                                // Fill bomb cooldown meter accordingly
+                                HealthbarUI.transform.GetChild(4).GetComponent<Image>().fillAmount = 0;
+                                HealthbarUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastBombActivatedTime) / ship.Value.BombCooldownTime);
+                            }
+                            // If bomb is not on cooldown
+                            else
+                            {
+                                // Fill bomb cooldown meter accordingly
+                                HealthbarUI.transform.GetChild(4).GetComponent<Image>().fillAmount = 1;
+                            }
                         }
                     }
                 }
@@ -159,25 +190,37 @@ public static class UIController
                     RemoveHealthbar(ship.Key);
                 }
             }
+            // If shield damage vignette effect is currently active and either it has been longer than the effect duration specified or the health damage vignette effect is on
             if(ShieldDamageEffect.activeSelf == true && (Time.time - ShieldDamageEffectStartTime > ShowDamageEffectDuration || HealthDamageEffect.activeSelf == true))
             {
+                // Turn off shield damage vignette
                 ShieldDamageEffect.SetActive(false);
             }
+            // If health damage vignette effect is currently active and it has been longer than the effect duration specified
             if(HealthDamageEffect.activeSelf == true && Time.time - HealthDamageEffectStartTime > ShowDamageEffectDuration)
             {
+                // Turn off health damage vignette
                 HealthDamageEffect.SetActive(false);
             }
         }
+        // If game state is paused
         else if(GameController.CurrentGameState == GameController.GameState.Paused)
         {
-
+            // TODO: Fill this in
         }
     }
 
     // Remove Healthbar
     public static void RemoveHealthbar(uint _id)
     {
-        GameObject.Destroy(HealthbarUIs[_id]);
+        if(_id != 1)
+        {
+            GameObject.Destroy(HealthbarUIs[_id]);
+        }
+        else
+        {
+            HealthbarUIs[_id].SetActive(false);
+        }
         HealthbarUIs.Remove(_id);
     }
 
@@ -198,14 +241,14 @@ public static class UIController
     // Game over screen
     public static void GameOver()
     {
-        GameOverScreen.GetComponent<TextMeshProUGUI>().text = $@"GAME OVER{Environment.NewLine}{Environment.NewLine}TIME: {TimeString}{Environment.NewLine}SCORE: {GameController.Score}";
         GameOverScreen.SetActive(true);
+        GameOverText = GameObject.Find(GameController.GameOverTextName);
+        GameOverText.GetComponent<TextMeshProUGUI>().text = $@"GAME OVER{Environment.NewLine}{Environment.NewLine}TIME: {TimeString}{Environment.NewLine}SCORE: {GameController.Score}";
     }
 
     // Show main menu screen
     public static void ShowMainMenu()
     {
-        
         MainMenu.SetActive(true);
         HideUI();
     }
@@ -227,5 +270,16 @@ public static class UIController
     public static void HideUI()
     {
         UI.SetActive(false);
+    }
+
+    // Restart
+    public static void Restart()
+    {
+        GameOverScreen.SetActive(false);
+        foreach(KeyValuePair<uint, GameObject> healthbarui in HealthbarUIs)
+        {
+            GameObject.Destroy(healthbarui.Value);
+        }
+        HealthbarUIs.Clear();
     }
 }
