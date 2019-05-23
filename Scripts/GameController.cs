@@ -5,6 +5,7 @@ using UnityEngine;
 // GENERAL STUFF TO DO
 // TODO: Add a main menu with a new game button, a load game button, a settings button to configure inputs and maybe graphics, and a quit button
 // TODO: Add a game state, (MainMenu, Playing, Paused, etc) and change GameController.Update to depend on game state
+// TODO: Add object pooling
 // TODO: Add an inventory system for player and update player stats based on what inventory is equipped
 // TODO: Add different player ship types to pick at beginning of game
 // TODO: Add more enemy types and behaviours
@@ -21,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.9a";
+    public static string Version = "0.0.9b";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject CamerasPrefab;
@@ -104,6 +105,7 @@ public static class GameController
     // Initialize is called before the first frame update
     public static void Initialize()
     {
+        Logger.Initialize();
         CurrentGameState = GameState.MainMenu;
         UIController.Initialize();
         InitializeCamera();
@@ -134,6 +136,7 @@ public static class GameController
         {
             //UIController.ShowPauseMenu();
         }
+        Logger.Update();
     }
 
     // Fixed Update is called a fixed number of times per second, Physics updates should be done in FixedUpdate
@@ -152,7 +155,7 @@ public static class GameController
     // On application quit
     public static void OnApplicationQuit()
     {
-
+        Logger.OnApplicationQuit();
     }
 
     // On restart
