@@ -8,15 +8,17 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: EnemyShipMaterial2
-  m_Shader: {fileID: -6465566751694194690, guid: 56baa582e82749b4a86b5f8f5a6a5ad0,
+  m_Shader: {fileID: -6465566751694194690, guid: 8f36b37f15ca23e4e9a004c80943c224,
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
+  stringTagMap:
+    MotionVector: User
+  disabledShaderPasses:
+  - MOTIONVECTORS
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -193,7 +195,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture2D:
-        m_Texture: {fileID: 2800000, guid: 8d0db8186037d8040bdfde9abf18ef91, type: 3}
+        m_Texture: {fileID: 2800000, guid: c26aeb784800809469694df916001d29, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ThicknessMap:
@@ -303,7 +305,7 @@ Material:
     - _MaterialID: 1
     - _MaterialTilingU: 1
     - _MaterialTilingV: 1
-    - _Metallic: 0
+    - _Metallic: 0.5
     - _Mode: 0
     - _NormalMapSpace: 0
     - _NormalScale: 1

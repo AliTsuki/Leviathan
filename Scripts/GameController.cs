@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using Cinemachine;
-
 using UnityEngine;
 
 // GENERAL STUFF TO DO
@@ -10,6 +8,7 @@ using UnityEngine;
 // TODO: Add an inventory system for player and update player stats based on what inventory is equipped
 // TODO: Add different player ship types to pick at beginning of game
 // TODO: Add more enemy types and behaviours
+// TODO: Set up a field for how many guns a ship has, then during initialization loop through that amount and find all gun barrel objects instead of hardcoding it
 // TODO: Add more projectile types and behaviours
 // TODO: Add new backgrounds/areas, make maybe a map system, it loads the background specified in maybe a csv *shrug* map it out in excel
 // TODO: Add enemy type based on which background tile it is generated on
@@ -22,12 +21,11 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.8b";
+    public static string Version = "0.0.9a";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject CamerasPrefab;
     private static GameObject Cameras;
-    private static CinemachineVirtualCamera FollowCamera;
     public static System.Random r = new System.Random();
 
     // Entity Lists and Dicts
@@ -128,6 +126,7 @@ public static class GameController
             }
             ProcessShipUpdate();
             EnemySpawnUpdate();
+            FollowCamera();
             Background.Update();
             UIController.Update();
         }
@@ -186,15 +185,14 @@ public static class GameController
         Cameras.name = "Cameras";
     }
 
-    // Initialize follow camera
-    private static void InitializeFollowCamera()
+    // Set up follow camera
+    private static void FollowCamera()
     {
         // If player has been instantiated
         if(Player != null)
         {
             // Set up follow camera
-            FollowCamera = GameObject.Find(FollowCameraName).GetComponent<CinemachineVirtualCamera>();
-            FollowCamera.Follow = Player.ShipObject.transform;
+            Cameras.transform.position = Player.ShipObject.transform.position + new Vector3(0, 120, 0);
         }
     }
 
@@ -212,7 +210,7 @@ public static class GameController
         Score = 0;
         // Initialize player, follow camera, and backgrounds
         SpawnPlayer();
-        InitializeFollowCamera();
+        FollowCamera();
         Background.Initialize();
     }
 

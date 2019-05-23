@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3498280909668489529}
   - component: {fileID: 1148044715918734689}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gun Barrel 5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c8e6469972eab0c4d91ab064e163c404, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 7924d514e6a495e46a4908b3be712339, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -138,7 +138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5864204216501443721}
   - component: {fileID: 3594629131220711827}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gun Barrel 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -170,7 +170,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c8e6469972eab0c4d91ab064e163c404, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 7924d514e6a495e46a4908b3be712339, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -266,7 +266,7 @@ GameObject:
   m_Component:
   - component: {fileID: 394799513983414886}
   - component: {fileID: 7144437904855153097}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gun Barrel 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -298,7 +298,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c8e6469972eab0c4d91ab064e163c404, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 7924d514e6a495e46a4908b3be712339, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -395,7 +395,7 @@ GameObject:
   - component: {fileID: 4649427020848467551}
   - component: {fileID: 5028492170562249012}
   - component: {fileID: 6840376513759489990}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gun Barrel Lights 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -498,7 +498,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1531722945506796421}
   - component: {fileID: 7252539820121364594}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gun Barrel 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -530,7 +530,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c8e6469972eab0c4d91ab064e163c404, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 7924d514e6a495e46a4908b3be712339, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -626,7 +626,7 @@ GameObject:
   m_Component:
   - component: {fileID: 114733986018019855}
   - component: {fileID: 3974761010547527743}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gun Barrel 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -658,7 +658,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c8e6469972eab0c4d91ab064e163c404, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 7924d514e6a495e46a4908b3be712339, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -759,7 +759,9 @@ GameObject:
   - component: {fileID: 4954519881787142557}
   - component: {fileID: 4969320820762179239}
   - component: {fileID: 8294796431542753807}
-  m_Layer: 10
+  - component: {fileID: 1340985310503395276}
+  - component: {fileID: 4017285480282181700}
+  m_Layer: 0
   m_Name: Impulse Engine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -791,7 +793,7 @@ Light:
   serializedVersion: 9
   m_Type: 2
   m_Color: {r: 1, g: 0, b: 0.036886215, a: 1}
-  m_Intensity: 10
+  m_Intensity: 47.746483
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -831,7 +833,7 @@ Light:
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
   m_Lightmapping: 4
-  m_LightShadowCasterMode: 0
+  m_LightShadowCasterMode: 2
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 0
   m_ColorTemperature: 6570
@@ -5528,7 +5530,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5bcec8967a229e048a1d093c3a1784ba, type: 2}
+  - {fileID: 2100000, guid: 60f463ba9d6be0d4f88eb43a2481df1a, type: 2}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -5537,6 +5539,7 @@ ParticleSystemRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -5590,7 +5593,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 774d8966d7f992a4c97d7ab1a92a43d6, type: 2}
+  - {fileID: 2100000, guid: 757db30663856ef419b627bf3ce57f7a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5598,6 +5601,7 @@ TrailRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -5686,7 +5690,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 63dc28f1328e2d245bdf006d3f5309be, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 5cbc45f56ee7aff409d22f2e58b1b8a5, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -5772,6 +5776,109 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1340985310503395276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3776529483803292958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 4
+  m_Version: 4
+  directionalIntensity: 3.1415927
+  punctualIntensity: 600
+  areaIntensity: 200
+  enableSpotReflector: 0
+  luxAtDistance: 1
+  m_InnerSpotPercent: 0
+  lightDimmer: 1
+  m_VolumetricDimmer: 1
+  lightUnit: 0
+  sunDiskSize: 1
+  sunHaloSize: 0.1
+  fadeDistance: 10000
+  affectDiffuse: 1
+  affectSpecular: 1
+  nonLightmappedOnly: 0
+  lightTypeExtent: 0
+  m_SpotLightShape: 0
+  shapeWidth: 0.5
+  shapeHeight: 0.5
+  aspectRatio: 1
+  shapeRadius: 0
+  maxSmoothness: 0.99
+  applyRangeAttenuation: 1
+  useOldInspector: 0
+  useVolumetric: 1
+  featuresFoldout: 1
+  showAdditionalSettings: 0
+  displayLightIntensity: 600
+  displayAreaLightEmissiveMesh: 0
+  areaLightCookie: {fileID: 0}
+  areaLightShadowCone: 120
+  evsmExponent: 15
+  evsmLightLeakBias: 0
+  evsmVarianceBias: 0.00001
+  evsmBlurPasses: 0
+  lightLayers: 1
+  shadowNearPlane: 0.1
+  shadowSoftness: 0.5
+  blockerSampleCount: 24
+  filterSampleCount: 16
+  minFilterSize: 0.00001
+  kernelSize: 5
+  lightAngle: 1
+  maxDepthBias: 0.001
+--- !u!114 &4017285480282181700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3776529483803292958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6c2871f720b2af4e9210febdac74517, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 1
+  shadowResolution: 512
+  shadowDimmer: 1
+  volumetricShadowDimmer: 1
+  shadowFadeDistance: 10000
+  contactShadows: 0
+  viewBiasMin: 0.2
+  viewBiasMax: 100
+  viewBiasScale: 1
+  normalBiasMin: 0.5
+  normalBiasMax: 0.5
+  normalBiasScale: 1
+  sampleBiasScale: 0
+  edgeLeakFixup: 1
+  edgeToleranceNormal: 1
+  edgeTolerance: 1
+  shadowCascadeCount: 4
+  shadowCascadeRatios:
+  - 0.05
+  - 0.2
+  - 0.3
+  shadowCascadeBorders:
+  - 0.2
+  - 0.2
+  - 0.2
+  - 0.2
+  shadowAlgorithm: 0
+  shadowVariant: 0
+  shadowPrecision: 0
+  shadowData:
+    format: 0
+    data: 
+  shadowDatas: []
 --- !u!1 &4558097025685463320
 GameObject:
   m_ObjectHideFlags: 0
@@ -5782,7 +5889,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1275820398957141069}
   - component: {fileID: 2167214013519112338}
-  m_Layer: 11
+  m_Layer: 9
   m_Name: Minimap Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5828,6 +5935,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -5840,7 +5948,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a902d47738698bd49bc2af34f772dd72, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 79d00d141dd68ed4a9e13a0545ad16f3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -5862,7 +5970,7 @@ GameObject:
   - component: {fileID: 5361663829411592237}
   - component: {fileID: 5147796520021113537}
   - component: {fileID: 3323309449775559592}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gun Barrel Lights 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5966,7 +6074,7 @@ GameObject:
   - component: {fileID: 4698066624644989253}
   - component: {fileID: 6339576640827823826}
   - component: {fileID: 1160077098892206038}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gun Barrel Lights 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6071,7 +6179,7 @@ GameObject:
   - component: {fileID: 5813804151899998267}
   - component: {fileID: 2582882621887772707}
   - component: {fileID: 8101629030045465483}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Warp Engine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10768,7 +10876,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 06816cc48158e1240b1422127147e960, type: 2}
+  - {fileID: 2100000, guid: 701b439b98bd247458cafeb3cea3519a, type: 2}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -10777,6 +10885,7 @@ ParticleSystemRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -10822,7 +10931,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: ebc9b972cdd99ab4ca9a746b8a34bdae, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 83e10f2a9abbc16499fcdd4576a20812, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -10918,7 +11027,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3773787290300407016}
   - component: {fileID: 424400620471135351}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gun Barrel 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10950,7 +11059,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c8e6469972eab0c4d91ab064e163c404, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 7924d514e6a495e46a4908b3be712339, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -11084,7 +11193,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6806985013796802950}
-  m_Mesh: {fileID: -5495902117074765545, guid: 1dd4583bf28d48f4e805f9bd636191f4, type: 3}
+  m_Mesh: {fileID: -5495902117074765545, guid: fe17554e5dff3264bb47a306700ba693, type: 3}
 --- !u!23 &2755176497069203270
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11102,7 +11211,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1376d5979a853864496af5c93c127f16, type: 2}
+  - {fileID: 2100000, guid: 2ec229f49a839044f84a35aea2929870, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11110,6 +11219,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -11133,7 +11243,7 @@ GameObject:
   - component: {fileID: 698668904898712806}
   - component: {fileID: 4510726450377995765}
   - component: {fileID: 5893725455443978408}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gun Barrel Lights 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11237,7 +11347,9 @@ GameObject:
   - component: {fileID: 5612980628109467003}
   - component: {fileID: 8264720919417226560}
   - component: {fileID: 3321853494305111642}
-  m_Layer: 10
+  - component: {fileID: 3680906770838589194}
+  - component: {fileID: 1080306963895269555}
+  m_Layer: 0
   m_Name: Gun Barrel Lights 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11269,7 +11381,7 @@ Light:
   serializedVersion: 9
   m_Type: 2
   m_Color: {r: 0.43867922, g: 1, b: 0.97308695, a: 1}
-  m_Intensity: 10
+  m_Intensity: 47.746483
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -11309,7 +11421,7 @@ Light:
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
   m_Lightmapping: 4
-  m_LightShadowCasterMode: 0
+  m_LightShadowCasterMode: 2
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 0
   m_ColorTemperature: 6570
@@ -11330,6 +11442,109 @@ Halo:
     serializedVersion: 2
     rgba: 4294573871
   m_Size: 5
+--- !u!114 &3680906770838589194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7840042097509775314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 4
+  m_Version: 4
+  directionalIntensity: 3.1415927
+  punctualIntensity: 600
+  areaIntensity: 200
+  enableSpotReflector: 0
+  luxAtDistance: 1
+  m_InnerSpotPercent: 0
+  lightDimmer: 1
+  m_VolumetricDimmer: 1
+  lightUnit: 0
+  sunDiskSize: 1
+  sunHaloSize: 0.1
+  fadeDistance: 10000
+  affectDiffuse: 1
+  affectSpecular: 1
+  nonLightmappedOnly: 0
+  lightTypeExtent: 0
+  m_SpotLightShape: 0
+  shapeWidth: 0.5
+  shapeHeight: 0.5
+  aspectRatio: 1
+  shapeRadius: 0
+  maxSmoothness: 0.99
+  applyRangeAttenuation: 1
+  useOldInspector: 0
+  useVolumetric: 1
+  featuresFoldout: 1
+  showAdditionalSettings: 0
+  displayLightIntensity: 600
+  displayAreaLightEmissiveMesh: 0
+  areaLightCookie: {fileID: 0}
+  areaLightShadowCone: 120
+  evsmExponent: 15
+  evsmLightLeakBias: 0
+  evsmVarianceBias: 0.00001
+  evsmBlurPasses: 0
+  lightLayers: 1
+  shadowNearPlane: 0.1
+  shadowSoftness: 0.5
+  blockerSampleCount: 24
+  filterSampleCount: 16
+  minFilterSize: 0.00001
+  kernelSize: 5
+  lightAngle: 1
+  maxDepthBias: 0.001
+--- !u!114 &1080306963895269555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7840042097509775314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6c2871f720b2af4e9210febdac74517, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 1
+  shadowResolution: 512
+  shadowDimmer: 1
+  volumetricShadowDimmer: 1
+  shadowFadeDistance: 10000
+  contactShadows: 0
+  viewBiasMin: 0.2
+  viewBiasMax: 100
+  viewBiasScale: 1
+  normalBiasMin: 0.5
+  normalBiasMax: 0.5
+  normalBiasScale: 1
+  sampleBiasScale: 0
+  edgeLeakFixup: 1
+  edgeToleranceNormal: 1
+  edgeTolerance: 1
+  shadowCascadeCount: 4
+  shadowCascadeRatios:
+  - 0.05
+  - 0.2
+  - 0.3
+  shadowCascadeBorders:
+  - 0.2
+  - 0.2
+  - 0.2
+  - 0.2
+  shadowAlgorithm: 0
+  shadowVariant: 0
+  shadowPrecision: 0
+  shadowData:
+    format: 0
+    data: 
+  shadowDatas: []
 --- !u!1 &8063054273621893924
 GameObject:
   m_ObjectHideFlags: 0
@@ -11342,7 +11557,7 @@ GameObject:
   - component: {fileID: 1399772069510597820}
   - component: {fileID: 1786949690388809592}
   - component: {fileID: 387290640238767417}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Enemy Ship 2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -11403,7 +11618,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8063054273621893924}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be72676091332ca44bc2c920b68b390f, type: 3}
+  m_Script: {fileID: 11500000, guid: 6eb2d09c1485f0f4fbcefd9dfb5bd03a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8456029168330841593
@@ -11417,7 +11632,7 @@ GameObject:
   - component: {fileID: 9134157547766979553}
   - component: {fileID: 3329572933565749403}
   - component: {fileID: 5803910129104448992}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Gun Barrel Lights 5
   m_TagString: Untagged
   m_Icon: {fileID: 0}

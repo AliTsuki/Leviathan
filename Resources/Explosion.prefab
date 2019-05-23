@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3816234427471831652}
   - component: {fileID: 1840343484375702951}
   - component: {fileID: 4900841819241018147}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Shrapnel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4709,7 +4709,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 56f249afeb3713040afe3f3158675b1a, type: 2}
+  - {fileID: 2100000, guid: 7666370f4f865e24f97e029d6fdc3733, type: 2}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -4718,6 +4718,7 @@ ParticleSystemRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -4765,7 +4766,7 @@ GameObject:
   - component: {fileID: 674684342945683687}
   - component: {fileID: 7153608924899686072}
   - component: {fileID: 1871086821608740584}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9463,7 +9464,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 08cc040a7cfd37e40b05dd2ddb055af6, type: 2}
+  - {fileID: 2100000, guid: 2f6b85fc3dfed4245ae604e53118108b, type: 2}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -9472,6 +9473,7 @@ ParticleSystemRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -9517,7 +9519,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 61aa8a203eafbb24f8504ba4aa5f9564, type: 3}
+  m_audioClip: {fileID: 8300000, guid: b1dfd26a11b8ee244ad79d5f457d8082, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -9614,7 +9616,7 @@ GameObject:
   - component: {fileID: 4279032268709228192}
   - component: {fileID: 2149340865356646262}
   - component: {fileID: 3958957112302587668}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Shrapnel Flames
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14311,7 +14313,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 56f249afeb3713040afe3f3158675b1a, type: 2}
+  - {fileID: 2100000, guid: 7666370f4f865e24f97e029d6fdc3733, type: 2}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -14320,6 +14322,7 @@ ParticleSystemRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

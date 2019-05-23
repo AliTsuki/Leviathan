@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 674684342945683687}
   - component: {fileID: 7153608924899686072}
   - component: {fileID: 1871086821608740584}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Bomb Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4709,7 +4709,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 649fb1fdf83ae0944a48146dad9cd8ef, type: 2}
+  - {fileID: 2100000, guid: 3b61f44bf48ffa147a3480cfed208fcc, type: 2}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -4718,6 +4718,7 @@ ParticleSystemRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -4763,7 +4764,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 61aa8a203eafbb24f8504ba4aa5f9564, type: 3}
+  m_audioClip: {fileID: 8300000, guid: b1dfd26a11b8ee244ad79d5f457d8082, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

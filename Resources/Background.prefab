@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2201643655324949847}
   - component: {fileID: 2201643655324949845}
   - component: {fileID: 2201643655324949846}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Space Fog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -57,7 +57,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9a59453a26422734195c9689b24df3cf, type: 2}
+  - {fileID: 2100000, guid: 1ca04ece93b53194988786181e9db7e8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -65,6 +65,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -88,7 +89,7 @@ GameObject:
   - component: {fileID: 2201643655364522307}
   - component: {fileID: 2201643655364522308}
   - component: {fileID: 2201643655364522309}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Starfield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,7 +135,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5706bd3b400923c40a7c69ffbd80f59b, type: 2}
+  - {fileID: 2100000, guid: 1fbf5db898577d945850f7de9315b2fd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -142,6 +143,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -163,7 +165,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2201643655749763958}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Background
   m_TagString: Background
   m_Icon: {fileID: 0}

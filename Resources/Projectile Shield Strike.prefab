@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 674684342945683687}
   - component: {fileID: 7153608924899686072}
   - component: {fileID: 5068650924495867792}
-  m_Layer: 10
-  m_Name: ProjectileShieldStrike
+  m_Layer: 0
+  m_Name: Projectile Shield Strike
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4709,7 +4709,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ae55524eb5a6a454fa1e2906d6cc4db9, type: 2}
+  - {fileID: 2100000, guid: 06a9fc55079f73e478420b2e831388f1, type: 2}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -4718,6 +4718,7 @@ ParticleSystemRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -4763,7 +4764,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: e89fba58b96ab02419d40f6ec69f22b4, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 19f4f11ae36c9c04c9355225864880b0, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
