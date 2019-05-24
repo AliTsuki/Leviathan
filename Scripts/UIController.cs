@@ -160,7 +160,7 @@ public static class UIController
                             {
                                 // Fill barrage cooldown meter accordingly
                                 HealthbarUI.transform.GetChild(3).GetComponent<Image>().fillAmount = 0;
-                                HealthbarUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastBarrageActivatedTime) / ship.Value.BarrageCooldownTime);
+                                HealthbarUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastBarrageCooldownStartedTime) / ship.Value.BarrageCooldownTime);
                             }
                             // If barrage is not on cooldown
                             else

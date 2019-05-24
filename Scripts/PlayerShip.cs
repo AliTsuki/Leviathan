@@ -50,8 +50,8 @@ public class PlayerShip : Ship
         this.GunShotCurvature = 0.05f;
         this.GunShotDamage = 30f;
         this.GunShotAccuracy = 99f;
-        this.GunShotSpeed = 75f;
-        this.GunShotLifetime = 1f;
+        this.GunShotSpeed = 80f;
+        this.GunShotLifetime = 2f;
         // ----Bombs
         this.BombCurvature = 0f;
         this.BombDamage = 120f;

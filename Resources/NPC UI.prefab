@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5746445340345618224
 RectTransform:
   m_ObjectHideFlags: 0
@@ -55,7 +55,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6437546815431730919}
   - component: {fileID: 4598751106343909097}
-  - component: {fileID: 8627898879168725535}
+  - component: {fileID: 2380571506577552654}
   m_Layer: 5
   m_Name: Shield Bar Background
   m_TagString: Untagged
@@ -91,7 +91,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3464171082190003976}
   m_CullTransparentMesh: 1
---- !u!114 &8627898879168725535
+--- !u!114 &2380571506577552654
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,25 +100,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 3464171082190003976}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.4716981, g: 0.13279644, b: 0, a: 1}
-  m_RaycastTarget: 0
+  m_Color: {r: 0.65882355, g: 0.31931657, b: 0, a: 1}
+  m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, Unity.ugui,
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: be997e8e83b8e9a4b982963d47e0daa3, type: 3}
-  m_Type: 3
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 0
-  m_FillAmount: 0
+  m_FillMethod: 4
+  m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 1
+  m_FillOrigin: 0
   m_UseSpriteMesh: 0
 --- !u!1 &5040768963844942211
 GameObject:
@@ -130,7 +130,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5242261123613570186}
   - component: {fileID: 8792203512500651760}
-  - component: {fileID: 4108450329856745856}
+  - component: {fileID: 2496347540922607324}
   m_Layer: 5
   m_Name: Shield Bar Foreground
   m_TagString: Untagged
@@ -165,7 +165,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5040768963844942211}
   m_CullTransparentMesh: 1
---- !u!114 &4108450329856745856
+--- !u!114 &2496347540922607324
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,16 +174,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 5040768963844942211}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.1462264, g: 0.6417497, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_Color: {r: 0, g: 0.55484986, b: 1, a: 1}
+  m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, Unity.ugui,
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: be997e8e83b8e9a4b982963d47e0daa3, type: 3}
   m_Type: 3
@@ -204,7 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 263485348384521766}
   - component: {fileID: 406240996270899379}
-  - component: {fileID: 6967814536756543449}
+  - component: {fileID: 3816301033152693141}
   m_Layer: 5
   m_Name: Health Bar Background
   m_TagString: Untagged
@@ -240,7 +240,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6148022588304589349}
   m_CullTransparentMesh: 1
---- !u!114 &6967814536756543449
+--- !u!114 &3816301033152693141
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -249,25 +249,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 6148022588304589349}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7735849, g: 0, b: 0.031151412, a: 1}
-  m_RaycastTarget: 0
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, Unity.ugui,
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: be997e8e83b8e9a4b982963d47e0daa3, type: 3}
-  m_Type: 3
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 0
-  m_FillAmount: 0
+  m_FillMethod: 4
+  m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 1
+  m_FillOrigin: 0
   m_UseSpriteMesh: 0
 --- !u!1 &6403414929952768449
 GameObject:
@@ -279,7 +279,7 @@ GameObject:
   m_Component:
   - component: {fileID: 698567545014722883}
   - component: {fileID: 1705141118070305133}
-  - component: {fileID: 987393666486429570}
+  - component: {fileID: 5442981195139922590}
   m_Layer: 5
   m_Name: Health Bar Border
   m_TagString: Untagged
@@ -317,7 +317,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6403414929952768449}
   m_CullTransparentMesh: 1
---- !u!114 &987393666486429570
+--- !u!114 &5442981195139922590
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -326,16 +326,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 6403414929952768449}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, Unity.ugui,
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: be997e8e83b8e9a4b982963d47e0daa3, type: 3}
   m_Type: 0
@@ -356,7 +356,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5799695951948905875}
   - component: {fileID: 5880296403214438742}
-  - component: {fileID: 6491628082725902444}
+  - component: {fileID: 6239258440772932455}
   m_Layer: 5
   m_Name: Shield/Health Margin Border
   m_TagString: Untagged
@@ -391,7 +391,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7195054776702127679}
   m_CullTransparentMesh: 1
---- !u!114 &6491628082725902444
+--- !u!114 &6239258440772932455
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -400,16 +400,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 7195054776702127679}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, Unity.ugui,
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: be997e8e83b8e9a4b982963d47e0daa3, type: 3}
   m_Type: 0
@@ -430,7 +430,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5859876773039982820}
   - component: {fileID: 3132502104495991014}
-  - component: {fileID: 9079886750040948904}
+  - component: {fileID: 654314936194418265}
   m_Layer: 5
   m_Name: Health Bar Foreground
   m_TagString: Untagged
@@ -465,7 +465,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7746613943671881101}
   m_CullTransparentMesh: 1
---- !u!114 &9079886750040948904
+--- !u!114 &654314936194418265
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -474,16 +474,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 7746613943671881101}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.3679245, b: 0.050037704, a: 1}
-  m_RaycastTarget: 0
+  m_Color: {r: 0, g: 0.754717, b: 0.0140584195, a: 1}
+  m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, Unity.ugui,
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: be997e8e83b8e9a4b982963d47e0daa3, type: 3}
   m_Type: 3
