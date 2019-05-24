@@ -14,6 +14,7 @@ public class PlayerShip : Ship
     public PlayerShip(uint _id)
     {
         this.ID = _id;
+        // TODO: Change starting position to be last home zone saved to
         this.StartingPosition = new Vector3(0, 0, 0);
         this.IFF = GameController.IFF.Friend;
         this.IsPlayer = true;
@@ -34,6 +35,7 @@ public class PlayerShip : Ship
         this.GunEnergyCost = 17f;
         this.BarrierEnergyDrainCost = 10f;
         // --Acceleration
+        this.EngineCount = 1;
         this.ImpulseAcceleration = 100f;
         this.WarpAccelerationMultiplier = 3f;
         this.StrafeAcceleration = 0f;
@@ -44,6 +46,7 @@ public class PlayerShip : Ship
         this.MaxRotationSpeed = 0.1f;
         // --Weapon stats
         // ----Main gun
+        this.GunBarrelCount = 1;
         this.GunShotProjectileType = 5;
         this.GunCooldownTime = 0.25f;
         this.GunShotAmount = 1;
@@ -56,15 +59,15 @@ public class PlayerShip : Ship
         this.BombCurvature = 0f;
         this.BombDamage = 120f;
         this.BombRadius = 35f;
-        this.BombSpeed = 30f;
+        this.BombSpeed = 35f;
         this.BombLiftime = 3f;
         this.BombPrimerTime = 0.25f;
         // ----Barrage
         this.BarrageGunCooldownTimeMultiplier = 0.5f;
         this.BarrageShotAmountIncrease = 1;
-        this.BarrageDamageMultiplier = 0.70f;
-        this.BarrageAccuracyMultiplier = 0.70f;
-        this.BarrageEnergyCostMultiplier = 0.70f;
+        this.BarrageDamageMultiplier = 0.7f;
+        this.BarrageAccuracyMultiplier = 0.7f;
+        this.BarrageEnergyCostMultiplier = 0.7f;
         // --Cooldowns
         this.ShieldCooldownTime = 3f;
         this.BarrierDuration = 5f;
@@ -123,8 +126,9 @@ public class PlayerShip : Ship
         // If bomb input is active, bomb is not on cooldown, and there is no bomb in flight
         if(this.BombInput == true && this.BombOnCooldown == false && this.BombInFlight == false)
         {
+            // TODO: Now that a ship can have more than one main gun, need to think of something better than just having bomb use the 0th gun barrel location/rotation
             // Spawn a bomb
-            this.bomb = GameController.SpawnBomb(this, this.IFF, this.BombCurvature, this.BombDamage, this.BombRadius, this.GunBarrelObject.transform.position, this.GunBarrelObject.transform.rotation, this.ShipRigidbody.velocity, this.BombSpeed, this.BombLiftime);
+            this.bomb = GameController.SpawnBomb(this, this.IFF, this.BombCurvature, this.BombDamage, this.BombRadius, this.GunBarrelObjects[0].transform.position, this.GunBarrelObjects[0].transform.rotation, this.ShipRigidbody.velocity, this.BombSpeed, this.BombLiftime);
             // Set bomb on cooldown
             this.BombOnCooldown = true;
             // Set bomb in flight

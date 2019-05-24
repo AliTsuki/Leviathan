@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2122637301136921068}
   - component: {fileID: 2122637301136921070}
   m_Layer: 0
-  m_Name: Gun Barrel Lights
+  m_Name: Gun Barrel Lights 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 2122637301159359034}
   - component: {fileID: 3627792595482041288}
   m_Layer: 0
-  m_Name: Warp Engine
+  m_Name: Warp Engine 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4951,7 +4951,7 @@ GameObject:
   - component: {fileID: 2122637301606366905}
   - component: {fileID: 5492836643577447360}
   m_Layer: 0
-  m_Name: Gun Barrel
+  m_Name: Gun Barrel 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5083,7 +5083,7 @@ GameObject:
   - component: {fileID: 2122637301883821281}
   - component: {fileID: 7100663474697170257}
   m_Layer: 0
-  m_Name: Impulse Engine
+  m_Name: Impulse Engine 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

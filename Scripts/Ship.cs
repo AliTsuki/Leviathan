@@ -5,19 +5,23 @@ public class Ship
     // GameObjects and Components
     public GameObject ShipObject;
     public GameObject ShipObjectPrefab;
-    public GameObject ImpulseEngineObject;
-    public GameObject WarpEngineObject;
-    public GameObject GunBarrelObject;
-    public GameObject GunBarrelLightsObject;
     public Rigidbody ShipRigidbody;
-    public ParticleSystem ImpulseParticleSystem;
-    public ParticleSystem WarpParticleSystem;
-    public ParticleSystem.MainModule ImpulseParticleMain;
-    public ParticleSystem.MainModule WarpParticleMain;
-    public AudioSource ImpulseAudio;
-    public AudioSource WarpAudio;
-    public AudioSource GunAudio;
+    // Engine Objects
+    public GameObject[] ImpulseEngineObjects;
+    public GameObject[] WarpEngineObjects;
+    public ParticleSystem[] ImpulseParticleSystems;
+    public ParticleSystem[] WarpParticleSystems;
+    public ParticleSystem.MainModule[] ImpulseParticleSystemMains;
+    public ParticleSystem.MainModule[] WarpParticleSystemMains;
+    public AudioSource[] ImpulseAudioSources;
+    public AudioSource[] WarpAudioSources;
+    // Gun Objects
+    public GameObject[] GunBarrelObjects;
+    public GameObject[] GunBarrelLightsObjects;
+    public AudioSource[] GunAudioSources;
+    // Shield Object
     public AudioSource ShieldRegenAudio;
+    // Particle Objects
     public GameObject ProjectileShieldStrikePrefab;
     public GameObject ProjectileHullStrikePrefab;
     public GameObject ProjectileShieldStrike;
@@ -104,6 +108,7 @@ public class Ship
     public float GunEnergyCost;
     public float BarrierEnergyDrainCost;
     // --Acceleration
+    public uint EngineCount;
     public float ImpulseAcceleration;
     public float WarpAccelerationMultiplier;
     public float StrafeAcceleration;
@@ -114,6 +119,7 @@ public class Ship
     public float MaxRotationSpeed;
     // --Weapon stats
     // ----Main gun
+    public uint GunBarrelCount;
     public uint GunShotProjectileType;
     public float GunCooldownTime;
     public float GunShotAmount;
@@ -155,6 +161,7 @@ public class Ship
     }
     public AIType AItype;
     public Ship CurrentTarget;
+    public bool AIAimAssist;
     public float MaxTargetAcquisitionRange;
     public float MaxOrbitRange;
     public float MaxWeaponsRange;
@@ -182,31 +189,54 @@ public class Ship
         this.ShipObject.name = $@"{this.ID}";
         this.ShipRigidbody = this.ShipObject.GetComponent<Rigidbody>();
         this.ShipRigidbody = this.ShipObject.GetComponent<Rigidbody>();
-        this.ImpulseEngineObject = this.ShipObject.transform.GetChild(0).Find(GameController.ImpulseEngineName).gameObject;
-        this.WarpEngineObject = this.ShipObject.transform.GetChild(0).Find(GameController.WarpEngineName).gameObject;
-        this.GunBarrelObject = this.ShipObject.transform.GetChild(0).Find(GameController.GunBarrelName).gameObject;
-        this.GunBarrelLightsObject = this.GunBarrelObject.transform.Find(GameController.GunBarrelLightsName).gameObject;
-        this.ImpulseParticleSystem = this.ImpulseEngineObject.GetComponent<ParticleSystem>();
-        this.ImpulseParticleMain = this.ImpulseParticleSystem.main;
-        this.WarpParticleSystem = this.WarpEngineObject.GetComponent<ParticleSystem>();
-        this.WarpParticleMain = this.WarpParticleSystem.main;
-        this.ImpulseAudio = this.ImpulseEngineObject.GetComponent<AudioSource>();
-        this.WarpAudio = this.WarpEngineObject.GetComponent<AudioSource>();
-        this.GunAudio = this.GunBarrelObject.GetComponent<AudioSource>();
+        // Set up Engine Objects
+        this.ImpulseEngineObjects = new GameObject[this.EngineCount];
+        this.WarpEngineObjects = new GameObject[this.EngineCount];
+        this.ImpulseParticleSystems = new ParticleSystem[this.EngineCount];
+        this.ImpulseParticleSystemMains = new ParticleSystem.MainModule[this.EngineCount];
+        this.WarpParticleSystems = new ParticleSystem[this.EngineCount];
+        this.WarpParticleSystemMains = new ParticleSystem.MainModule[this.EngineCount];
+        this.ImpulseAudioSources = new AudioSource[this.EngineCount];
+        this.WarpAudioSources = new AudioSource[this.EngineCount];
+        for(int i = 0; i < this.EngineCount; i++)
+        {
+            this.ImpulseEngineObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.ImpulseEngineName + $@" {i}").gameObject;
+            this.WarpEngineObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.WarpEngineName + $@" {i}").gameObject;
+            this.ImpulseParticleSystems[i] = this.ImpulseEngineObjects[i].GetComponent<ParticleSystem>();
+            this.ImpulseParticleSystemMains[i] = this.ImpulseParticleSystems[i].main;
+            this.WarpParticleSystems[i] = this.WarpEngineObjects[i].GetComponent<ParticleSystem>();
+            this.WarpParticleSystemMains[i] = this.WarpParticleSystems[i].main;
+            this.ImpulseAudioSources[i] = this.ImpulseEngineObjects[i].GetComponent<AudioSource>();
+            this.WarpAudioSources[i] = this.WarpEngineObjects[i].GetComponent<AudioSource>();
+        }
+        // Set up Gun Objects
+        this.GunBarrelObjects = new GameObject[this.GunBarrelCount];
+        this.GunBarrelLightsObjects = new GameObject[this.GunBarrelCount];
+        this.GunAudioSources = new AudioSource[this.GunBarrelCount];
+        for(int i = 0; i < this.GunBarrelCount; i++)
+        {
+            this.GunBarrelObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.GunBarrelName + $@" {i}").gameObject;
+            this.GunBarrelLightsObjects[i] = this.GunBarrelObjects[i].transform.Find(GameController.GunBarrelLightsName + $@" {i}").gameObject;
+            this.GunAudioSources[i] = this.GunBarrelObjects[i].GetComponent<AudioSource>();
+        }
+        // Set up Shield Objects
         this.ShieldRegenAudio = this.ShipObject.GetComponent<AudioSource>();
+        // Set up Particle Objects
         this.ProjectileShieldStrikePrefab = Resources.Load<GameObject>(GameController.ProjectileShieldStrikePrefabName);
         this.ProjectileHullStrikePrefab = Resources.Load<GameObject>(GameController.ProjectileHullStrikePrefabName);
         this.ExplosionPrefab = Resources.Load<GameObject>(GameController.ExplosionPrefabName);
+        // Set up basic fields
         this.Alive = true;
         this.Health = this.MaxHealth;
         this.Shields = this.MaxShields;
         this.Energy = this.MaxEnergy;
+        this.RecentRotations = new float[RecentRotationsIndexMax];
+        // Set up Default Cooldowns
         this.DefaultGunCooldownTime = this.GunCooldownTime;
         this.DefaultGunShotAmount = this.GunShotAmount;
         this.DefaultGunShotDamage = this.GunShotDamage;
         this.DefaultGunShotAccuracy = this.GunShotAccuracy;
         this.DefaultGunEnergyCost = this.GunEnergyCost;
-        this.RecentRotations = new float[RecentRotationsIndexMax];
     }
 
     // Update is called once per frame
@@ -417,12 +447,16 @@ public class Ship
                 // Accelerate forward
                 this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.ImpulseAcceleration));
             }
-            // Modify particle effects
-            this.ImpulseParticleMain.startSpeed = 2.8f;
-            this.WarpParticleMain.startLifetime = 0f;
-            // Fade in/out audio
-            AudioController.FadeIn(this.ImpulseAudio, this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMaxVol);
-            AudioController.FadeOut(this.WarpAudio, this.WarpEngineAudioStep, this.WarpEngineAudioMinVol);
+            // Loop through engines
+            for(int i = 0; i < this.EngineCount; i++)
+            {
+                // Modify particle effects
+                this.ImpulseParticleSystemMains[i].startSpeed = 2.8f;
+                this.WarpParticleSystemMains[i].startLifetime = 0f;
+                // Fade in/out audio
+                AudioController.FadeIn(this.ImpulseAudioSources[i], this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMaxVol);
+                AudioController.FadeOut(this.WarpAudioSources[i], this.WarpEngineAudioStep, this.WarpEngineAudioMinVol);
+            }
         }
         // If warp engine is activated by player input or AI
         else if(this.WarpInput == true)
@@ -435,24 +469,32 @@ public class Ship
             }
             // Subtract warp energy cost
             this.Energy -= this.WarpEnergyCost;
-            // Modify particle effects
-            this.ImpulseParticleMain.startSpeed = 5f;
-            this.WarpParticleMain.startSpeed = 20f;
-            this.WarpParticleMain.startLifetime = 1f;
-            // Fade in/out audio
-            AudioController.FadeIn(this.WarpAudio, this.WarpEngineAudioStep, this.WarpEngineAudioMaxVol);
-            AudioController.FadeOut(this.ImpulseAudio, this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMinVol);
+            // Loop through engines
+            for(int i = 0; i < this.EngineCount; i++)
+            {
+                // Modify particle effects
+                this.ImpulseParticleSystemMains[i].startSpeed = 5f;
+                this.WarpParticleSystemMains[i].startSpeed = 20f;
+                this.WarpParticleSystemMains[i].startLifetime = 1f;
+                // Fade in/out audio
+                AudioController.FadeIn(this.WarpAudioSources[i], this.WarpEngineAudioStep, this.WarpEngineAudioMaxVol);
+                AudioController.FadeOut(this.ImpulseAudioSources[i], this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMinVol);
+            }
         }
         // If no engines are active
         else
         {
-            // Turn particles back to default
-            this.ImpulseParticleMain.startSpeed = 1f;
-            this.WarpParticleMain.startSpeed = 0f;
-            this.WarpParticleMain.startLifetime = 0f;
-            // Fade out audio
-            AudioController.FadeOut(this.ImpulseAudio, this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMinVol);
-            AudioController.FadeOut(this.WarpAudio, this.WarpEngineAudioStep, this.WarpEngineAudioMinVol);
+            // Loop through engines
+            for(int i = 0; i < this.EngineCount; i++)
+            {
+                // Turn particles back to default
+                this.ImpulseParticleSystemMains[i].startSpeed = 1f;
+                this.WarpParticleSystemMains[i].startSpeed = 0f;
+                this.WarpParticleSystemMains[i].startLifetime = 0f;
+                // Fade out audio
+                AudioController.FadeOut(this.ImpulseAudioSources[i], this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMinVol);
+                AudioController.FadeOut(this.WarpAudioSources[i], this.WarpEngineAudioStep, this.WarpEngineAudioMinVol);
+            }
         }
     }
 
@@ -491,7 +533,7 @@ public class Ship
         }
     }
 
-    // Uses ship abilities
+    // Uses ship abilities, PlayerShip has override for also checking Bombs, Barrier, Barrage etc
     public virtual void CheckAbilities()
     {
         this.CheckMainGun();
@@ -509,28 +551,44 @@ public class Ship
         // If weapons fire gun input is activated by player input or AI, the weapon is not on cooldown, and there is more available energy than the cost to fire
         if(this.GunInput == true && this.GunOnCooldown == false && this.Energy >= this.GunEnergyCost)
         {
-            // Loop through shot amount
-            for(int i = 0; i < this.GunShotAmount; i++)
+            // Loop through gun barrel count
+            for(int c = 0; c < this.GunBarrelCount; c++)
             {
-                // If shot accuracy percentage is above 100, set to 100
-                Mathf.Clamp(this.GunShotAccuracy, 0f, 100f);
-                // Get accuracy of current projectile as random number from negative shot accuracy to positive shot accuracy
-                float accuracy = GameController.r.Next(-(int)(100f - this.GunShotAccuracy), (int)(100f - this.GunShotAccuracy) + 1);
-                Quaternion shotRotation;
-                // If this is player
-                if(this.IsPlayer == true)
+                // Loop through gun shot amount
+                for(int a = 0; a < this.GunShotAmount; a++)
                 {
-                    // Shot rotation is affected by accuracy and the rotation of the gun barrel
-                    shotRotation = Quaternion.Euler(0f, this.GunBarrelObject.transform.rotation.eulerAngles.y + accuracy, 0f);
+                    // If shot accuracy percentage is above 100, set to 100
+                    Mathf.Clamp(this.GunShotAccuracy, 0f, 100f);
+                    // Get accuracy of current projectile as random number from negative shot accuracy to positive shot accuracy
+                    float accuracy = GameController.r.Next(-(int)(100f - this.GunShotAccuracy), (int)(100f - this.GunShotAccuracy) + 1);
+                    Quaternion shotRotation;
+                    // If this is player
+                    if(this.IsPlayer == true)
+                    {
+                        // Shot rotation is affected by accuracy and the rotation of the gun barrel
+                        shotRotation = Quaternion.Euler(0f, this.GunBarrelObjects[c].transform.rotation.eulerAngles.y + accuracy, 0f);
+                    }
+                    // If this is NPC
+                    else
+                    {
+                        if(this.AIAimAssist == true)
+                        {
+                            // Shot rotation is affected by accuracy and the rotation to its target (instead of rotation of gun barrel, some NPCs need a little aiming boost)
+                            shotRotation = Quaternion.Euler(0f, this.IntendedRotation.eulerAngles.y + accuracy, 0f);
+                        }
+                        else
+                        {
+                            // Shot rotation is affected by accuracy and the rotation of the gun barrel
+                            shotRotation = Quaternion.Euler(0f, this.GunBarrelObjects[c].transform.rotation.eulerAngles.y + accuracy, 0f);
+                        }
+                    }
+                    // Spawn a projectile
+                    GameController.SpawnProjectile(this.IFF, this.GunShotProjectileType, this.GunShotCurvature, this.GunShotDamage, this.GunBarrelObjects[c].transform.position, shotRotation, this.ShipRigidbody.velocity, this.GunShotSpeed, this.GunShotLifetime);
+                    // Turn on gun lights
+                    this.GunBarrelLightsObjects[c].SetActive(true);
+                    // Play gun audio
+                    this.GunAudioSources[c].Play();
                 }
-                // If this is NPC
-                else
-                {
-                    // Shot rotation is affected by accuracy and the rotation to its target (NPCs need a little aiming boost)
-                    shotRotation = Quaternion.Euler(0f, this.IntendedRotation.eulerAngles.y + accuracy, 0f);
-                }
-                // Spawn a projectile
-                GameController.SpawnProjectile(this.IFF, this.GunShotProjectileType, this.GunShotCurvature, this.GunShotDamage, this.GunBarrelObject.transform.position, shotRotation, this.ShipRigidbody.velocity, this.GunShotSpeed, this.GunShotLifetime);
             }
             // Set last shot time
             this.LastGunFireTime = Time.time;
@@ -538,16 +596,16 @@ public class Ship
             this.GunOnCooldown = true;
             // Subtract energy for shot
             this.Energy -= this.GunEnergyCost;
-            // Turn on gun lights
-            this.GunBarrelLightsObject.SetActive(true);
-            // Play gun audio
-            this.GunAudio.Play();
         }
         // If weapons fire input is not active, weapon is on cooldown, or not enough energy to fire
         else
         {
-            // Turn gun lights off
-            this.GunBarrelLightsObject.SetActive(false);
+            // Loop through gun barrels
+            for(int i = 0; i < this.GunBarrelCount; i++)
+            {
+                // Turn gun lights off
+                this.GunBarrelLightsObjects[i].SetActive(false);
+            }
         }
     }
 
