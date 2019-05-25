@@ -12,9 +12,8 @@ public class InputHandler : MonoBehaviour
         }
         else if(_input == "NewGame")
         {
-            // TODO: Start a new game
+            GameController.Restart();
             GameController.CurrentGameState = GameController.GameState.Playing;
-            UIController.ShowUI();
         }
         else if(_input == "LoadGame")
         {
@@ -31,6 +30,15 @@ public class InputHandler : MonoBehaviour
         else if(_input == "Restart")
         {
             GameController.Restart();
+        }
+        else if(_input == "Resume")
+        {
+            GameController.CurrentGameState = GameController.GameState.Playing;
+        }
+        else if(_input == "QuitToMainMenu")
+        {
+            GameController.Restart();
+            GameController.CurrentGameState = GameController.GameState.MainMenu;
         }
     }
 }

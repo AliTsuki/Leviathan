@@ -96,6 +96,11 @@ public class PlayerShip : Ship
         this.BarrierInput = this.playerInput.Barrier;
         this.BarrageInput = this.playerInput.Barrage;
         this.PauseInput = this.playerInput.Pause;
+        // Pause game if pause is pressed
+        if(this.PauseInput == true)
+        {
+            GameController.CurrentGameState = GameController.GameState.Paused;
+        }
     }
 
     // Gets intended rotation

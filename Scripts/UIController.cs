@@ -22,6 +22,7 @@ public static class UIController
     private static TextMeshProUGUI InfoLabel;
     private static GameObject ShieldDamageEffect;
     private static GameObject HealthDamageEffect;
+    private static GameObject PauseMenuScreen;
     private static GameObject GameOverScreen;
     private static GameObject GameOverText;
 
@@ -55,6 +56,7 @@ public static class UIController
         ShieldDamageEffect.SetActive(false);
         HealthDamageEffect = GameObject.Find(GameController.HealthDamageEffectName);
         HealthDamageEffect.SetActive(false);
+        PauseMenuScreen = GameObject.Find(GameController.PauseMenuScreenName);
         GameOverScreen = GameObject.Find(GameController.GameOverScreenName);
         GameOverScreen.SetActive(false);
         GameOverText = GameObject.Find(GameController.GameOverTextName);
@@ -68,11 +70,15 @@ public static class UIController
         if(GameController.CurrentGameState == GameController.GameState.MainMenu)
         {
             ShowMainMenu();
+            HideUI();
+            HidePauseMenu();
         }
         // If game state is playing
         else if(GameController.CurrentGameState == GameController.GameState.Playing)
         {
             HideMainMenu();
+            ShowUI();
+            HidePauseMenu();
             if(HealthbarUIs.Count < 1)
             {
                 HealthbarUIs.Add(1, PlayerUI); // TODO: replace 1 with actual player ID
@@ -206,7 +212,7 @@ public static class UIController
         // If game state is paused
         else if(GameController.CurrentGameState == GameController.GameState.Paused)
         {
-            // TODO: Fill this in
+            ShowPauseMenu();
         }
     }
 
@@ -250,14 +256,12 @@ public static class UIController
     public static void ShowMainMenu()
     {
         MainMenu.SetActive(true);
-        HideUI();
     }
 
     // Hide main menu screen
     public static void HideMainMenu()
     {
         MainMenu.SetActive(false);
-        ShowUI();
     }
 
     // Show UI
@@ -272,13 +276,41 @@ public static class UIController
         UI.SetActive(false);
     }
 
+    // Show pause menu
+    public static void ShowPauseMenu()
+    {
+        PauseMenuScreen.SetActive(true);
+        // Pause physics simulation time
+        Time.timeScale = 0;
+    }
+
+    // Hide pause menu
+    public static void HidePauseMenu()
+    {
+        PauseMenuScreen.SetActive(false);
+        // Set physics simulation time to default
+        Time.timeScale = 1;
+    }
+
     // Restart
     public static void Restart()
     {
         GameOverScreen.SetActive(false);
+        // Loop through healthbar uis
         foreach(KeyValuePair<uint, GameObject> healthbarui in HealthbarUIs)
         {
-            GameObject.Destroy(healthbarui.Value);
+            // If healthbar is for player
+            if(healthbarui.Key == 1)
+            {
+                // Hide healthbar
+                HealthbarUI.SetActive(false);
+            }
+            // If healthbar is for anyone else
+            else
+            {
+                // Destroy game object for healthbar
+                GameObject.Destroy(healthbarui.Value);
+            }
         }
         HealthbarUIs.Clear();
     }

@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.10a";
+    public static string Version = "0.0.10c";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject CamerasPrefab;
@@ -50,6 +50,7 @@ public static class GameController
     public const string CanvasName = "UI Canvas";
     public const string ShieldDamageEffectName = "Shield Damage Effect";
     public const string HealthDamageEffectName = "Health Damage Effect";
+    public const string PauseMenuScreenName = "Pause Menu Screen";
     public const string GameOverScreenName = "Game Over Screen";
     public const string GameOverTextName = "Game Over Text";
     public const string GameOverRestartButtonName = "Restart Button";
@@ -114,10 +115,6 @@ public static class GameController
     // Update is called once per frame
     public static void Update()
     {
-        if(CurrentGameState == GameState.MainMenu)
-        {
-            UIController.ShowMainMenu();
-        }
         if(CurrentGameState == GameState.Playing)
         {
             if(GameplayInitialized == false)
@@ -130,12 +127,8 @@ public static class GameController
             EnemySpawnUpdate();
             FollowCamera();
             Background.Update();
-            UIController.Update();
         }
-        else if(CurrentGameState == GameState.Paused)
-        {
-            //UIController.ShowPauseMenu();
-        }
+        UIController.Update();
         Logger.Update();
     }
 
