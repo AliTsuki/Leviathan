@@ -3,13 +3,13 @@
 using UnityEngine;
 
 // GENERAL STUFF TO DO
-// TODO: Add a main menu with a new game button, a load game button, a settings button to configure inputs and maybe graphics, and a quit button
-// TODO: Add a game state, (MainMenu, Playing, Paused, etc) and change GameController.Update to depend on game state
-// TODO: Add object pooling
+// TODO: Add leveling system / stats
 // TODO: Add an inventory system for player and update player stats based on what inventory is equipped
+// TODO: Add a save system for progress
+// TODO: Add object pooling MAYBE, don't need to right now as performance is fine, but could be a good idea for the future
+// TODO: Add a value for enemies so large enemies are worth more than small enemies for Enemy Count purposes maybe...
 // TODO: Add different player ship types to pick at beginning of game
 // TODO: Add more enemy types and behaviours
-// TODO: Set up a field for how many guns a ship has, then during initialization loop through that amount and find all gun barrel objects instead of hardcoding it
 // TODO: Add more projectile types and behaviours
 // TODO: Add new backgrounds/areas, make maybe a map system, it loads the background specified in maybe a csv *shrug* map it out in excel
 // TODO: Add enemy type based on which background tile it is generated on
@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.10c";
+    public static string Version = "0.0.10d";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject CamerasPrefab;
@@ -58,24 +58,24 @@ public static class GameController
     public const string NPCUIPrefabName = "NPC UI";
     public const string MinimapCoordsName = "Minimap Coords";
     public const string InfoLabelName = "Info Label";
-    public const string BackgroundPrefabName = "Background";
-    public const string PlayerPrefabName = "Player Ship";
-    public const string FriendPrefabName = "Player Ship";
-    public const string EnemyStandardPrefabName = "Enemy Ship 0";
-    public const string EnemyRammingPrefabName = "Enemy Ship 1";
-    public const string EnemyBroadsidePrefabName = "Enemy Ship 2";
+    public const string BackgroundPrefabName = "Environment/Background";
+    public const string PlayerPrefabName = "Ships/Player Ship";
+    public const string FriendPrefabName = "Ships/Player Ship";
+    public const string EnemyStandardPrefabName = "Ships/Enemy Ship 0";
+    public const string EnemyRammingPrefabName = "Ships/Enemy Ship 1";
+    public const string EnemyBroadsidePrefabName = "Ships/Enemy Ship 2";
     public const string ImpulseEngineName = "Impulse Engine";
     public const string WarpEngineName = "Warp Engine";
     public const string GunBarrelName = "Gun Barrel";
     public const string GunBarrelLightsName = "Gun Barrel Lights";
     public const string ShieldName = "Barrier";
     public const string ScannerName = "Scanner";
-    public const string ProjectilePrefabName = "Projectile";
-    public const string BombPrefabName = "Bomb";
-    public const string ProjectileShieldStrikePrefabName = "Projectile Shield Strike";
-    public const string ProjectileHullStrikePrefabName = "Projectile Hull Strike";
-    public const string BombExplostionPrefabName = "Bomb Explosion";
-    public const string ExplosionPrefabName = "Explosion";
+    public const string ProjectilePrefabName = "Projectiles/Projectile";
+    public const string BombPrefabName = "Projectiles/Bomb";
+    public const string ProjectileShieldStrikePrefabName = "VisualFX/Projectile Shield Strike";
+    public const string ProjectileHullStrikePrefabName = "VisualFX/Projectile Hull Strike";
+    public const string BombExplostionPrefabName = "VisualFX/Bomb Explosion";
+    public const string ExplosionPrefabName = "VisualFX/Explosion";
 
     // Entity IDs
     private static uint ShipID = 0;
