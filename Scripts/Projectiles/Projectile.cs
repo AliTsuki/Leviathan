@@ -12,6 +12,7 @@ public class Projectile
     // Constructor criteria
     public uint ProjectileType;
     public float Curvature;
+    public float SightCone;
     public float Damage;
     public Vector3 Position;
     public Quaternion Rotation;
@@ -51,7 +52,7 @@ public class Projectile
                     if(this.Target == null || this.Target.Alive == false)
                     {
                         // Acquire new target
-                        this.Target = AIController.AcquireForwardTarget(this.ProjectileObject.transform, this.IFF, 30);
+                        this.Target = AIController.AcquireForwardTarget(this.ProjectileObject.transform, this.IFF, 30, this.SightCone);
                     }
                     // If there is a target and it is alive
                     else if(this.Target != null && this.Target.Alive == true)

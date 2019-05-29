@@ -3,9 +3,12 @@
 // Sends Start(), Update(), and FixedUpdate() calls from UnityEngine to GameController to propogate to all non-MonoBehaviour scripts
 public class GameManager : MonoBehaviour
 {
+    public static GameManager gm;
+
     // Start is called before the first frame update
     public void Start()
     {
+        gm = this;
         GameController.Initialize();
     }
 

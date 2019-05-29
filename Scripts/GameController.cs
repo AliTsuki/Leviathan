@@ -11,7 +11,6 @@ using UnityEngine;
 // TODO: Add different player ship types to pick at beginning of game
 // TODO: Add more enemy types and behaviours
 // TODO: Add more projectile types and behaviours
-// TODO: Add new backgrounds/areas, make maybe a map system, it loads the background specified in maybe a csv *shrug* map it out in excel
 // TODO: Add enemy type based on which background tile it is generated on
 // TODO: Add space stations where you can purchase inventory items
 // TODO: Add gameover conditions
@@ -22,7 +21,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.10d";
+    public static string Version = "0.0.11a";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject CamerasPrefab;
@@ -35,6 +34,9 @@ public static class GameController
     public static readonly List<uint> ShipsToRemove = new List<uint>();
     public static readonly List<uint> ProjectilesToRemove = new List<uint>();
 
+    // Player fields
+    private static PlayerShip.PlayerShipType PlayerShipType;
+
     // Enemy spawn fields
     private static uint EnemyCount = 0;
     private readonly static uint MaxEnemyCount = 20;
@@ -43,9 +45,11 @@ public static class GameController
     private readonly static int EnemyDespawnDistance = 300;
 
     // Constant references to Prefab filenames
-    public const string MainMenuName = "Main Menu";
+    // Cameras
     public const string CamerasPrefabName = "Cameras";
     public const string FollowCameraName = "Follow Camera";
+    // UI
+    public const string MainMenuName = "Main Menu";
     public const string UIName = "UI";
     public const string CanvasName = "UI Canvas";
     public const string ShieldDamageEffectName = "Shield Damage Effect";
@@ -58,20 +62,25 @@ public static class GameController
     public const string NPCUIPrefabName = "NPC UI";
     public const string MinimapCoordsName = "Minimap Coords";
     public const string InfoLabelName = "Info Label";
+    // Background tiles
+    public const string TilemapName = "Tilemap/Tilemap";
     public const string BackgroundPrefabName = "Environment/Background";
-    public const string PlayerPrefabName = "Ships/Player Ship";
-    public const string FriendPrefabName = "Ships/Player Ship";
-    public const string EnemyStandardPrefabName = "Ships/Enemy Ship 0";
-    public const string EnemyRammingPrefabName = "Ships/Enemy Ship 1";
-    public const string EnemyBroadsidePrefabName = "Ships/Enemy Ship 2";
+    // Ships
+    public const string PlayerPrefabName = "Ships/Player Ships/Player Ship";
+    public const string FriendPrefabName = "Ships/Player Ships/Player Ship";
+    public const string EnemyStandardPrefabName = "Ships/Enemy Ships/Enemy Ship 0";
+    public const string EnemyRammingPrefabName = "Ships/Enemy Ships/Enemy Ship 1";
+    public const string EnemyBroadsidePrefabName = "Ships/Enemy Ships/Enemy Ship 2";
+    // Ship parts
     public const string ImpulseEngineName = "Impulse Engine";
     public const string WarpEngineName = "Warp Engine";
     public const string GunBarrelName = "Gun Barrel";
     public const string GunBarrelLightsName = "Gun Barrel Lights";
     public const string ShieldName = "Barrier";
-    public const string ScannerName = "Scanner";
+    // Projectiles
     public const string ProjectilePrefabName = "Projectiles/Projectile";
     public const string BombPrefabName = "Projectiles/Bomb";
+    // Visual FX
     public const string ProjectileShieldStrikePrefabName = "VisualFX/Projectile Shield Strike";
     public const string ProjectileHullStrikePrefabName = "VisualFX/Projectile Hull Strike";
     public const string BombExplostionPrefabName = "VisualFX/Bomb Explosion";
@@ -108,6 +117,8 @@ public static class GameController
     {
         Logger.Initialize();
         CurrentGameState = GameState.MainMenu;
+        PlayerInput.Controller = PlayerInput.ControllerType.GenericGamepad;
+        PlayerShipType = PlayerShip.PlayerShipType.Bomber;
         UIController.Initialize();
         InitializeCamera();
     }
@@ -115,6 +126,7 @@ public static class GameController
     // Update is called once per frame
     public static void Update()
     {
+        PlayerInput.Update();
         if(CurrentGameState == GameState.Playing)
         {
             if(GameplayInitialized == false)
@@ -175,10 +187,8 @@ public static class GameController
     // Initialize camera
     private static void InitializeCamera()
     {
-        // Spawn camera
-        CamerasPrefab = Resources.Load<GameObject>(CamerasPrefabName);
-        Cameras = GameObject.Instantiate(CamerasPrefab);
-        Cameras.name = "Cameras";
+        // Get camera
+        Cameras = GameObject.Find(CamerasPrefabName);
     }
 
     // Set up follow camera
@@ -200,21 +210,33 @@ public static class GameController
         ShipsToRemove.Clear();
         Projectiles.Clear();
         ProjectilesToRemove.Clear();
+        // Reset counts
         EnemyCount = 0;
         ShipID = 0;
         ProjectileID = 0;
         Score = 0;
         // Initialize player, follow camera, and backgrounds
-        SpawnPlayer();
+        SpawnPlayer(PlayerShipType);
         FollowCamera();
         Background.Initialize();
     }
 
     // Initialize player ship in world
-    private static void SpawnPlayer()
+    private static void SpawnPlayer(PlayerShip.PlayerShipType _type)
     {
         NextShipID();
-        Ships.Add(ShipID, new PlayerShip(ShipID));
+        if(_type == PlayerShip.PlayerShipType.Bomber)
+        {
+            Ships.Add(ShipID, new PSBomber(ShipID));
+        }
+        else if(_type == PlayerShip.PlayerShipType.Engineer)
+        {
+            Ships.Add(ShipID, new PSEngineer(ShipID));
+        }
+        else if(_type == PlayerShip.PlayerShipType.Scout)
+        {
+            Ships.Add(ShipID, new PSScout(ShipID));
+        }
         Player = Ships[ShipID];
     }
 
@@ -232,31 +254,31 @@ public static class GameController
         int enemyTypeSelector = r.Next(0, 100);
         if(enemyTypeSelector <= 80)
         {
-            Ships.Add(ShipID, new EnemyShipStandard(ShipID, _startingPosition));
+            Ships.Add(ShipID, new ESStandard(ShipID, _startingPosition));
         }
         else if(enemyTypeSelector > 80 && enemyTypeSelector <= 90)
         {
-            Ships.Add(ShipID, new EnemyShipRamming(ShipID, _startingPosition));
+            Ships.Add(ShipID, new ESRamming(ShipID, _startingPosition));
         }
         else if(enemyTypeSelector > 90)
         {
-            Ships.Add(ShipID, new EnemyShipBroadside(ShipID, _startingPosition));
+            Ships.Add(ShipID, new ESBroadside(ShipID, _startingPosition));
         }
         EnemyCount++;
     }
 
     // Spawn projectile
-    public static void SpawnProjectile(IFF _iff, uint _type, float _curvature, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public static void SpawnProjectile(IFF _iff, uint _type, float _curvature, float _sightCone, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
         NextProjectileID();
-        Projectiles.Add(ProjectileID, new Bolt(ProjectileID, _iff, _type, _curvature, _damage, _position, _rotation, _velocity, _speed, _lifetime));
+        Projectiles.Add(ProjectileID, new Bolt(ProjectileID, _iff, _type, _curvature, _sightCone, _damage, _position, _rotation, _velocity, _speed, _lifetime));
     }
 
     // Spawn bomb
-    public static Bomb SpawnBomb(PlayerShip _player, IFF _iff, float _curvature, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public static Bomb SpawnBomb(PSBomber _player, IFF _iff, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
         NextProjectileID();
-        Projectiles.Add(ProjectileID, new Bomb(_player, ProjectileID, _iff, _curvature, _damage, _radius, _position, _rotation, _velocity, _speed, _lifetime));
+        Projectiles.Add(ProjectileID, new Bomb(_player, ProjectileID, _iff, _damage, _radius, _position, _rotation, _velocity, _speed, _lifetime));
         return Projectiles[ProjectileID] as Bomb;
     }
 

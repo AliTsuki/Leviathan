@@ -6,20 +6,29 @@ using UnityEngine;
 public static class Background
 {
     // GameObjects
-    private static GameObject BackgroundPrefab;
+    private static GameObject[] BackgroundPrefabs;
+    
+    // Tilemap
+    private static Texture2D Tilemap;
    
-    // Fields
+    // Lists and Dicts
     private static readonly Dictionary<Vector2Int, GameObject> Backgrounds = new Dictionary<Vector2Int, GameObject>();
     private static List<Vector2Int> BackgroundsToRemove = new List<Vector2Int>();
+
+    // Next background fields
     private static Vector2Int NextBackgroundKey;
     private static Vector3 NextBackgroundPosition;
+    private static byte NextBackgroundType;
+
+    // Player position
     private static Vector3 PlayerPosition;
 
     // Constants
+    private const int BackgroundPrefabsAmount = 1;
     private const int BackgroundInitializationTileAmount = 2;
     private const int BackgroundGenerationTileAmount = 2;
     private const int BackgroundTileSize = 200;
-    private const int BackgroundMaxDistance = 500;
+    private const int BackgroundMaxDistanceFromPlayer = 500;
 
 
     // Initialize
@@ -28,8 +37,14 @@ public static class Background
         // Clear lists
         Backgrounds.Clear();
         BackgroundsToRemove.Clear();
-        // Load background prefab
-        BackgroundPrefab = Resources.Load<GameObject>(GameController.BackgroundPrefabName);
+        // Load tilemap
+        Tilemap = Resources.Load<Texture2D>(GameController.TilemapName);
+        // Load background prefabs
+        BackgroundPrefabs = new GameObject[BackgroundPrefabsAmount];
+        for(int i = 0; i < BackgroundPrefabsAmount; i++)
+        {
+            BackgroundPrefabs[i] = Resources.Load<GameObject>(GameController.BackgroundPrefabName + $@" {i}");
+        }
         // Initialize background
         InitializeBackground();
     }
@@ -41,6 +56,25 @@ public static class Background
         RemoveDistantBackgrounds();
         // Add new backgrounds
         AddNewBackgrounds();
+    }
+
+    // Get background tile type at position
+    private static byte GetBackgroundTypeAtPosition(Vector2Int _pos)
+    {
+        Color color = Tilemap.GetPixel(_pos.x + (Tilemap.width / 2), _pos.y + (Tilemap.height / 2));
+        // TODO: Color Tilemap file and add corresponding colors here and background prefabs with the byte number suffix
+        if(color == Color.black)
+        {
+            return 0;
+        }
+        else if(color == Color.white)
+        {
+            return 1;
+        }
+        else
+        {
+            return 2;
+        }
     }
 
     // Initializes the background at beginning of game
@@ -55,8 +89,10 @@ public static class Background
                 NextBackgroundKey = new Vector2Int(x, z);
                 // Set the next background position to x and z multiplied by the size of the tiles
                 NextBackgroundPosition = new Vector3(NextBackgroundKey.x * BackgroundTileSize, 0, NextBackgroundKey.y * BackgroundTileSize);
+                // Get what type of background tile to add at this position
+                NextBackgroundType = GetBackgroundTypeAtPosition(NextBackgroundKey);
                 // Add a new background prefab at the next background position and add it to backgrounds list
-                Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefab, NextBackgroundPosition, Quaternion.identity));
+                Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[NextBackgroundType], NextBackgroundPosition, Quaternion.identity));
                 // Set name of GameObject in Unity Editor to the key
                 Backgrounds[NextBackgroundKey].name = $@"Background: {NextBackgroundKey.x}, {NextBackgroundKey.y}";
             }
@@ -72,7 +108,7 @@ public static class Background
         foreach(KeyValuePair<Vector2Int, GameObject> bg in Backgrounds)
         {
             // Check if background is further away than max distance allowed
-            if(Vector3.Distance(bg.Value.transform.position, PlayerPosition) > BackgroundMaxDistance)
+            if(Vector3.Distance(bg.Value.transform.position, PlayerPosition) > BackgroundMaxDistanceFromPlayer)
             {
                 // Add background to removal list
                 BackgroundsToRemove.Add(bg.Key);
@@ -107,8 +143,10 @@ public static class Background
                 // Check if next background already exists
                 if(Backgrounds.ContainsKey(NextBackgroundKey) == false)
                 {
+                    // Get what type of background tile to add at this position
+                    NextBackgroundType = GetBackgroundTypeAtPosition(NextBackgroundKey);
                     // If background doesn't already exist, add new background into game and into backgrounds list
-                    Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefab, NextBackgroundPosition, Quaternion.identity));
+                    Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[NextBackgroundType], NextBackgroundPosition, Quaternion.identity));
                     // Set name of GameObject in Unity Editor to the key
                     Backgrounds[NextBackgroundKey].name = $@"Background: {NextBackgroundKey.x}, {NextBackgroundKey.y}";
                 }

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: EnemyShipMaterial0
+  m_Name: Enemy Ship 0 Material
   m_Shader: {fileID: -6465566751694194690, guid: 8f36b37f15ca23e4e9a004c80943c224,
     type: 3}
   m_ShaderKeywords: _COLOROVERLAY_ON _RECEIVE_SHADOWS_OFF

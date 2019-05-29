@@ -5,19 +5,18 @@ using UnityEngine;
 public class Bomb : Projectile
 {
     // Constructor criteria
-    private readonly PlayerShip Player;
+    private readonly PSBomber Player;
     private readonly GameObject BombExplosionPrefab;
     private GameObject BombExplosionObject;
     private readonly float FiredTime;
     private readonly float Radius;
 
     // Projectile constructor
-    public Bomb(PlayerShip _player, uint _id, GameController.IFF _iff, float _curvature, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public Bomb(PSBomber _player, uint _id, GameController.IFF _iff, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
         this.Player = _player;
         this.ID = _id;
         this.IFF = _iff;
-        this.Curvature = _curvature;
         this.Damage = _damage;
         this.Radius = _radius;
         this.Position = _position;

@@ -31,9 +31,6 @@ public class FriendlyShip : Ship
         this.GunShotCurvature = 0f;
         // Cooldowns
         this.GunCooldownTime = 0.25f;
-        this.BarrierCooldownTime = 10f;
-        this.BombCooldownTime = 10f;
-        this.BarrageCooldownTime = 10f;
         // Energy cost
         this.WarpEnergyCost = 5f;
         this.GunEnergyCost = 5f;

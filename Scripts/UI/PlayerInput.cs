@@ -1,52 +1,61 @@
 ﻿using UnityEngine;
 
 // Reads and stores inputs from player
-public class PlayerInput
+public static class PlayerInput
 {
+    // Controller layout types
+    public enum ControllerType
+    {
+        GenericGamepad,
+        XboxController,
+        PSController
+    }
+    public static ControllerType Controller;
+
     // Inputs
-    public Vector2 Aim;
-    public float Horizontal;
-    public float Vertical;
-    public bool Impulse;
-    public bool Warp;
-    public bool Fire;
-    public bool Bomb;
-    public bool Barrier;
-    public bool Barrage;
-    public bool Pause;
+    public static Vector2 AimInput = new Vector2();
+    public static bool ImpulseEngineInput;
+    public static bool WarpEngineInput;
+    public static bool MainGunInput;
+    public static bool Ability1Input;
+    public static bool Ability2Input;
+    public static bool Ability3Input;
+    public static bool PauseButtonInput;
 
     // Update is called once per frame
-    public void Update()
+    public static void Update()
     {
-        this.ClearInput();
-        this.ProcessInputs();
-    }
-
-    // Clears the inputs to default state
-    private void ClearInput()
-    {
-        this.Horizontal = 0f;
-        this.Vertical = 0f;
-        this.Impulse = false;
-        this.Warp = false;
-        this.Fire = false;
-        this.Bomb = false;
-        this.Barrier = false;
-        this.Barrage = false;
-        this.Pause = false;
+        ProcessInputs();
     }
 
     // Reads the inputs and stores them
-    private void ProcessInputs()
+    private static void ProcessInputs()
     {
-        this.Horizontal = Input.GetAxis("Horizontal");
-        this.Vertical = Input.GetAxis("Vertical");
-        this.Impulse = Input.GetButton("Impulse");
-        this.Warp = Input.GetButton("Warp");
-        this.Fire = Input.GetButton("Fire");
-        this.Bomb = Input.GetButton("Bomb");
-        this.Barrier = Input.GetButton("Barrier");
-        this.Barrage = Input.GetButton("Barrage");
-        this.Pause = Input.GetButtonDown("Pause");
+        if(Controller == ControllerType.GenericGamepad)
+        {
+            AimInput.Set(Input.GetAxis("Left Stick Horizontal"), Input.GetAxis("Left Stick Vertical"));
+            ImpulseEngineInput = Input.GetButton("Button 7");
+            WarpEngineInput = Input.GetButton("Button 6");
+            MainGunInput = Input.GetButton("Button 1");
+            Ability1Input = Input.GetButton("Button 2");
+            Ability2Input = Input.GetButton("Button 0");
+            Ability3Input = Input.GetButton("Button 3");
+            PauseButtonInput = Input.GetButtonDown("Button 9");
+        }
+        else if(Controller == ControllerType.XboxController)
+        {
+            AimInput.Set(Input.GetAxis("Left Stick Horizontal"), Input.GetAxis("Left Stick Vertical"));
+            ImpulseEngineInput = Input.GetAxis("Right Trigger XBox") > 0f ? true : false;
+            WarpEngineInput = Input.GetAxis("Left Trigger XBox") > 0f ? true : false;
+            MainGunInput = Input.GetButton("Button 0");
+            Ability1Input = Input.GetButton("Button 1");
+            Ability2Input = Input.GetButton("Button 2");
+            Ability3Input = Input.GetButton("Button 3");
+            PauseButtonInput = Input.GetButtonDown("Button 7");
+        }
+        else if(Controller == ControllerType.PSController)
+        {
+
+        }
     }
 }

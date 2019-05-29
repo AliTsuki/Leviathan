@@ -29,25 +29,27 @@ public class Ship
     public GameObject ExplosionPrefab;
     public GameObject Explosion;
 
-    // Audio fields
-    public float ImpulseEngineAudioStep = 0.05f;
-    public float ImpulseEngineAudioMinVol = 0.1f;
-    public float ImpulseEngineAudioMaxVol = 0.5f;
-    public float WarpEngineAudioStep = 0.05f;
-    public float WarpEngineAudioMinVol = 0f;
-    public float WarpEngineAudioMaxVol = 1f;
+    // Constants
+    // Audio constants
+    public const float ImpulseEngineAudioStep = 0.05f;
+    public const float ImpulseEngineAudioMinVol = 0.1f;
+    public const float ImpulseEngineAudioMaxVol = 0.5f;
+    public const float WarpEngineAudioStep = 0.05f;
+    public const float WarpEngineAudioMinVol = 0f;
+    public const float WarpEngineAudioMaxVol = 1f;
+    // Shader constants
+    public const float DamageShaderCooldownTime = 0.5f;
 
     // Inputs
-    public float HorizontalInput;
-    public float VerticalInput;
+    public Vector2 AimInput;
     public bool ImpulseInput;
-    public bool WarpInput;
-    public bool GunInput;
-    public bool BombInput;
-    public bool BarrierInput;
-    public bool BarrageInput;
-    public bool PauseInput;
+    public bool WarpEngineInput;
     public bool StrafeInput;
+    public bool MainGunInput;
+    public bool Ability1Input;
+    public bool Ability2Input;
+    public bool Ability3Input;
+    public bool PauseInput;
 
     // Rotation fields
     public Vector3 StartingPosition;
@@ -69,21 +71,23 @@ public class Ship
     // Cooldown times
     public float LastGunFireTime = 0f;
     public float LastDamageTakenTime = 0f;
-    public float LastBarrierActivatedTime = 0f;
-    public float LastBarrierCooldownStartedTime = 0f;
-    public float LastBombActivatedTime = 0f;
-    public float LastBarrageActivatedTime = 0f;
-    public float LastBarrageCooldownStartedTime = 0f;
-    public float DamageShaderCooldownTime = 0.5f;
+    public float LastAbility1ActivatedTime = 0f;
+    public float LastAbility2ActivatedTime = 0f;
+    public float LastAbility3ActivatedTime = 0f;
+    public float LastAbility1CooldownStartedTime = 0f;
+    public float LastAbility2CooldownStartedTime = 0f;
+    public float LastAbility3CooldownStartedTime = 0f;
+    
     // On cooldown bools
     public bool GunOnCooldown = false;
-    public bool BombOnCooldown = false;
-    public bool BombInFlight = false;
     public bool ShieldOnCooldown = false;
-    public bool BarrierOnCooldown = false;
-    public bool BarrierActive = false;
-    public bool BarrageOnCooldown = false;
-    public bool BarrageActive = false;
+    public bool Ability1OnCooldown = false;
+    public bool Ability2OnCooldown = false;
+    public bool Ability3OnCooldown = false;
+    public bool Ability1Active = false;
+    public bool Ability2Active = false;
+    public bool Ability3Active = false;
+
     // Misc cooldown related
     public float DefaultGunCooldownTime;
     public float DefaultGunShotAmount;
@@ -93,62 +97,51 @@ public class Ship
 
     // Ship stats
     // --Health/Armor/Shields
-    public float Health;
-    public float MaxHealth;
-    public float Armor;
-    public float Shields;
-    public float MaxShields;
-    public float ShieldRegenSpeed;
+    public float Health; // Current health value
+    public float MaxHealth; // Maximum health value
+    public float Armor; // Divide by 100 and apply percent as damage reduction modifier to ship to ship impact damage
+    public float Shields; // Current shield value
+    public float MaxShields; // Maximum shield value
+    public float ShieldRegenSpeed; // Amount of shield to regenerate per game tick
     // --Current/Max energy
-    public float Energy;
-    public float MaxEnergy;
-    public float EnergyRegenSpeed;
+    public float Energy; // Current energy value
+    public float MaxEnergy; // Maximum energy value
+    public float EnergyRegenSpeed; // Amount of energy to regenerate per game tick
     // --Energy costs
-    public float WarpEnergyCost;
-    public float GunEnergyCost;
-    public float BarrierEnergyDrainCost;
+    public float WarpEnergyCost; // Energy cost per tick applied by using warp engine
+    public float GunEnergyCost; // Energy cost per main gun shot fired (doesn't apply multiple times for multi cannon or multi shot ships)
+    
     // --Acceleration
-    public uint EngineCount;
-    public float ImpulseAcceleration;
-    public float WarpAccelerationMultiplier;
-    public float StrafeAcceleration;
+    public uint EngineCount; // Number of engines on ship (used only for visual FX for thruster fire)
+    public float ImpulseAcceleration; // The amount of acceleration to apply per game tick when impulse engine is on
+    public float WarpAccelerationMultiplier; // Impulse acceleration is multiplied by this value while warp engine is on
+    public float StrafeAcceleration; // The amount of acceleration to apply per game tick while strafe is ongoing (strafe is NPC only)
     // --Max Speed
-    public float MaxImpulseSpeed;
-    public float MaxWarpSpeed;
-    public float MaxStrafeSpeed;
-    public float MaxRotationSpeed;
+    public float MaxImpulseSpeed; // Maximum velocity for impulse engines
+    public float MaxWarpSpeed; // Maximum velocity for warp engines
+    public float MaxStrafeSpeed; // Maximum velocity for strafing (strafe is NPC only)
+    public float MaxRotationSpeed; // Maximum rotation amount per tick for ships
     // --Weapon stats
     // ----Main gun
-    public uint GunBarrelCount;
-    public uint GunShotProjectileType;
-    public float GunCooldownTime;
-    public float GunShotAmount;
-    public float GunShotCurvature;
-    public float GunShotDamage;
-    public float GunShotAccuracy;
-    public float GunShotSpeed;
-    public float GunShotLifetime;
-    // ----Bombs
-    public float BombCurvature;
-    public float BombDamage;
-    public float BombRadius;
-    public float BombSpeed;
-    public float BombLiftime;
-    public float BombPrimerTime;
-    // ----Barrage
-    public float BarrageGunCooldownTimeMultiplier;
-    public float BarrageShotAmountIncrease;
-    public float BarrageDamageMultiplier;
-    public float BarrageAccuracyMultiplier;
-    public float BarrageEnergyCostMultiplier;
+    public uint GunBarrelCount; // Number of gun barrels from which to spawn projectiles
+    public uint GunShotProjectileType; // Visual FX identifier for projectiles (references projectile prefab numbering system)
+    public float GunCooldownTime; // How long in seconds to wait between each shot fired from main gun
+    public float GunShotAmount; // Amount of projectiles to spawn from each gun barrel
+    public float GunShotCurvature; // Maximum rotation per game tick that projectiles can turn when homing on target (values of 0 produce no homing effect)
+    public float GunShotSightCone; // Value describing the sight cone within which projectiles can acquire target if they have a curvature above 0 (-1 is full 360°, 0 is 180°, 1 is 0° cone)
+    public float GunShotDamage; // Amount of damage each projectile inflicts on target collided with
+    public float GunShotAccuracy; // Divide by 100 and use value to determine the maximum degree change that can be randomly assigned each fired projectile (5 means projectile can be ±5° from straight forward)
+    public float GunShotSpeed; // Maximum velocity of fired projectile
+    public float GunShotLifetime; // Number of seconds projectile lasts before burning out
     // --Cooldowns
-    public float ShieldCooldownTime;
-    public float BarrierDuration;
-    public float BarrierCooldownTime;
-    public float BombCooldownTime;
-    public float BarrageDuration;
-    public float BarrageCooldownTime;
-    
+    public float ShieldCooldownTime; // How long in seconds the regenerating shield must go without taking damage before it will recharge
+    public float Ability1Duration; // How long in seconds ability 1 lasts
+    public float Ability2Duration; // How long in seconds ability 1 lasts
+    public float Ability3Duration; // How long in seconds ability 1 lasts
+    public float Ability1CooldownTime; // How long in seconds ability 1 will be on cooldown after use
+    public float Ability2CooldownTime; // How long in seconds ability 2 will be on cooldown after use
+    public float Ability3CooldownTime; // How long in seconds ability 3 will be on cooldown after use
+
     // --Experience worth
     public uint XP;
 
@@ -266,7 +259,7 @@ public class Ship
     // Processes inputs
     public virtual void ProcessInputs()
     {
-        // Each subclass has its own AI for this method
+        AIController.ProcessAI(this);
     }
 
     // Updates the state of the ship, turning, accelerating, using weapons etc.
@@ -284,7 +277,7 @@ public class Ship
     public void CheckHealth()
     {
         // If damage shader has been playing long enough
-        if(Time.time - this.LastDamageTakenTime >= this.DamageShaderCooldownTime)
+        if(Time.time - this.LastDamageTakenTime >= DamageShaderCooldownTime)
         {
             // Turn off damage shader
             this.ShowDamageShaderEffect(false);
@@ -384,7 +377,7 @@ public class Ship
     // Gets intended rotation
     public virtual void GetIntendedRotation()
     {
-        // Each subclass has its own AI for this method
+        AIController.GetIntendedRotation(this);
     }
 
     // Turns the ship
@@ -438,8 +431,9 @@ public class Ship
     // Accelerates the ship
     public void AccelerateShip()
     {
+        // TODO: Speed limit is still a bit buggy, when going diagonally player can get to higher speeds than intended
         // If impulse engine is activated by player input or AI and warp engine is not activated
-        if(this.ImpulseInput == true && this.WarpInput == false)
+        if(this.ImpulseInput == true && this.WarpEngineInput == false)
         {
             // If below impulse speed limit
             if(this.ShipRigidbody.velocity.magnitude < this.MaxImpulseSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.7f)
@@ -454,12 +448,12 @@ public class Ship
                 this.ImpulseParticleSystemMains[i].startSpeed = 2.8f;
                 this.WarpParticleSystemMains[i].startLifetime = 0f;
                 // Fade in/out audio
-                AudioController.FadeIn(this.ImpulseAudioSources[i], this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMaxVol);
-                AudioController.FadeOut(this.WarpAudioSources[i], this.WarpEngineAudioStep, this.WarpEngineAudioMinVol);
+                AudioController.FadeIn(this.ImpulseAudioSources[i], ImpulseEngineAudioStep, ImpulseEngineAudioMaxVol);
+                AudioController.FadeOut(this.WarpAudioSources[i], WarpEngineAudioStep, WarpEngineAudioMinVol);
             }
         }
         // If warp engine is activated by player input or AI
-        else if(this.WarpInput == true)
+        else if(this.WarpEngineInput == true)
         {
             // If below warp speed limit
             if(this.ShipRigidbody.velocity.magnitude < this.MaxWarpSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.5f)
@@ -477,8 +471,8 @@ public class Ship
                 this.WarpParticleSystemMains[i].startSpeed = 20f;
                 this.WarpParticleSystemMains[i].startLifetime = 1f;
                 // Fade in/out audio
-                AudioController.FadeIn(this.WarpAudioSources[i], this.WarpEngineAudioStep, this.WarpEngineAudioMaxVol);
-                AudioController.FadeOut(this.ImpulseAudioSources[i], this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMinVol);
+                AudioController.FadeIn(this.WarpAudioSources[i], WarpEngineAudioStep, WarpEngineAudioMaxVol);
+                AudioController.FadeOut(this.ImpulseAudioSources[i], ImpulseEngineAudioStep, ImpulseEngineAudioMinVol);
             }
         }
         // If no engines are active
@@ -492,8 +486,8 @@ public class Ship
                 this.WarpParticleSystemMains[i].startSpeed = 0f;
                 this.WarpParticleSystemMains[i].startLifetime = 0f;
                 // Fade out audio
-                AudioController.FadeOut(this.ImpulseAudioSources[i], this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMinVol);
-                AudioController.FadeOut(this.WarpAudioSources[i], this.WarpEngineAudioStep, this.WarpEngineAudioMinVol);
+                AudioController.FadeOut(this.ImpulseAudioSources[i], ImpulseEngineAudioStep, ImpulseEngineAudioMinVol);
+                AudioController.FadeOut(this.WarpAudioSources[i], WarpEngineAudioStep, WarpEngineAudioMinVol);
             }
         }
     }
@@ -533,10 +527,13 @@ public class Ship
         }
     }
 
-    // Uses ship abilities, PlayerShip has override for also checking Bombs, Barrier, Barrage etc
-    public virtual void CheckAbilities()
+    // Uses abilities: fire weapons, bombs, use barrier and scanner
+    public void CheckAbilities()
     {
         this.CheckMainGun();
+        this.CheckAbility1();
+        this.CheckAbility2();
+        this.CheckAbility3();
     }
 
     // Fires main guns
@@ -549,7 +546,7 @@ public class Ship
             this.GunOnCooldown = false;
         }
         // If weapons fire gun input is activated by player input or AI, the weapon is not on cooldown, and there is more available energy than the cost to fire
-        if(this.GunInput == true && this.GunOnCooldown == false && this.Energy >= this.GunEnergyCost)
+        if(this.MainGunInput == true && this.GunOnCooldown == false && this.Energy >= this.GunEnergyCost)
         {
             // Loop through gun barrel count
             for(int c = 0; c < this.GunBarrelCount; c++)
@@ -583,7 +580,7 @@ public class Ship
                         }
                     }
                     // Spawn a projectile
-                    GameController.SpawnProjectile(this.IFF, this.GunShotProjectileType, this.GunShotCurvature, this.GunShotDamage, this.GunBarrelObjects[c].transform.position, shotRotation, this.ShipRigidbody.velocity, this.GunShotSpeed, this.GunShotLifetime);
+                    GameController.SpawnProjectile(this.IFF, this.GunShotProjectileType, this.GunShotCurvature, this.GunShotSightCone, this.GunShotDamage, this.GunBarrelObjects[c].transform.position, shotRotation, this.ShipRigidbody.velocity, this.GunShotSpeed, this.GunShotLifetime);
                     // Turn on gun lights
                     this.GunBarrelLightsObjects[c].SetActive(true);
                     // Play gun audio
@@ -609,11 +606,29 @@ public class Ship
         }
     }
 
+    // Check ablity 1
+    public virtual void CheckAbility1()
+    {
+        // Each ship has their own special ablities
+    }
+
+    // Check ability 2
+    public virtual void CheckAbility2()
+    {
+        // Each ship has their own special ablities
+    }
+
+    // Check ability 3
+    public virtual void CheckAbility3()
+    {
+        // Each ship has their own special ablities
+    }
+
     // Called when receiving collision from projectile
-    public void ReceivedCollisionFromProjectile(float _damage, Vector3 _projectileStrikeLocation)
+    public virtual void ReceivedCollisionFromProjectile(float _damage, Vector3 _projectileStrikeLocation)
     {
         // If shields are above 0 or barrier is active
-        if(this.Shields > 0f || this.BarrierActive == true)
+        if(this.Shields > 0f)
         {
             // Spawn a shield strike particle effect
             this.ProjectileShieldStrike = GameObject.Instantiate(this.ProjectileShieldStrikePrefab, _projectileStrikeLocation, Quaternion.identity);
@@ -648,59 +663,49 @@ public class Ship
     }
 
     // Called when ship receives a damaging attack
-    public void TakeDamage(float _damage)
+    public virtual void TakeDamage(float _damage)
     {
-        // If barrier is not active
-        if(this.BarrierActive == false)
+        // Apply damage to shields
+        this.Shields -= _damage;
+        // If shields are knocked below 0
+        if(this.Shields < 0f)
         {
-            // Apply damage to shields
-            this.Shields -= _damage;
-            // If shields are knocked below 0
-            if(this.Shields < 0f)
+            // Add negative shield amount to health
+            this.Health += this.Shields;
+            // Reset shield to 0
+            this.Shields = 0f;
+            // If this is player
+            if(this.IsPlayer == true)
             {
-                // Add negative shield amount to health
-                this.Health += this.Shields;
-                // Reset shield to 0
-                this.Shields = 0f;
-                // If this is player
-                if(this.IsPlayer == true)
-                {
-                    // Show health damage vignette
-                    UIController.ShowHealthDamageEffect();
-                }
-            }
-            // If shields are still above 0
-            else
-            {
-                // If this is player
-                if(this.IsPlayer == true)
-                {
-                    // Show shield damage vignette
-                    UIController.ShowShieldDamageEffect();
-                }
-            }
-            // Set last damage taken time
-            this.LastDamageTakenTime = Time.time;
-            // Put shield on cooldown
-            this.ShieldOnCooldown = true;
-            // If this is player and shield regen audio is currently playing
-            if(this.IsPlayer == true && this.ShieldRegenAudio.isPlaying == true)
-            {
-                // Fade out shield regen audio
-                AudioController.FadeOut(this.ShieldRegenAudio, 0.25f, 0f);
-            }
-            // If ship is currently alive
-            if(this.Alive == true)
-            {
-                // Show damage shader
-                this.ShowDamageShaderEffect(true);
+                // Show health damage vignette
+                UIController.ShowHealthDamageEffect();
             }
         }
-        // If shield is active
+        // If shields are still above 0
         else
         {
-            // Subtract barrier energy drain cost from energy
-            this.Energy -= this.BarrierEnergyDrainCost;
+            // If this is player
+            if(this.IsPlayer == true)
+            {
+                // Show shield damage vignette
+                UIController.ShowShieldDamageEffect();
+            }
+        }
+        // Set last damage taken time
+        this.LastDamageTakenTime = Time.time;
+        // Put shield on cooldown
+        this.ShieldOnCooldown = true;
+        // If this is player and shield regen audio is currently playing
+        if(this.IsPlayer == true && this.ShieldRegenAudio.isPlaying == true)
+        {
+            // Fade out shield regen audio
+            AudioController.FadeOut(this.ShieldRegenAudio, 0.25f, 0f);
+        }
+        // If ship is currently alive
+        if(this.Alive == true)
+        {
+            // Show damage shader
+            this.ShowDamageShaderEffect(true);
         }
     }
 
@@ -771,7 +776,7 @@ public class Ship
     public void Wander()
     {
         // Stop shooting
-        this.GunInput = false;
+        this.MainGunInput = false;
         // If not moving(wandering) and not currently waiting around
         if(this.IsWanderMove == false && this.IsWaiting == false)
         {

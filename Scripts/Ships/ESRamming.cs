@@ -3,14 +3,18 @@
 using UnityEngine;
 
 // Suicide Bomber enemy ship
-public class EnemyShipRamming : EnemyShip
+public class ESRamming : EnemyShip
 {
     // Ramming ship-only GameObjects
     private readonly GameObject BombExplosionPrefab;
     private GameObject BombExplosionObject;
 
+    // Ship stats
+    private readonly float BombDamage;
+    private readonly float BombRadius;
+
     // Enemy ship constructor
-    public EnemyShipRamming(uint _id, Vector3 _startingPosition)
+    public ESRamming(uint _id, Vector3 _startingPosition)
     {
         this.ID = _id;
         this.StartingPosition = _startingPosition;
@@ -25,60 +29,26 @@ public class EnemyShipRamming : EnemyShip
         this.Shields = 10f;
         this.MaxShields = 10f;
         this.ShieldRegenSpeed = 1f;
+        this.ShieldCooldownTime = 3f;
         // --Current/Max energy
         this.Energy = 100f;
         this.MaxEnergy = 100f;
         this.EnergyRegenSpeed = 1.5f;
-        // --Energy costs
-        this.WarpEnergyCost = 0f; // Unused by enemy
-        this.GunEnergyCost = 0f; // Unused by enemy
-        this.BarrierEnergyDrainCost = 0f; // Unused by enemy
         // --Acceleration
         this.EngineCount = 1;
         this.ImpulseAcceleration = 100f;
-        this.WarpAccelerationMultiplier = 0f; // Unused by enemy
-        this.StrafeAcceleration = 0f; // Unused by enemy
         // --Max Speed
         this.MaxImpulseSpeed = 100f;
-        this.MaxWarpSpeed = 0f; // Unused by enemy
-        this.MaxStrafeSpeed = 0f; // Unused by enemy
         this.MaxRotationSpeed = 0.15f;
         // --Weapon stats
         // ----Main gun
         this.GunBarrelCount = 0;
-        this.GunShotProjectileType = 0; // Unused by enemy
-        this.GunCooldownTime = 0f; // Unused by enemy
-        this.GunShotAmount = 0; // Unused by enemy
-        this.GunShotCurvature = 0f; // unused by enemy
-        this.GunShotDamage = 0f; // Unused by enemy
-        this.GunShotAccuracy = 0f; // Unused by enemy
-        this.GunShotSpeed = 0f; // Unused by enemy
-        this.GunShotLifetime = 0f; // Unused by enemy
-        // ----Bombs
-        this.BombCurvature = 0f; // Unused by enemy
+        // ----Bomb
         this.BombDamage = 50f;
         this.BombRadius = 50f;
-        this.BombSpeed = 0f; // Unused by enemy
-        this.BombLiftime = 0f; // Unused by enemy
-        this.BombPrimerTime = 0f; // Unused by enemy
-        // ----Barrage
-        this.BarrageGunCooldownTimeMultiplier = 0f; // Unused by enemy
-        this.BarrageShotAmountIncrease = 0; // Unused by enemy
-        this.BarrageDamageMultiplier = 0f; // Unused by enemy
-        this.BarrageAccuracyMultiplier = 0f; // Unused by enemy
-        this.BarrageEnergyCostMultiplier = 0f; // Unused by enemy
-        // --Cooldowns
-        this.ShieldCooldownTime = 3f;
-        this.BarrierDuration = 0f; // Unused by enemy
-        this.BarrierCooldownTime = 0f; // Unused by enemy
-        this.BombCooldownTime = 0f; // Unused by enemy
-        this.BarrageDuration = 0f; // Unused by enemy
-        this.BarrageCooldownTime = 0f; // Unused by enemy
         // AI fields
         this.AIAimAssist = false;
         this.MaxTargetAcquisitionRange = 80f;
-        this.MaxOrbitRange = 0f; // Unused by enemy
-        this.MaxWeaponsRange = 0f; // Unused by enemy
         // Experience
         this.XP = (uint)(this.MaxHealth + this.MaxShields);
         // GameObject Instantiation
@@ -86,44 +56,6 @@ public class EnemyShipRamming : EnemyShip
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.Euler(0, GameController.r.Next(0, 360), 0));
         this.BombExplosionPrefab = Resources.Load<GameObject>(GameController.BombExplostionPrefabName);
         this.Initialize();
-    }
-
-
-    // Processes inputs
-    public override void ProcessInputs()
-    {
-        // If there is no current target or current target is dead
-        if(this.CurrentTarget == null || this.CurrentTarget.Alive == false)
-        {
-            // Acquire new target
-            this.CurrentTarget = AIController.AcquireTarget(this.ShipObject.transform.position, this.IFF, this.MaxTargetAcquisitionRange);
-        }
-        // If there is a current target and it is alive
-        if(this.CurrentTarget != null && this.CurrentTarget.Alive == true)
-        {
-            // Stop wandering as currently have target
-            this.IsWandering = false;
-            // Use AI to figure out if ship should accelerate
-            if(AIController.ShouldAccelerate(this.AItype, this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
-            {
-                this.ImpulseInput = true;
-            }
-            else
-            {
-                this.ImpulseInput = false;
-            }
-        }
-        // If unable to acquire target set wandering to true
-        else
-        {
-            this.IsWandering = true;
-        }
-        // If wandering
-        if(this.IsWandering == true)
-        {
-            // Wander
-            this.Wander();
-        }
     }
 
     // Called when receiving collision from ship

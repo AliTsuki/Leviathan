@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BombMaterial
+  m_Name: Projectile 5 Material
   m_Shader: {fileID: 4800000, guid: 0406db5a14f94604a8c57ccfbc9f3b46, type: 3}
   m_ShaderKeywords: _COLOROVERLAY_ON _EMISSION _RECEIVE_SHADOWS_OFF
   m_LightmapFlags: 2
@@ -24,10 +24,22 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: ba8921b7fb1986042901943a6546fc69, type: 3}
+        m_Texture: {fileID: 2800000, guid: 44dbfe2916c8b5345af4708e1179b30e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -36,15 +48,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
-        m_Texture: {fileID: 2800000, guid: ba8921b7fb1986042901943a6546fc69, type: 3}
+        m_Texture: {fileID: 2800000, guid: 44dbfe2916c8b5345af4708e1179b30e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissiveColorMap:
-        m_Texture: {fileID: 2800000, guid: ba8921b7fb1986042901943a6546fc69, type: 3}
+        m_Texture: {fileID: 2800000, guid: 44dbfe2916c8b5345af4708e1179b30e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: ba8921b7fb1986042901943a6546fc69, type: 3}
+        m_Texture: {fileID: 2800000, guid: 44dbfe2916c8b5345af4708e1179b30e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -55,12 +67,16 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _UnlitColorMap:
-        m_Texture: {fileID: 2800000, guid: ba8921b7fb1986042901943a6546fc69, type: 3}
+        m_Texture: {fileID: 2800000, guid: 44dbfe2916c8b5345af4708e1179b30e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
@@ -81,6 +97,7 @@ Material:
     - _Cull: 2
     - _CullMode: 2
     - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
     - _DistortionBlend: 0.5
     - _DistortionBlendMode: 0
     - _DistortionBlurBlendMode: 0
@@ -97,11 +114,12 @@ Material:
     - _DistortionScale: 1
     - _DistortionSrcBlend: 1
     - _DistortionStrength: 1
-    - _DistortionStrengthScaled: 0.1
+    - _DistortionStrengthScaled: 0
     - _DistortionVectorBias: -1
     - _DistortionVectorScale: 2
     - _DoubleSidedEnable: 0
     - _DstBlend: 10
+    - _EmissionEnabled: 0
     - _EmissiveExposureWeight: 1
     - _EmissiveIntensity: 1
     - _EmissiveIntensityUnit: 0
@@ -109,22 +127,29 @@ Material:
     - _EnvironmentReflections: 1
     - _FlipbookBlending: 0
     - _FlipbookMode: 0
-    - _GlossMapScale: 0
+    - _GlossMapScale: 1
     - _Glossiness: 0
+    - _GlossinessSource: 0
     - _GlossyReflections: 0
     - _HdrpVersion: 2
     - _IncludeIndirectLighting: 1
+    - _LightingEnabled: 0
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _Parallax: 0.02
     - _QueueOffset: 0
-    - _ReceiveShadows: 1
-    - _Smoothness: 0.5
+    - _ReceiveShadows: 0
+    - _SampleGI: 0
+    - _Shininess: 0
+    - _Smoothness: 0
+    - _SmoothnessSource: 0
     - _SmoothnessTextureChannel: 0
     - _SoftParticlesEnabled: 0
     - _SoftParticlesFarFadeDistance: 1
     - _SoftParticlesNearFadeDistance: 0
-    - _SpecularHighlights: 1
+    - _SpecSource: 0
+    - _SpecularHighlights: 0
     - _SrcBlend: 5
     - _StencilRef: 0
     - _StencilRefDepth: 32
@@ -135,22 +160,24 @@ Material:
     - _Surface: 1
     - _SurfaceType: 1
     - _TransparentSortPriority: 0
+    - _UVSec: 0
     - _UseEmissiveIntensity: 0
     - _WorkflowMode: 1
     - _ZTestModeDistortion: 4
     - _ZWrite: 0
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BaseColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
+    - _BaseColorAddSubDiff: {r: 1, g: 0, b: 0, a: 0}
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
-    - _Color: {r: 7.999999, g: 7.999999, b: 7.999999, a: 1}
-    - _EmissionColor: {r: 2.670157, g: 0, b: 0.45255306, a: 1}
-    - _EmissiveColor: {r: 7.999999, g: 7.999999, b: 7.999999, a: 1}
+    - _Color: {r: 2, g: 2, b: 2, a: 1}
+    - _ColorAddSubDiff: {r: 1, g: 0, b: 0, a: 0}
+    - _EmissionColor: {r: 2, g: 0, b: 0.7372549, a: 1}
+    - _EmissiveColor: {r: 2, g: 2, b: 2, a: 1}
     - _EmissiveColorLDR: {r: 0, g: 0, b: 0, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
-    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SpecColor: {r: 0.19999993, g: 0.19999993, b: 0.19999993, a: 0}
     - _UnlitColor: {r: 1, g: 1, b: 1, a: 1}
---- !u!114 &3042568491308889522
+--- !u!114 &1484845088634278905
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

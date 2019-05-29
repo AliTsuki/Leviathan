@@ -1,18 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PSEngineer : MonoBehaviour
+public class PSEngineer : PlayerShip
 {
-    // Start is called before the first frame update
-    void Start()
+    // Player ship constructor
+    public PSEngineer(uint _id)
     {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
