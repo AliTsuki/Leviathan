@@ -8,8 +8,9 @@ public class ESBroadside : EnemyShip
     {
         this.ID = _id;
         this.StartingPosition = _startingPosition;
+        this.Type = EnemyShipType.Broadside;
+        this.AItype = AIType.Broadside;
         this.IFF = GameController.IFF.Enemy;
-        this.AItype = AIType.Standard;
         this.IsPlayer = false;
         // Ship stats
         // --Health/Armor/Shields
@@ -54,7 +55,7 @@ public class ESBroadside : EnemyShip
         // Experience
         this.XP = (uint)(this.MaxHealth + this.MaxShields);
         // GameObject Instantiation
-        this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.EnemyBroadsidePrefabName);
+        this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.EnemyShipPrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.Euler(0, GameController.r.Next(0, 360), 0));
         this.Initialize();
     }

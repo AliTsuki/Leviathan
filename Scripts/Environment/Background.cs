@@ -1,34 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 
 // Controls the background tiles
 public static class Background
 {
-    // GameObjects
-    private static GameObject[] BackgroundPrefabs;
-    
     // Tilemap
-    private static Texture2D Tilemap;
-   
+    public static Texture2D Tilemap;
+
     // Lists and Dicts
+    private static Dictionary<Zone.ZoneType, GameObject> BackgroundPrefabs = new Dictionary<Zone.ZoneType, GameObject>();
     private static readonly Dictionary<Vector2Int, GameObject> Backgrounds = new Dictionary<Vector2Int, GameObject>();
     private static List<Vector2Int> BackgroundsToRemove = new List<Vector2Int>();
 
     // Next background fields
     private static Vector2Int NextBackgroundKey;
     private static Vector3 NextBackgroundPosition;
-    private static byte NextBackgroundType;
+    private static Zone.ZoneType NextBackgroundType;
 
     // Player position
     private static Vector3 PlayerPosition;
 
     // Constants
-    private const int BackgroundPrefabsAmount = 1;
     private const int BackgroundInitializationTileAmount = 2;
     private const int BackgroundGenerationTileAmount = 2;
-    private const int BackgroundTileSize = 200;
-    private const int BackgroundMaxDistanceFromPlayer = 500;
+    private const uint BackgroundTileSize = 200;
+    private const uint BackgroundMaxDistanceFromPlayer = 500;
 
 
     // Initialize
@@ -40,10 +38,9 @@ public static class Background
         // Load tilemap
         Tilemap = Resources.Load<Texture2D>(GameController.TilemapName);
         // Load background prefabs
-        BackgroundPrefabs = new GameObject[BackgroundPrefabsAmount];
-        for(int i = 0; i < BackgroundPrefabsAmount; i++)
+        foreach(Zone.ZoneType type in (Zone.ZoneType[]) Enum.GetValues(typeof(Zone.ZoneType)))
         {
-            BackgroundPrefabs[i] = Resources.Load<GameObject>(GameController.BackgroundPrefabName + $@" {i}");
+            BackgroundPrefabs.Add(type, Resources.Load<GameObject>(GameController.BackgroundPrefabName + $@" {type}"));
         }
         // Initialize background
         InitializeBackground();
@@ -58,23 +55,10 @@ public static class Background
         AddNewBackgrounds();
     }
 
-    // Get background tile type at position
-    private static byte GetBackgroundTypeAtPosition(Vector2Int _pos)
+    // Convert world coords to tile coords
+    public static Vector2Int WorldCoordsToTileCoords(Vector3 _pos)
     {
-        Color color = Tilemap.GetPixel(_pos.x + (Tilemap.width / 2), _pos.y + (Tilemap.height / 2));
-        // TODO: Color Tilemap file and add corresponding colors here and background prefabs with the byte number suffix
-        if(color == Color.black)
-        {
-            return 0;
-        }
-        else if(color == Color.white)
-        {
-            return 1;
-        }
-        else
-        {
-            return 2;
-        }
+        return new Vector2Int(Mathf.RoundToInt(_pos.x / BackgroundTileSize), Mathf.RoundToInt(_pos.z / BackgroundTileSize));
     }
 
     // Initializes the background at beginning of game
@@ -90,7 +74,7 @@ public static class Background
                 // Set the next background position to x and z multiplied by the size of the tiles
                 NextBackgroundPosition = new Vector3(NextBackgroundKey.x * BackgroundTileSize, 0, NextBackgroundKey.y * BackgroundTileSize);
                 // Get what type of background tile to add at this position
-                NextBackgroundType = GetBackgroundTypeAtPosition(NextBackgroundKey);
+                NextBackgroundType = Zone.GetZoneAtPosition(NextBackgroundKey);
                 // Add a new background prefab at the next background position and add it to backgrounds list
                 Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[NextBackgroundType], NextBackgroundPosition, Quaternion.identity));
                 // Set name of GameObject in Unity Editor to the key
@@ -144,7 +128,7 @@ public static class Background
                 if(Backgrounds.ContainsKey(NextBackgroundKey) == false)
                 {
                     // Get what type of background tile to add at this position
-                    NextBackgroundType = GetBackgroundTypeAtPosition(NextBackgroundKey);
+                    NextBackgroundType = Zone.GetZoneAtPosition(NextBackgroundKey);
                     // If background doesn't already exist, add new background into game and into backgrounds list
                     Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[NextBackgroundType], NextBackgroundPosition, Quaternion.identity));
                     // Set name of GameObject in Unity Editor to the key

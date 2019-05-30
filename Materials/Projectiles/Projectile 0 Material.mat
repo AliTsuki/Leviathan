@@ -114,7 +114,7 @@ Material:
     - _DistortionScale: 1
     - _DistortionSrcBlend: 1
     - _DistortionStrength: 1
-    - _DistortionStrengthScaled: 0
+    - _DistortionStrengthScaled: 0.1
     - _DistortionVectorBias: -1
     - _DistortionVectorScale: 2
     - _DoubleSidedEnable: 0

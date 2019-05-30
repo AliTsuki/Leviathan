@@ -28,19 +28,19 @@
             "typeInfo": {
                 "fullName": "UnityEditor.ShaderGraph.Vector1ShaderProperty"
             },
-            "JSONnodeData": "{\n    \"m_Name\": \"_FresnelPatternAlpha\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"d6a3d1fa-8a94-4cf1-b36d-c1be1ea56fa5\"\n    },\n    \"m_DefaultReferenceName\": \"Vector1_1EDEC858\",\n    \"m_OverrideReferenceName\": \"_FresnelPatternAlpha\",\n    \"m_Value\": 3.0,\n    \"m_FloatType\": 0,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    },\n    \"m_Hidden\": false\n}"
+            "JSONnodeData": "{\n    \"m_Name\": \"_FresnelPatternAlpha\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"d6a3d1fa-8a94-4cf1-b36d-c1be1ea56fa5\"\n    },\n    \"m_DefaultReferenceName\": \"Vector1_1EDEC858\",\n    \"m_OverrideReferenceName\": \"_FresnelPatternAlpha\",\n    \"m_Value\": 3.0,\n    \"m_FloatType\": 1,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 10.0\n    },\n    \"m_Hidden\": false\n}"
         },
         {
             "typeInfo": {
                 "fullName": "UnityEditor.ShaderGraph.Vector1ShaderProperty"
             },
-            "JSONnodeData": "{\n    \"m_Name\": \"_ScrollSpeed\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"651bf913-f6c1-44de-92a8-cd631c076c71\"\n    },\n    \"m_DefaultReferenceName\": \"Vector1_631A9223\",\n    \"m_OverrideReferenceName\": \"_ScrollSpeed\",\n    \"m_Value\": 0.10000000149011612,\n    \"m_FloatType\": 0,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    },\n    \"m_Hidden\": false\n}"
+            "JSONnodeData": "{\n    \"m_Name\": \"_ScrollSpeed\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"651bf913-f6c1-44de-92a8-cd631c076c71\"\n    },\n    \"m_DefaultReferenceName\": \"Vector1_631A9223\",\n    \"m_OverrideReferenceName\": \"_ScrollSpeed\",\n    \"m_Value\": 0.10000000149011612,\n    \"m_FloatType\": 1,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    },\n    \"m_Hidden\": false\n}"
         },
         {
             "typeInfo": {
                 "fullName": "UnityEditor.ShaderGraph.Vector1ShaderProperty"
             },
-            "JSONnodeData": "{\n    \"m_Name\": \"_FresnelEdgeEffect\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"654e71f0-afc3-4499-b437-7ecc517e5dcb\"\n    },\n    \"m_DefaultReferenceName\": \"Vector1_8E68A24F\",\n    \"m_OverrideReferenceName\": \"_FresnelEdgeEffect\",\n    \"m_Value\": 5.0,\n    \"m_FloatType\": 0,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 1.0\n    },\n    \"m_Hidden\": false\n}"
+            "JSONnodeData": "{\n    \"m_Name\": \"_FresnelEdgeEffect\",\n    \"m_GeneratePropertyBlock\": true,\n    \"m_Guid\": {\n        \"m_GuidSerialized\": \"654e71f0-afc3-4499-b437-7ecc517e5dcb\"\n    },\n    \"m_DefaultReferenceName\": \"Vector1_8E68A24F\",\n    \"m_OverrideReferenceName\": \"_FresnelEdgeEffect\",\n    \"m_Value\": 5.0,\n    \"m_FloatType\": 1,\n    \"m_RangeValues\": {\n        \"x\": 0.0,\n        \"y\": 10.0\n    },\n    \"m_Hidden\": false\n}"
         }
     ],
     "m_GUID": {

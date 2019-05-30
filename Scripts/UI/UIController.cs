@@ -85,7 +85,8 @@ public static class UIController
                 HealthbarUIs[1].SetActive(true);
             }
             // Minimap coords
-            MinimapCoords.GetComponent<TextMeshProUGUI>().text = $@"X: {Mathf.RoundToInt(GameController.Player.ShipObject.transform.position.x)}{Environment.NewLine}Z: {Mathf.RoundToInt(GameController.Player.ShipObject.transform.position.z)}";
+            Vector3 PlayerPosition = GameController.Player.ShipObject.transform.position;
+            MinimapCoords.GetComponent<TextMeshProUGUI>().text = $@"X: {Mathf.RoundToInt(PlayerPosition.x)}{Environment.NewLine}Z: {Mathf.RoundToInt(PlayerPosition.z)}";
             // Add info to info label
             deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
             FPS = Mathf.FloorToInt(1.0f / deltaTime);

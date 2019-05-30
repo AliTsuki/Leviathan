@@ -30,13 +30,12 @@ public class Ship
     public GameObject Explosion;
 
     // Constants
-    // Audio constants
-    public const float ImpulseEngineAudioStep = 0.05f;
-    public const float ImpulseEngineAudioMinVol = 0.1f;
-    public const float ImpulseEngineAudioMaxVol = 0.5f;
-    public const float WarpEngineAudioStep = 0.05f;
-    public const float WarpEngineAudioMinVol = 0f;
-    public const float WarpEngineAudioMaxVol = 1f;
+    public float ImpulseEngineAudioStep = 0.05f;
+    public float ImpulseEngineAudioMinVol = 0.25f;
+    public float ImpulseEngineAudioMaxVol = 1f;
+    public float WarpEngineAudioStep = 0.05f;
+    public float WarpEngineAudioMinVol = 0f;
+    public float WarpEngineAudioMaxVol = 1f;
     // Shader constants
     public const float DamageShaderCooldownTime = 0.5f;
 
@@ -110,7 +109,6 @@ public class Ship
     // --Energy costs
     public float WarpEnergyCost; // Energy cost per tick applied by using warp engine
     public float GunEnergyCost; // Energy cost per main gun shot fired (doesn't apply multiple times for multi cannon or multi shot ships)
-    
     // --Acceleration
     public uint EngineCount; // Number of engines on ship (used only for visual FX for thruster fire)
     public float ImpulseAcceleration; // The amount of acceleration to apply per game tick when impulse engine is on
@@ -194,13 +192,16 @@ public class Ship
         for(int i = 0; i < this.EngineCount; i++)
         {
             this.ImpulseEngineObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.ImpulseEngineName + $@" {i}").gameObject;
-            this.WarpEngineObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.WarpEngineName + $@" {i}").gameObject;
             this.ImpulseParticleSystems[i] = this.ImpulseEngineObjects[i].GetComponent<ParticleSystem>();
             this.ImpulseParticleSystemMains[i] = this.ImpulseParticleSystems[i].main;
-            this.WarpParticleSystems[i] = this.WarpEngineObjects[i].GetComponent<ParticleSystem>();
-            this.WarpParticleSystemMains[i] = this.WarpParticleSystems[i].main;
             this.ImpulseAudioSources[i] = this.ImpulseEngineObjects[i].GetComponent<AudioSource>();
-            this.WarpAudioSources[i] = this.WarpEngineObjects[i].GetComponent<AudioSource>();
+            if(this.IsPlayer == true)
+            {
+                this.WarpEngineObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.WarpEngineName + $@" {i}").gameObject;
+                this.WarpParticleSystems[i] = this.WarpEngineObjects[i].GetComponent<ParticleSystem>();
+                this.WarpParticleSystemMains[i] = this.WarpParticleSystems[i].main;
+                this.WarpAudioSources[i] = this.WarpEngineObjects[i].GetComponent<AudioSource>();
+            }
         }
         // Set up Gun Objects
         this.GunBarrelObjects = new GameObject[this.GunBarrelCount];
@@ -230,6 +231,13 @@ public class Ship
         this.DefaultGunShotDamage = this.GunShotDamage;
         this.DefaultGunShotAccuracy = this.GunShotAccuracy;
         this.DefaultGunEnergyCost = this.GunEnergyCost;
+        // Default audio levels
+        this.ImpulseEngineAudioStep = 0.05f;
+        this.ImpulseEngineAudioMinVol = 0.1f;
+        this.ImpulseEngineAudioMaxVol = 0.5f;
+        this.WarpEngineAudioStep = 0.05f;
+        this.WarpEngineAudioMinVol = 0f;
+        this.WarpEngineAudioMaxVol = 1f;
     }
 
     // Update is called once per frame
@@ -446,10 +454,14 @@ public class Ship
             {
                 // Modify particle effects
                 this.ImpulseParticleSystemMains[i].startSpeed = 2.8f;
-                this.WarpParticleSystemMains[i].startLifetime = 0f;
-                // Fade in/out audio
-                AudioController.FadeIn(this.ImpulseAudioSources[i], ImpulseEngineAudioStep, ImpulseEngineAudioMaxVol);
-                AudioController.FadeOut(this.WarpAudioSources[i], WarpEngineAudioStep, WarpEngineAudioMinVol);
+                // Audio fadein
+                AudioController.FadeIn(this.ImpulseAudioSources[i], this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMaxVol);
+                // If this is player
+                if(this.IsPlayer == true)
+                {
+                    this.WarpParticleSystemMains[i].startLifetime = 0f;
+                    AudioController.FadeOut(this.WarpAudioSources[i], this.WarpEngineAudioStep, this.WarpEngineAudioMinVol);
+                }
             }
         }
         // If warp engine is activated by player input or AI
@@ -468,11 +480,15 @@ public class Ship
             {
                 // Modify particle effects
                 this.ImpulseParticleSystemMains[i].startSpeed = 5f;
-                this.WarpParticleSystemMains[i].startSpeed = 20f;
-                this.WarpParticleSystemMains[i].startLifetime = 1f;
-                // Fade in/out audio
-                AudioController.FadeIn(this.WarpAudioSources[i], WarpEngineAudioStep, WarpEngineAudioMaxVol);
-                AudioController.FadeOut(this.ImpulseAudioSources[i], ImpulseEngineAudioStep, ImpulseEngineAudioMinVol);
+                // Audio fadeout
+                AudioController.FadeOut(this.ImpulseAudioSources[i], this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMinVol);
+                // If this is player
+                if(this.IsPlayer == true)
+                {
+                    this.WarpParticleSystemMains[i].startSpeed = 20f;
+                    this.WarpParticleSystemMains[i].startLifetime = 1f;
+                    AudioController.FadeIn(this.WarpAudioSources[i], this.WarpEngineAudioStep, this.WarpEngineAudioMaxVol);
+                }
             }
         }
         // If no engines are active
@@ -483,11 +499,15 @@ public class Ship
             {
                 // Turn particles back to default
                 this.ImpulseParticleSystemMains[i].startSpeed = 1f;
-                this.WarpParticleSystemMains[i].startSpeed = 0f;
-                this.WarpParticleSystemMains[i].startLifetime = 0f;
-                // Fade out audio
-                AudioController.FadeOut(this.ImpulseAudioSources[i], ImpulseEngineAudioStep, ImpulseEngineAudioMinVol);
-                AudioController.FadeOut(this.WarpAudioSources[i], WarpEngineAudioStep, WarpEngineAudioMinVol);
+                // Audio fadeout to default
+                AudioController.FadeOut(this.ImpulseAudioSources[i], this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMinVol);
+                // If this is player
+                if(this.IsPlayer == true)
+                {
+                    this.WarpParticleSystemMains[i].startSpeed = 0f;
+                    this.WarpParticleSystemMains[i].startLifetime = 0f;
+                    AudioController.FadeOut(this.WarpAudioSources[i], this.WarpEngineAudioStep, this.WarpEngineAudioMinVol);
+                }
             }
         }
     }

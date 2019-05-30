@@ -18,8 +18,9 @@ public class ESRamming : EnemyShip
     {
         this.ID = _id;
         this.StartingPosition = _startingPosition;
-        this.IFF = GameController.IFF.Enemy;
+        this.Type = EnemyShipType.Ramming;
         this.AItype = AIType.Ramming;
+        this.IFF = GameController.IFF.Enemy;
         this.IsPlayer = false;
         // Ship stats
         // --Health/Armor/Shields
@@ -52,7 +53,7 @@ public class ESRamming : EnemyShip
         // Experience
         this.XP = (uint)(this.MaxHealth + this.MaxShields);
         // GameObject Instantiation
-        this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.EnemyRammingPrefabName);
+        this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.EnemyShipPrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.Euler(0, GameController.r.Next(0, 360), 0));
         this.BombExplosionPrefab = Resources.Load<GameObject>(GameController.BombExplostionPrefabName);
         this.Initialize();

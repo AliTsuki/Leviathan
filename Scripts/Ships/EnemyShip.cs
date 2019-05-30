@@ -1,7 +1,12 @@
-﻿using UnityEngine;
-
-// Controls the enemy ships
+﻿// Controls the enemy ships
 public class EnemyShip : Ship
 {
-    // All basic enemy ship functions have been merged with Ship superclass, consider deletion of this class
+    // Enemy ship types
+    public enum EnemyShipType
+    {
+        Standard,
+        Ramming,
+        Broadside
+    }
+    public EnemyShipType Type;
 }

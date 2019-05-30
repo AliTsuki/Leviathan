@@ -21,7 +21,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.11a";
+    public static string Version = "0.0.11b";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject CamerasPrefab;
@@ -68,9 +68,7 @@ public static class GameController
     // Ships
     public const string PlayerPrefabName = "Ships/Player Ships/Player Ship";
     public const string FriendPrefabName = "Ships/Player Ships/Player Ship";
-    public const string EnemyStandardPrefabName = "Ships/Enemy Ships/Enemy Ship 0";
-    public const string EnemyRammingPrefabName = "Ships/Enemy Ships/Enemy Ship 1";
-    public const string EnemyBroadsidePrefabName = "Ships/Enemy Ships/Enemy Ship 2";
+    public const string EnemyShipPrefabName = "Ships/Enemy Ships/Enemy Ship";
     // Ship parts
     public const string ImpulseEngineName = "Impulse Engine";
     public const string WarpEngineName = "Warp Engine";
@@ -99,7 +97,7 @@ public static class GameController
     {
         Friend,
         Enemy
-    };
+    }
 
     // Game State fields
     public enum GameState
@@ -251,19 +249,7 @@ public static class GameController
     private static void SpawnEnemy(Vector3 _startingPosition)
     {
         NextShipID();
-        int enemyTypeSelector = r.Next(0, 100);
-        if(enemyTypeSelector <= 80)
-        {
-            Ships.Add(ShipID, new ESStandard(ShipID, _startingPosition));
-        }
-        else if(enemyTypeSelector > 80 && enemyTypeSelector <= 90)
-        {
-            Ships.Add(ShipID, new ESRamming(ShipID, _startingPosition));
-        }
-        else if(enemyTypeSelector > 90)
-        {
-            Ships.Add(ShipID, new ESBroadside(ShipID, _startingPosition));
-        }
+        Ships.Add(ShipID, Zone.SpawnEnemy(ShipID, _startingPosition));
         EnemyCount++;
     }
 

@@ -29,6 +29,7 @@ public class PSBomber : PlayerShip
     public PSBomber(uint _id)
     {
         this.ID = _id;
+        this.Type = PlayerShipType.Bomber;
         // TODO: Change starting position to be last home zone saved to
         this.StartingPosition = new Vector3(0, 0, 0);
         this.IFF = GameController.IFF.Friend;
@@ -94,9 +95,13 @@ public class PSBomber : PlayerShip
         this.Ability3Duration = 5f;
         this.Ability3CooldownTime = 10f;
         // GameObject Instantiation
-        this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.PlayerPrefabName);
+        this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.PlayerPrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         this.BarrierObject = this.ShipObject.transform.GetChild(0).Find(GameController.ShieldName).gameObject;
+        // Audio levels
+        this.ImpulseEngineAudioStep = 0.05f;
+        this.ImpulseEngineAudioMinVol = 0.25f;
+        this.ImpulseEngineAudioMaxVol = 1f;
         this.Initialize();
     }
 

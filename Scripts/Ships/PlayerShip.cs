@@ -10,6 +10,7 @@ public class PlayerShip : Ship
         Engineer,
         Scout
     }
+    public PlayerShipType Type;
 
 
     // Processes inputs

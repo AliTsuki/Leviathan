@@ -83,13 +83,13 @@ public static class AIController
             if(_ship.CurrentTarget != null && _ship.CurrentTarget.Alive == true && _ship.StrafeInput == false)
             {
                 // Get rotation to face target
-                _ship.IntendedRotation = AIController.GetRotationToTarget(_ship.ShipObject.transform, _ship.CurrentTarget.ShipObject.transform.position);
+                _ship.IntendedRotation = GetRotationToTarget(_ship.ShipObject.transform, _ship.CurrentTarget.ShipObject.transform.position);
             }
             // If there is a current target and it is alive and we are currenlty strafing
             else if(_ship.CurrentTarget != null && _ship.CurrentTarget.Alive == true && _ship.StrafeInput == true)
             {
                 // Get rotation to face target
-                _ship.IntendedRotation = AIController.GetRotationToTarget(_ship.ShipObject.transform, _ship.CurrentTarget.ShipObject.transform.position);
+                _ship.IntendedRotation = GetRotationToTarget(_ship.ShipObject.transform, _ship.CurrentTarget.ShipObject.transform.position);
                 // If strafe right
                 if(_ship.StrafeRight == true)
                 {
