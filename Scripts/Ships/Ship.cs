@@ -41,7 +41,7 @@ public class Ship
 
     // Inputs
     public Vector2 AimInput;
-    public bool ImpulseInput;
+    public bool ImpulseEngineInput;
     public bool WarpEngineInput;
     public bool StrafeInput;
     public bool MainGunInput;
@@ -441,10 +441,10 @@ public class Ship
     {
         // TODO: Speed limit is still a bit buggy, when going diagonally player can get to higher speeds than intended
         // If impulse engine is activated by player input or AI and warp engine is not activated
-        if(this.ImpulseInput == true && this.WarpEngineInput == false)
+        if(this.ImpulseEngineInput == true && this.WarpEngineInput == false)
         {
             // If below impulse speed limit
-            if(this.ShipRigidbody.velocity.magnitude < this.MaxImpulseSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.7f)
+            if(this.ShipRigidbody.velocity.magnitude < this.MaxImpulseSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.5f)
             {
                 // Accelerate forward
                 this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.ImpulseAcceleration));
@@ -547,7 +547,7 @@ public class Ship
         }
     }
 
-    // Uses abilities: fire weapons, bombs, use barrier and scanner
+    // Uses abilities: fire weapons, use abilities 1, 2, and 3
     public void CheckAbilities()
     {
         this.CheckMainGun();
@@ -827,7 +827,7 @@ public class Ship
         // If moving, set impulse to true which causes ship to accelerate forward
         if(this.IsWanderMove == true)
         {
-            this.ImpulseInput = true;
+            this.ImpulseEngineInput = true;
         }
     }
 }

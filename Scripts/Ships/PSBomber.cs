@@ -3,7 +3,7 @@
 public class PSBomber : PlayerShip
 {
     // Player-only GameObjects
-    private readonly GameObject BarrierObject;
+    private GameObject BarrierObject;
     private Bomb bomb;
 
     // On cooldown bools

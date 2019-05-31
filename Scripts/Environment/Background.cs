@@ -6,21 +6,23 @@ using UnityEngine;
 // Controls the background tiles
 public static class Background
 {
-    // Tilemap
-    public static Texture2D Tilemap;
-
     // Lists and Dicts
-    private static Dictionary<Zone.ZoneType, GameObject> BackgroundPrefabs = new Dictionary<Zone.ZoneType, GameObject>();
-    private static readonly Dictionary<Vector2Int, GameObject> Backgrounds = new Dictionary<Vector2Int, GameObject>();
+    public static Dictionary<Vector2Int, BackgroundTile> Tilemap = new Dictionary<Vector2Int, BackgroundTile>();
+    private static Dictionary<string, GameObject> BackgroundPrefabs = new Dictionary<string, GameObject>();
+    private static Dictionary<Vector2Int, GameObject> Backgrounds = new Dictionary<Vector2Int, GameObject>();
     private static List<Vector2Int> BackgroundsToRemove = new List<Vector2Int>();
 
     // Next background fields
     private static Vector2Int NextBackgroundKey;
     private static Vector3 NextBackgroundPosition;
-    private static Zone.ZoneType NextBackgroundType;
+    private static BackgroundTile NextBackgroundTile;
 
     // Player position
     private static Vector3 PlayerPosition;
+
+    // Tilemap
+    public static Texture2D TilemapTexture;
+    private static bool BackgroundDependenciesLoaded = false;
 
     // Constants
     private const int BackgroundInitializationTileAmount = 2;
@@ -36,11 +38,19 @@ public static class Background
         Backgrounds.Clear();
         BackgroundsToRemove.Clear();
         // Load tilemap
-        Tilemap = Resources.Load<Texture2D>(GameController.TilemapName);
-        // Load background prefabs
-        foreach(Zone.ZoneType type in (Zone.ZoneType[]) Enum.GetValues(typeof(Zone.ZoneType)))
+        if(BackgroundDependenciesLoaded == false)
         {
-            BackgroundPrefabs.Add(type, Resources.Load<GameObject>(GameController.BackgroundPrefabName + $@" {type}"));
+            TilemapTexture = Resources.Load<Texture2D>(GameController.TilemapName);
+            StoreTilemapInDict();
+            // Load background prefabs
+            foreach(Zone.ZoneType ZoneType in (Zone.ZoneType[])Enum.GetValues(typeof(Zone.ZoneType)))
+            {
+                foreach(BackgroundTile.TileTypeEnum TileType in (BackgroundTile.TileTypeEnum[])Enum.GetValues(typeof(BackgroundTile.TileTypeEnum)))
+                {
+                    BackgroundPrefabs.Add($@"{ZoneType}:{TileType}", Resources.Load<GameObject>(GameController.BackgroundPrefabName + $@"/{ZoneType}/{TileType}"));
+                }
+            }
+            BackgroundDependenciesLoaded = true;
         }
         // Initialize background
         InitializeBackground();
@@ -55,10 +65,54 @@ public static class Background
         AddNewBackgrounds();
     }
 
-    // Convert world coords to tile coords
-    public static Vector2Int WorldCoordsToTileCoords(Vector3 _pos)
+    // Convert tilemap pixel coords to tile coords
+    public static Vector2Int TilemapPixelCoordsToTileCoords(Vector2Int _pixelCoords)
     {
-        return new Vector2Int(Mathf.RoundToInt(_pos.x / BackgroundTileSize), Mathf.RoundToInt(_pos.z / BackgroundTileSize));
+        return new Vector2Int(_pixelCoords.x - (TilemapTexture.width / 2), _pixelCoords.y - (TilemapTexture.height / 2));
+    }
+
+    // Convert world coords to tile coords
+    public static Vector2Int WorldCoordsToTileCoords(Vector3 _worldCoords)
+    {
+        return new Vector2Int(Mathf.RoundToInt(_worldCoords.x / BackgroundTileSize), Mathf.RoundToInt(_worldCoords.z / BackgroundTileSize));
+    }
+
+    // Convert tile coords to world coords
+    public static Vector3 TileCoordsToWorldCoords(Vector2Int _tileCoords)
+    {
+        return new Vector3(_tileCoords.x * BackgroundTileSize, 0, _tileCoords.y * BackgroundTileSize);
+    }
+
+    // Store tilemap in Dict
+    private static void StoreTilemapInDict()
+    {
+        for(int x = 0; x < TilemapTexture.width; x++)
+        {
+            for(int z = 0; z < TilemapTexture.height; z++)
+            {
+                Vector2Int PixelCoords = new Vector2Int(x, z);
+                Zone.ZoneType ZoneType = Zone.GetZoneAtPixelCoords(new Vector2Int(x, z));
+                byte TileTypeAndRotation = 0;
+                if(Zone.GetZoneAtPixelCoords(new Vector2Int(x + 1, z - 1)) == ZoneType)
+                {
+                    TileTypeAndRotation += 1;
+                }
+                if(Zone.GetZoneAtPixelCoords(new Vector2Int(x - 1, z - 1)) == ZoneType)
+                {
+                    TileTypeAndRotation += 2;
+                }
+                if(Zone.GetZoneAtPixelCoords(new Vector2Int(x + 1, z + 1)) == ZoneType)
+                {
+                    TileTypeAndRotation += 4;
+                }
+                if(Zone.GetZoneAtPixelCoords(new Vector2Int(x - 1, z + 1)) == ZoneType)
+                {
+                    TileTypeAndRotation += 8;
+                }
+                Vector2Int TileCoords = TilemapPixelCoordsToTileCoords(PixelCoords);
+                Tilemap.Add(TileCoords, new BackgroundTile(ZoneType, TileTypeAndRotation));
+            }
+        }
     }
 
     // Initializes the background at beginning of game
@@ -72,11 +126,11 @@ public static class Background
                 // Set the next background key to be current x and z
                 NextBackgroundKey = new Vector2Int(x, z);
                 // Set the next background position to x and z multiplied by the size of the tiles
-                NextBackgroundPosition = new Vector3(NextBackgroundKey.x * BackgroundTileSize, 0, NextBackgroundKey.y * BackgroundTileSize);
+                NextBackgroundPosition = TileCoordsToWorldCoords(NextBackgroundKey);
                 // Get what type of background tile to add at this position
-                NextBackgroundType = Zone.GetZoneAtPosition(NextBackgroundKey);
+                NextBackgroundTile = Tilemap[NextBackgroundKey];
                 // Add a new background prefab at the next background position and add it to backgrounds list
-                Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[NextBackgroundType], NextBackgroundPosition, Quaternion.identity));
+                Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[$@"{NextBackgroundTile.ZoneType}:{NextBackgroundTile.TileType}"], NextBackgroundPosition, Quaternion.Euler(NextBackgroundTile.Rotation)));
                 // Set name of GameObject in Unity Editor to the key
                 Backgrounds[NextBackgroundKey].name = $@"Background: {NextBackgroundKey.x}, {NextBackgroundKey.y}";
             }
@@ -128,9 +182,9 @@ public static class Background
                 if(Backgrounds.ContainsKey(NextBackgroundKey) == false)
                 {
                     // Get what type of background tile to add at this position
-                    NextBackgroundType = Zone.GetZoneAtPosition(NextBackgroundKey);
-                    // If background doesn't already exist, add new background into game and into backgrounds list
-                    Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[NextBackgroundType], NextBackgroundPosition, Quaternion.identity));
+                    NextBackgroundTile = Tilemap[NextBackgroundKey];
+                    // Add a new background prefab at the next background position and add it to backgrounds list
+                    Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[$@"{NextBackgroundTile.ZoneType}:{NextBackgroundTile.TileType}"], NextBackgroundPosition, Quaternion.Euler(NextBackgroundTile.Rotation)));
                     // Set name of GameObject in Unity Editor to the key
                     Backgrounds[NextBackgroundKey].name = $@"Background: {NextBackgroundKey.x}, {NextBackgroundKey.y}";
                 }
@@ -144,6 +198,118 @@ public static class Background
         foreach(KeyValuePair<Vector2Int, GameObject> background in Backgrounds)
         {
             GameObject.Destroy(background.Value);
+        }
+    }
+}
+
+public struct BackgroundTile
+{
+    public Zone.ZoneType ZoneType;
+    public enum TileTypeEnum
+    {
+        Full,
+        Half,
+        InsideCorner,
+        OutsideCorner,
+    }
+    public TileTypeEnum TileType;
+    public static Vector3 North = new Vector3(0, 0, 0);
+    public static Vector3 East = new Vector3(0, 90, 0);
+    public static Vector3 South = new Vector3(0, 180, 0);
+    public static Vector3 West = new Vector3(0, 270, 0);
+    public static Vector3 NorthEast = new Vector3(0, 0, 0);
+    public static Vector3 SouthEast = new Vector3(0, 90, 0);
+    public static Vector3 SouthWest = new Vector3(0, 180, 0);
+    public static Vector3 NorthWest = new Vector3(0, 270, 0);
+    public Vector3 Rotation;
+
+    public BackgroundTile(Zone.ZoneType _zoneType, byte _tileTypeAndRotation)
+    {
+        this.ZoneType = _zoneType;
+        if(_tileTypeAndRotation == 0)
+        {
+            this.TileType = TileTypeEnum.Full;
+            this.Rotation = North;
+        }
+        else if(_tileTypeAndRotation == 1)
+        {
+            this.TileType = TileTypeEnum.InsideCorner;
+            this.Rotation = SouthEast;
+        }
+        else if(_tileTypeAndRotation == 2)
+        {
+            this.TileType = TileTypeEnum.InsideCorner;
+            this.Rotation = SouthWest;
+        }
+        else if(_tileTypeAndRotation == 3)
+        {
+            this.TileType = TileTypeEnum.Half;
+            this.Rotation = South;
+        }
+        else if(_tileTypeAndRotation == 4)
+        {
+            this.TileType = TileTypeEnum.InsideCorner;
+            this.Rotation = NorthEast;
+        }
+        else if(_tileTypeAndRotation == 5)
+        {
+            this.TileType = TileTypeEnum.Half;
+            this.Rotation = East;
+        }
+        else if(_tileTypeAndRotation == 6)
+        {
+            this.TileType = TileTypeEnum.Full;
+            this.Rotation = North;
+        }
+        else if(_tileTypeAndRotation == 7)
+        {
+            this.TileType = TileTypeEnum.OutsideCorner;
+            this.Rotation = SouthEast;
+        }
+        else if(_tileTypeAndRotation == 8)
+        {
+            this.TileType = TileTypeEnum.InsideCorner;
+            this.Rotation = NorthWest;
+        }
+        else if(_tileTypeAndRotation == 9)
+        {
+            this.TileType = TileTypeEnum.Full;
+            this.Rotation = North;
+        }
+        else if(_tileTypeAndRotation == 10)
+        {
+            this.TileType = TileTypeEnum.Half;
+            this.Rotation = West;
+        }
+        else if(_tileTypeAndRotation == 11)
+        {
+            this.TileType = TileTypeEnum.OutsideCorner;
+            this.Rotation = SouthWest;
+        }
+        else if(_tileTypeAndRotation == 12)
+        {
+            this.TileType = TileTypeEnum.Half;
+            this.Rotation = North;
+        }
+        else if(_tileTypeAndRotation == 13)
+        {
+            this.TileType = TileTypeEnum.OutsideCorner;
+            this.Rotation = NorthEast;
+        }
+        else if(_tileTypeAndRotation == 14)
+        {
+            this.TileType = TileTypeEnum.OutsideCorner;
+            this.Rotation = NorthWest;
+        }
+        else if(_tileTypeAndRotation == 15)
+        {
+            this.TileType = TileTypeEnum.Full;
+            this.Rotation = North;
+        }
+        else
+        {
+            this.TileType = TileTypeEnum.Full;
+            this.Rotation = North;
         }
     }
 }

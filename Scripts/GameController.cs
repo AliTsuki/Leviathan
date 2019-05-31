@@ -21,28 +21,27 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.11b";
+    public static string Version = "0.0.11c";
     // GameObjects and Components
     public static Ship Player;
-    private static GameObject CamerasPrefab;
     private static GameObject Cameras;
     public static System.Random r = new System.Random();
 
     // Entity Lists and Dicts
-    public static readonly Dictionary<uint, Ship> Ships = new Dictionary<uint, Ship>();
-    public static readonly Dictionary<uint, Projectile> Projectiles = new Dictionary<uint, Projectile>();
-    public static readonly List<uint> ShipsToRemove = new List<uint>();
-    public static readonly List<uint> ProjectilesToRemove = new List<uint>();
+    public static Dictionary<uint, Ship> Ships = new Dictionary<uint, Ship>();
+    public static Dictionary<uint, Projectile> Projectiles = new Dictionary<uint, Projectile>();
+    public static List<uint> ShipsToRemove = new List<uint>();
+    public static List<uint> ProjectilesToRemove = new List<uint>();
 
     // Player fields
     private static PlayerShip.PlayerShipType PlayerShipType;
 
     // Enemy spawn fields
     private static uint EnemyCount = 0;
-    private readonly static uint MaxEnemyCount = 20;
-    private readonly static int MinEnemySpawnDistance = 40;
-    private readonly static int MaxEnemySpawnDistance = 200;
-    private readonly static int EnemyDespawnDistance = 300;
+    private static uint MaxEnemyCount = 20;
+    private static int MinEnemySpawnDistance = 40;
+    private static int MaxEnemySpawnDistance = 200;
+    private static int EnemyDespawnDistance = 300;
 
     // Constant references to Prefab filenames
     // Cameras
@@ -115,7 +114,9 @@ public static class GameController
     {
         Logger.Initialize();
         CurrentGameState = GameState.MainMenu;
+        // TODO: add an option in settings menu to select a different controller type
         PlayerInput.Controller = PlayerInput.ControllerType.GenericGamepad;
+        // TODO: in new game menu have option to select different player ship type
         PlayerShipType = PlayerShip.PlayerShipType.Bomber;
         UIController.Initialize();
         InitializeCamera();
@@ -124,20 +125,32 @@ public static class GameController
     // Update is called once per frame
     public static void Update()
     {
+        // Get player inputs
         PlayerInput.Update();
+        // If gamestate is playing
         if(CurrentGameState == GameState.Playing)
         {
+            // If gameplay has yet to be initialized
             if(GameplayInitialized == false)
             {
+                // Initialize gameplay, get start time, and finally set gameplay to initialized
                 InitializeGameplay();
                 TimeStarted = Time.time;
                 GameplayInitialized = true;
             }
-            ProcessShipUpdate();
-            EnemySpawnUpdate();
+            // Set camera to follow player
             FollowCamera();
+            // Process ship updates, despawn distant enemies, spawn new enemies
+            ProcessShipUpdate();
+            EnemyDespawnUpdate();
+            EnemySpawnUpdate();
+            // Clean up lists
+            CleanupShipList();
+            CleanupProjectileList();
+            // Update background tiles
             Background.Update();
         }
+        // Update UI
         UIController.Update();
         Logger.Update();
     }
@@ -145,13 +158,12 @@ public static class GameController
     // Fixed Update is called a fixed number of times per second, Physics updates should be done in FixedUpdate
     public static void FixedUpdate()
     {
+        // If gamestate is playing
         if(CurrentGameState == GameState.Playing)
         {
+            // Process physics updates for ships and projectiles
             ProcessShipPhysicsUpdate();
             ProcessProjectilePhysicsUpdate();
-            CleanupShipList();
-            CleanupProjectileList();
-            EnemyDespawnUpdate();
         }
     }
 
@@ -164,21 +176,30 @@ public static class GameController
     // On restart
     public static void Restart()
     {
+        // Loop through ships
         foreach(KeyValuePair<uint, Ship> ship in Ships)
         {
+            // Destroy ships
             GameObject.Destroy(ship.Value.ShipObject);
         }
+        // Reset player reference
         Player = null;
+        // Clear ship lists
         Ships.Clear();
         ShipsToRemove.Clear();
+        // Loop through projectiles
         foreach(KeyValuePair<uint, Projectile> projectile in Projectiles)
         {
+            // Destroy projectiles
             GameObject.Destroy(projectile.Value.ProjectileObject);
         }
+        // Clear projectile lists
         Projectiles.Clear();
         ProjectilesToRemove.Clear();
+        // Call restart method in background and UI
         Background.Restart();
         UIController.Restart();
+        // Set gameplay initialized to default value of false
         GameplayInitialized = false;
     }
 
@@ -223,6 +244,7 @@ public static class GameController
     private static void SpawnPlayer(PlayerShip.PlayerShipType _type)
     {
         NextShipID();
+        // Spawn appropriate ship to player ship type
         if(_type == PlayerShip.PlayerShipType.Bomber)
         {
             Ships.Add(ShipID, new PSBomber(ShipID));
@@ -235,6 +257,7 @@ public static class GameController
         {
             Ships.Add(ShipID, new PSScout(ShipID));
         }
+        // Get reference to player ship
         Player = Ships[ShipID];
     }
 

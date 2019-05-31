@@ -25,11 +25,11 @@ public static class AIController
                 // Use AI to figure out if ship should accelerate
                 if(ShouldAccelerate(_ship.AItype, _ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position, _ship.MaxOrbitRange) == true)
                 {
-                    _ship.ImpulseInput = true;
+                    _ship.ImpulseEngineInput = true;
                 }
                 else
                 {
-                    _ship.ImpulseInput = false;
+                    _ship.ImpulseEngineInput = false;
                 }
                 // Ramming type ships don't use strafing or main guns
                 if(_ship.AItype != Ship.AIType.Ramming)

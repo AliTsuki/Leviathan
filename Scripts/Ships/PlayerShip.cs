@@ -18,7 +18,7 @@ public class PlayerShip : Ship
     {
         // Get inputs from PlayerInput
         this.AimInput = PlayerInput.AimInput;
-        this.ImpulseInput = PlayerInput.ImpulseEngineInput;
+        this.ImpulseEngineInput = PlayerInput.ImpulseEngineInput;
         this.WarpEngineInput = PlayerInput.WarpEngineInput;
         this.MainGunInput = PlayerInput.MainGunInput;
         this.Ability1Input = PlayerInput.Ability1Input;

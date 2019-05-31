@@ -2,7 +2,6 @@
 
 using UnityEngine;
 
-// TODO: Come up with a solution for hard edges between zones
 // Contains what type of enemies are located at which zones
 public class Zone
 {
@@ -13,7 +12,7 @@ public class Zone
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 5),
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 10)
     };
-    public static EnemyAndSpawnRate[] StarterZoneEnemies = new EnemyAndSpawnRate[]
+    public static EnemyAndSpawnRate[] GreenZoneEnemies = new EnemyAndSpawnRate[]
     {
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 85),
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 5),
@@ -23,27 +22,48 @@ public class Zone
     {
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 100)
     };
+    public static EnemyAndSpawnRate[] OrangeZoneEnemies = new EnemyAndSpawnRate[]
+    {
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 100)
+    };
+    public static EnemyAndSpawnRate[] PurpleZoneEnemies = new EnemyAndSpawnRate[]
+    {
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 100)
+    };
+    public static EnemyAndSpawnRate[] BlueZoneEnemies = new EnemyAndSpawnRate[]
+    {
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 100)
+    };
 
     // Zone types
     public enum ZoneType
     {
         DefaultZone,
-        StarterZone,
-        RedZone
+        GreenZone,
+        RedZone,
+        OrangeZone,
+        PurpleZone,
+        BlueZone
     }
     public ZoneType Type;
 
     // Zones
     public static Zone DefaultZone = new Zone(ZoneType.DefaultZone, DefaultZoneEnemies);
-    public static Zone StarterZone = new Zone(ZoneType.StarterZone, StarterZoneEnemies);
+    public static Zone GreenZone = new Zone(ZoneType.GreenZone, GreenZoneEnemies);
     public static Zone RedZone = new Zone(ZoneType.RedZone, RedZoneEnemies);
+    public static Zone OrangeZone = new Zone(ZoneType.OrangeZone, OrangeZoneEnemies);
+    public static Zone PurpleZone = new Zone(ZoneType.PurpleZone, PurpleZoneEnemies);
+    public static Zone BlueZone = new Zone(ZoneType.BlueZone, BlueZoneEnemies);
 
     // Dictionary of zones
     public static Dictionary<ZoneType, Zone> Zones = new Dictionary<ZoneType, Zone>
     {
         {DefaultZone.Type, DefaultZone},
-        {StarterZone.Type, StarterZone},
-        {RedZone.Type, RedZone}
+        {GreenZone.Type, GreenZone},
+        {RedZone.Type, RedZone},
+        {OrangeZone.Type, OrangeZone},
+        {PurpleZone.Type, PurpleZone},
+        {BlueZone.Type, BlueZone}
     };
 
     // Constructor fields
@@ -63,18 +83,17 @@ public class Zone
 
 
     // Get zone type at position
-    public static ZoneType GetZoneAtPosition(Vector2Int _pos)
+    public static ZoneType GetZoneAtPixelCoords(Vector2Int _pixelCoords)
     {
-        Color color = Background.Tilemap.GetPixel(_pos.x + (Background.Tilemap.width / 2), _pos.y + (Background.Tilemap.height / 2));
+        Color color = Background.TilemapTexture.GetPixel(_pixelCoords.x, _pixelCoords.y);
         return GetZoneIDByColor(color);
     }
 
     // Get zone type at position
-    public static ZoneType GetZoneAtPosition(Vector3 _pos)
+    public static ZoneType GetZoneAtWorldCoords(Vector3 _worldCoords)
     {
-        Vector2Int position = Background.WorldCoordsToTileCoords(_pos);
-        Color color = Background.Tilemap.GetPixel(position.x + (Background.Tilemap.width / 2), position.y + (Background.Tilemap.height / 2));
-        return GetZoneIDByColor(color);
+        Vector2Int TileCoords = Background.WorldCoordsToTileCoords(_worldCoords);
+        return Background.Tilemap[TileCoords].ZoneType;
     }
 
     // Get zone ID by color value
@@ -83,15 +102,27 @@ public class Zone
         // TODO: Color Tilemap file and add corresponding colors here and background prefabs with the byte number suffix
         if(color == Color.black)
         {
-            return StarterZone.Type;
+            return DefaultZone.Type;
+        }
+        else if(color == Color.green)
+        {
+            return GreenZone.Type;
         }
         else if(color == Color.red)
         {
-            return ZoneType.RedZone;
+            return OrangeZone.Type;
+        }
+        else if(color == new Color(1, 0, 1, 1)) // Purple
+        {
+            return PurpleZone.Type;
+        }
+        else if(color == Color.blue)
+        {
+            return BlueZone.Type;
         }
         else
         {
-            return ZoneType.DefaultZone;
+            return DefaultZone.Type;
         }
     }
 
@@ -125,7 +156,7 @@ public class Zone
     public static EnemyShip SpawnEnemy(uint _shipID, Vector3 _startingPosition)
     {
         // Get enemy type
-        EnemyShip.EnemyShipType EnemyType = GetRandomEnemyTypeInZone(GetZoneAtPosition(_startingPosition));
+        EnemyShip.EnemyShipType EnemyType = GetRandomEnemyTypeInZone(GetZoneAtWorldCoords(_startingPosition));
         // Return enemy indicated by enemyID
         if(EnemyType == EnemyShip.EnemyShipType.Standard)
         {

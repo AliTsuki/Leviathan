@@ -35,7 +35,7 @@ public static class UIController
     private static int FPS;
     private static float ShieldDamageEffectStartTime = 0f;
     private static float HealthDamageEffectStartTime = 0f;
-    private readonly static float ShowDamageEffectDuration = 0.25f;
+    private static float ShowDamageEffectDuration = 0.25f;
     private static int Seconds = 0;
     private static int Minutes = 0;
     private static int Hours = 0;
