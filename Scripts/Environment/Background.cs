@@ -47,7 +47,10 @@ public static class Background
             {
                 foreach(BackgroundTile.TileTypeEnum TileType in (BackgroundTile.TileTypeEnum[])Enum.GetValues(typeof(BackgroundTile.TileTypeEnum)))
                 {
-                    BackgroundPrefabs.Add($@"{ZoneType}:{TileType}", Resources.Load<GameObject>(GameController.BackgroundPrefabName + $@"/{ZoneType}/{TileType}"));
+                    foreach(BackgroundTile.TileDirectionEnum TileRotation in (BackgroundTile.TileDirectionEnum[])Enum.GetValues(typeof(BackgroundTile.TileDirectionEnum)))
+                    {
+                        BackgroundPrefabs.Add($@"{ZoneType}:{TileType}:{TileRotation}", Resources.Load<GameObject>(GameController.BackgroundPrefabName + $@"/{ZoneType}/{TileType} {TileRotation}"));
+                    }
                 }
             }
             BackgroundDependenciesLoaded = true;
@@ -95,19 +98,19 @@ public static class Background
                 byte TileTypeAndRotation = 0;
                 if(Zone.GetZoneAtPixelCoords(new Vector2Int(x + 1, z - 1)) == ZoneType)
                 {
-                    TileTypeAndRotation += 1;
+                    TileTypeAndRotation += 8;
                 }
                 if(Zone.GetZoneAtPixelCoords(new Vector2Int(x - 1, z - 1)) == ZoneType)
                 {
-                    TileTypeAndRotation += 2;
+                    TileTypeAndRotation += 4;
                 }
                 if(Zone.GetZoneAtPixelCoords(new Vector2Int(x + 1, z + 1)) == ZoneType)
                 {
-                    TileTypeAndRotation += 4;
+                    TileTypeAndRotation += 2;
                 }
                 if(Zone.GetZoneAtPixelCoords(new Vector2Int(x - 1, z + 1)) == ZoneType)
                 {
-                    TileTypeAndRotation += 8;
+                    TileTypeAndRotation += 1;
                 }
                 Vector2Int TileCoords = TilemapPixelCoordsToTileCoords(PixelCoords);
                 Tilemap.Add(TileCoords, new BackgroundTile(ZoneType, TileTypeAndRotation));
@@ -130,7 +133,7 @@ public static class Background
                 // Get what type of background tile to add at this position
                 NextBackgroundTile = Tilemap[NextBackgroundKey];
                 // Add a new background prefab at the next background position and add it to backgrounds list
-                Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[$@"{NextBackgroundTile.ZoneType}:{NextBackgroundTile.TileType}"], NextBackgroundPosition, Quaternion.Euler(NextBackgroundTile.Rotation)));
+                Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[$@"{NextBackgroundTile.ZoneType}:{NextBackgroundTile.TileType}:{NextBackgroundTile.Rotation}"], NextBackgroundPosition, Quaternion.identity));
                 // Set name of GameObject in Unity Editor to the key
                 Backgrounds[NextBackgroundKey].name = $@"Background: {NextBackgroundKey.x}, {NextBackgroundKey.y}";
             }
@@ -184,7 +187,7 @@ public static class Background
                     // Get what type of background tile to add at this position
                     NextBackgroundTile = Tilemap[NextBackgroundKey];
                     // Add a new background prefab at the next background position and add it to backgrounds list
-                    Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[$@"{NextBackgroundTile.ZoneType}:{NextBackgroundTile.TileType}"], NextBackgroundPosition, Quaternion.Euler(NextBackgroundTile.Rotation)));
+                    Backgrounds.Add(NextBackgroundKey, GameObject.Instantiate(BackgroundPrefabs[$@"{NextBackgroundTile.ZoneType}:{NextBackgroundTile.TileType}:{NextBackgroundTile.Rotation}"], NextBackgroundPosition, Quaternion.identity));
                     // Set name of GameObject in Unity Editor to the key
                     Backgrounds[NextBackgroundKey].name = $@"Background: {NextBackgroundKey.x}, {NextBackgroundKey.y}";
                 }
@@ -204,24 +207,26 @@ public static class Background
 
 public struct BackgroundTile
 {
-    public Zone.ZoneType ZoneType;
     public enum TileTypeEnum
     {
         Full,
         Half,
-        InsideCorner,
-        OutsideCorner,
+        Corner,
     }
+    public enum TileDirectionEnum
+    {
+        North,
+        East,
+        South,
+        West,
+        NorthEast,
+        SouthEast,
+        SouthWest,
+        NorthWest
+    }
+    public Zone.ZoneType ZoneType;
     public TileTypeEnum TileType;
-    public static Vector3 North = new Vector3(0, 0, 0);
-    public static Vector3 East = new Vector3(0, 90, 0);
-    public static Vector3 South = new Vector3(0, 180, 0);
-    public static Vector3 West = new Vector3(0, 270, 0);
-    public static Vector3 NorthEast = new Vector3(0, 0, 0);
-    public static Vector3 SouthEast = new Vector3(0, 90, 0);
-    public static Vector3 SouthWest = new Vector3(0, 180, 0);
-    public static Vector3 NorthWest = new Vector3(0, 270, 0);
-    public Vector3 Rotation;
+    public TileDirectionEnum Rotation;
 
     public BackgroundTile(Zone.ZoneType _zoneType, byte _tileTypeAndRotation)
     {
@@ -229,87 +234,87 @@ public struct BackgroundTile
         if(_tileTypeAndRotation == 0)
         {
             this.TileType = TileTypeEnum.Full;
-            this.Rotation = North;
+            this.Rotation = TileDirectionEnum.North;
         }
         else if(_tileTypeAndRotation == 1)
         {
-            this.TileType = TileTypeEnum.InsideCorner;
-            this.Rotation = SouthEast;
+            this.TileType = TileTypeEnum.Corner;
+            this.Rotation = TileDirectionEnum.SouthEast;
         }
         else if(_tileTypeAndRotation == 2)
         {
-            this.TileType = TileTypeEnum.InsideCorner;
-            this.Rotation = SouthWest;
+            this.TileType = TileTypeEnum.Corner;
+            this.Rotation = TileDirectionEnum.SouthWest;
         }
         else if(_tileTypeAndRotation == 3)
         {
             this.TileType = TileTypeEnum.Half;
-            this.Rotation = South;
+            this.Rotation = TileDirectionEnum.South;
         }
         else if(_tileTypeAndRotation == 4)
         {
-            this.TileType = TileTypeEnum.InsideCorner;
-            this.Rotation = NorthEast;
+            this.TileType = TileTypeEnum.Corner;
+            this.Rotation = TileDirectionEnum.NorthEast;
         }
         else if(_tileTypeAndRotation == 5)
         {
             this.TileType = TileTypeEnum.Half;
-            this.Rotation = East;
+            this.Rotation = TileDirectionEnum.East;
         }
         else if(_tileTypeAndRotation == 6)
         {
             this.TileType = TileTypeEnum.Full;
-            this.Rotation = North;
+            this.Rotation = TileDirectionEnum.North;
         }
         else if(_tileTypeAndRotation == 7)
         {
-            this.TileType = TileTypeEnum.OutsideCorner;
-            this.Rotation = SouthEast;
+            this.TileType = TileTypeEnum.Full;
+            this.Rotation = TileDirectionEnum.North;
         }
         else if(_tileTypeAndRotation == 8)
         {
-            this.TileType = TileTypeEnum.InsideCorner;
-            this.Rotation = NorthWest;
+            this.TileType = TileTypeEnum.Corner;
+            this.Rotation = TileDirectionEnum.NorthWest;
         }
         else if(_tileTypeAndRotation == 9)
         {
             this.TileType = TileTypeEnum.Full;
-            this.Rotation = North;
+            this.Rotation = TileDirectionEnum.North;
         }
         else if(_tileTypeAndRotation == 10)
         {
             this.TileType = TileTypeEnum.Half;
-            this.Rotation = West;
+            this.Rotation = TileDirectionEnum.West;
         }
         else if(_tileTypeAndRotation == 11)
         {
-            this.TileType = TileTypeEnum.OutsideCorner;
-            this.Rotation = SouthWest;
+            this.TileType = TileTypeEnum.Full;
+            this.Rotation = TileDirectionEnum.North;
         }
         else if(_tileTypeAndRotation == 12)
         {
             this.TileType = TileTypeEnum.Half;
-            this.Rotation = North;
+            this.Rotation = TileDirectionEnum.North;
         }
         else if(_tileTypeAndRotation == 13)
         {
-            this.TileType = TileTypeEnum.OutsideCorner;
-            this.Rotation = NorthEast;
+            this.TileType = TileTypeEnum.Full;
+            this.Rotation = TileDirectionEnum.North;
         }
         else if(_tileTypeAndRotation == 14)
         {
-            this.TileType = TileTypeEnum.OutsideCorner;
-            this.Rotation = NorthWest;
+            this.TileType = TileTypeEnum.Full;
+            this.Rotation = TileDirectionEnum.North;
         }
         else if(_tileTypeAndRotation == 15)
         {
             this.TileType = TileTypeEnum.Full;
-            this.Rotation = North;
+            this.Rotation = TileDirectionEnum.North;
         }
         else
         {
             this.TileType = TileTypeEnum.Full;
-            this.Rotation = North;
+            this.Rotation = TileDirectionEnum.North;
         }
     }
 }
