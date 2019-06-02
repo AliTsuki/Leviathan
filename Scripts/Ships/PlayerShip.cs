@@ -21,9 +21,9 @@ public class PlayerShip : Ship
         this.ImpulseEngineInput = PlayerInput.ImpulseEngineInput;
         this.WarpEngineInput = PlayerInput.WarpEngineInput;
         this.MainGunInput = PlayerInput.MainGunInput;
-        this.Ability1Input = PlayerInput.Ability1Input;
-        this.Ability2Input = PlayerInput.Ability2Input;
-        this.Ability3Input = PlayerInput.Ability3Input;
+        this.Ability3Input = PlayerInput.Ability1Input;
+        this.Ability1Input = PlayerInput.Ability2Input;
+        this.Ability2Input = PlayerInput.Ability3Input;
         this.PauseInput = PlayerInput.PauseButtonInput;
         // Pause game if pause is pressed
         if(this.PauseInput == true)
@@ -43,5 +43,23 @@ public class PlayerShip : Ship
             // Set intended rotation to intended angle on y axis
             this.IntendedRotation = Quaternion.Euler(new Vector3(0, this.IntendedAngle, 0));
         }
+    }
+
+    // Called when ship is destroyed by damage, grants XP
+    public override void Kill()
+    {
+        // Set to not alive
+        this.Alive = false;
+        // Tell UI to remove healthbar for this ship
+        UIController.RemoveHealthbar(this.ID);
+        // Create an explosion
+        this.Explosion = GameObject.Instantiate(this.ExplosionPrefab, this.ShipObject.transform.position, Quaternion.identity);
+        // Set explosion object to self destroy after 1 second
+        GameObject.Destroy(this.Explosion, 1f);
+        // If this is player
+        // Destroy ship model
+        GameObject.Destroy(this.ShipObject.transform.GetChild(0).gameObject);
+        // Show game over screen
+        UIController.GameOver();
     }
 }

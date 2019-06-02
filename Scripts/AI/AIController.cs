@@ -18,18 +18,18 @@ public static class AIController
                 _ship.CurrentTarget = AcquireTarget(_ship.ShipObject.transform.position, _ship.IFF, _ship.MaxTargetAcquisitionRange);
             }
             // If there is a current target and it is alive
-            if(_ship.CurrentTarget != null && _ship.CurrentTarget.Alive == true)
+            else if(_ship.CurrentTarget != null && _ship.CurrentTarget.Alive == true)
             {
                 // Stop wandering as currently have target
                 _ship.IsWandering = false;
                 // Use AI to figure out if ship should accelerate
                 if(ShouldAccelerate(_ship.AItype, _ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position, _ship.MaxOrbitRange) == true)
                 {
-                    _ship.ImpulseEngineInput = true;
+                    _ship.ImpulseEngineInput = 1f;
                 }
                 else
                 {
-                    _ship.ImpulseEngineInput = false;
+                    _ship.ImpulseEngineInput = 0f;
                 }
                 // Ramming type ships don't use strafing or main guns
                 if(_ship.AItype != Ship.AIType.Ramming)
@@ -59,7 +59,14 @@ public static class AIController
             // If unable to acquire target set wandering to true
             else
             {
-                _ship.IsWandering = true;
+                if(_ship.AItype != Ship.AIType.Drone)
+                {
+                    _ship.IsWandering = true;
+                }
+                else
+                {
+                    _ship.ShouldFollowParent = true;
+                }
             }
             // If wandering
             if(_ship.IsWandering == true)
@@ -67,10 +74,20 @@ public static class AIController
                 // Wander
                 _ship.Wander();
             }
+            // If ship is drone and it is past its leash distance from parent
+            if(_ship.AItype == Ship.AIType.Drone && Vector3.Distance(_ship.ShipObject.transform.position, _ship.Parent.ShipObject.transform.position) > _ship.MaxLeashDistance)
+            {
+                _ship.ShouldFollowParent = true;
+            }
+            if(_ship.ShouldFollowParent == true)
+            {
+                _ship.FollowParent();
+            }
         }
+        // If ship is friendly
         else if(_ship.IFF == GameController.IFF.Friend)
         {
-            // TODO: Friendly ship AI
+            
         }
     }
 

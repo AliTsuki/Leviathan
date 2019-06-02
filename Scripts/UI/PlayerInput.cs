@@ -14,8 +14,8 @@ public static class PlayerInput
 
     // Inputs
     public static Vector2 AimInput = new Vector2();
-    public static bool ImpulseEngineInput;
-    public static bool WarpEngineInput;
+    public static float ImpulseEngineInput;
+    public static float WarpEngineInput;
     public static bool MainGunInput;
     public static bool Ability1Input;
     public static bool Ability2Input;
@@ -34,8 +34,8 @@ public static class PlayerInput
         if(Controller == ControllerType.GenericGamepad)
         {
             AimInput.Set(Input.GetAxis("Left Stick Horizontal"), Input.GetAxis("Left Stick Vertical"));
-            ImpulseEngineInput = Input.GetButton("Button 7");
-            WarpEngineInput = Input.GetButton("Button 6");
+            ImpulseEngineInput = Input.GetButton("Button 7") == true ? 1f : 0f;
+            WarpEngineInput = Input.GetButton("Button 6") == true ? 1f : 0f;
             MainGunInput = Input.GetButton("Button 1");
             Ability1Input = Input.GetButton("Button 2");
             Ability2Input = Input.GetButton("Button 0");
@@ -45,8 +45,8 @@ public static class PlayerInput
         else if(Controller == ControllerType.XboxController)
         {
             AimInput.Set(Input.GetAxis("Left Stick Horizontal"), Input.GetAxis("Left Stick Vertical"));
-            ImpulseEngineInput = Input.GetAxis("Right Trigger XBox") > 0f ? true : false;
-            WarpEngineInput = Input.GetAxis("Left Trigger XBox") > 0f ? true : false;
+            ImpulseEngineInput = Input.GetAxis("Right Trigger Xbox");
+            WarpEngineInput = Input.GetAxis("Left Trigger Xbox");
             MainGunInput = Input.GetButton("Button 0");
             Ability1Input = Input.GetButton("Button 1");
             Ability2Input = Input.GetButton("Button 2");

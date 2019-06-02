@@ -6,38 +6,7 @@ public class FriendlyShip : Ship
     // Enemy ship constructor
     public FriendlyShip(uint _id)
     {
-        this.ID = _id;
-        this.StartingPosition = new Vector3(0, 0, 0);
-        this.IFF = GameController.IFF.Friend;
-        // Ship stats
-        // Health/Armor/Shields
-        this.Health = 0f;
-        this.MaxHealth = 100f;
-        this.Armor = 0f;
-        this.Shields = 0f;
-        this.MaxShields = 100f;
-        // Current/Max energy
-        this.Energy = 0f;
-        this.MaxEnergy = 100f;
-        // Speed/Acceleration
-        this.ImpulseAcceleration = 40f;
-        this.WarpAccelerationMultiplier = 3f;
-        this.MaxImpulseSpeed = 50f;
-        this.MaxWarpSpeed = 150f;
-        // Weapon stats
-        this.GunShotDamage = 10f;
-        this.GunShotSpeed = 10f;
-        this.GunShotLifetime = 2.5f;
-        this.GunShotCurvature = 0f;
-        // Cooldowns
-        this.GunCooldownTime = 0.25f;
-        // Energy cost
-        this.WarpEnergyCost = 5f;
-        this.GunEnergyCost = 5f;
-        // GameObject Instantiation
-        //this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.EnemyPrefabName);
-        this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
-        this.Initialize();
+        
     }
 
 

@@ -149,50 +149,52 @@ public static class UIController
                         {
                             // Fill energy bar accordingly
                             HealthbarUI.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = ship.Value.Energy / ship.Value.MaxEnergy;
-                            // If barrier is on cooldown or currently active
-                            if(ship.Value.Ability2OnCooldown == true || ship.Value.Ability2Active == true)
+                            // If Ability 1 is on cooldown or currently active
+                            if(ship.Value.Ability1OnCooldown == true || ship.Value.Ability1Active == true)
                             {
-                                // Fill barrier cooldown meter accordingly
+                                // Fill Ablity 1 cooldown meter accordingly
                                 HealthbarUI.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
-                                if(ship.Value.Ability2Active == true)
+                                if(ship.Value.Ability1Active == true)
                                 {
                                     HealthbarUI.transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1;
                                 }
                                 else
                                 {
-                                    HealthbarUI.transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastAbility2CooldownStartedTime) / ship.Value.Ability2CooldownTime);
+                                    HealthbarUI.transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastAbility1CooldownStartedTime) / ship.Value.Ability1CooldownTime);
                                 }
                             }
-                            // If barrier is not on cooldown
+                            // If Ability 1 is not on cooldown
                             else
                             {
-                                // Fill barrier cooldown meter accordingly
+                                // Fill Ability 1 cooldown meter accordingly
                                 HealthbarUI.transform.GetChild(2).GetComponent<Image>().fillAmount = 1;
+                                HealthbarUI.transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 0;
                             }
-                            // If barrage is on cooldown
-                            if(ship.Value.Ability3OnCooldown == true || ship.Value.Ability3Active == true)
+                            // If Ability 2 is on cooldown or currently active
+                            if(ship.Value.Ability2OnCooldown == true || ship.Value.Ability2Active == true)
                             {
-                                // Fill barrage cooldown meter accordingly
+                                // Fill Ability 2 cooldown meter accordingly
                                 HealthbarUI.transform.GetChild(3).GetComponent<Image>().fillAmount = 0;
-                                if(ship.Value.Ability3Active == true)
+                                if(ship.Value.Ability2Active == true)
                                 {
                                     HealthbarUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1;
                                 }
                                 else
                                 {
-                                    HealthbarUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastAbility3CooldownStartedTime) / ship.Value.Ability3CooldownTime);
+                                    HealthbarUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastAbility2CooldownStartedTime) / ship.Value.Ability2CooldownTime);
                                 }
                             }
-                            // If barrage is not on cooldown
+                            // If Ability 2 is not on cooldown
                             else
                             {
-                                // Fill barrage cooldown meter accordingly
+                                // Fill Ability 2 cooldown meter accordingly
                                 HealthbarUI.transform.GetChild(3).GetComponent<Image>().fillAmount = 1;
+                                HealthbarUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 0;
                             }
-                            // If bomb is on cooldown
-                            if(ship.Value.Ability1OnCooldown == true || ship.Value.Ability1Active == true)
+                            // If Ability 3 is on cooldown or currently active
+                            if(ship.Value.Ability3OnCooldown == true || ship.Value.Ability1Active == true)
                             {
-                                // Fill bomb cooldown meter accordingly
+                                // Fill Ability 3 cooldown meter accordingly
                                 HealthbarUI.transform.GetChild(4).GetComponent<Image>().fillAmount = 0;
                                 if(ship.Value.Ability1Active == true)
                                 {
@@ -200,14 +202,15 @@ public static class UIController
                                 }
                                 else
                                 {
-                                    HealthbarUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastAbility1CooldownStartedTime) / ship.Value.Ability1CooldownTime);
+                                    HealthbarUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1 - ((Time.time - ship.Value.LastAbility3CooldownStartedTime) / ship.Value.Ability3CooldownTime);
                                 }
                             }
-                            // If bomb is not on cooldown
+                            // If Ability 3 is not on cooldown
                             else
                             {
                                 // Fill bomb cooldown meter accordingly
                                 HealthbarUI.transform.GetChild(4).GetComponent<Image>().fillAmount = 1;
+                                HealthbarUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 0;
                             }
                         }
                     }

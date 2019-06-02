@@ -41,8 +41,8 @@ public class Ship
 
     // Inputs
     public Vector2 AimInput;
-    public bool ImpulseEngineInput;
-    public bool WarpEngineInput;
+    public float ImpulseEngineInput;
+    public float WarpEngineInput;
     public bool StrafeInput;
     public bool MainGunInput;
     public bool Ability1Input;
@@ -76,7 +76,7 @@ public class Ship
     public float LastAbility1CooldownStartedTime = 0f;
     public float LastAbility2CooldownStartedTime = 0f;
     public float LastAbility3CooldownStartedTime = 0f;
-    
+
     // On cooldown bools
     public bool GunOnCooldown = false;
     public bool ShieldOnCooldown = false;
@@ -86,13 +86,6 @@ public class Ship
     public bool Ability1Active = false;
     public bool Ability2Active = false;
     public bool Ability3Active = false;
-
-    // Misc cooldown related
-    public float DefaultGunCooldownTime;
-    public float DefaultGunShotAmount;
-    public float DefaultGunShotDamage;
-    public float DefaultGunShotAccuracy;
-    public float DefaultGunEnergyCost;
 
     // Ship stats
     // --Health/Armor/Shields
@@ -134,8 +127,8 @@ public class Ship
     // --Cooldowns
     public float ShieldCooldownTime; // How long in seconds the regenerating shield must go without taking damage before it will recharge
     public float Ability1Duration; // How long in seconds ability 1 lasts
-    public float Ability2Duration; // How long in seconds ability 1 lasts
-    public float Ability3Duration; // How long in seconds ability 1 lasts
+    public float Ability2Duration; // How long in seconds ability 2 lasts
+    public float Ability3Duration; // How long in seconds ability 3 lasts
     public float Ability1CooldownTime; // How long in seconds ability 1 will be on cooldown after use
     public float Ability2CooldownTime; // How long in seconds ability 2 will be on cooldown after use
     public float Ability3CooldownTime; // How long in seconds ability 3 will be on cooldown after use
@@ -146,6 +139,7 @@ public class Ship
     // AI fields
     public enum AIType
     {
+        Drone,
         Standard,
         Ramming,
         Broadside
@@ -165,6 +159,9 @@ public class Ship
     public bool IsWanderMove;
     public float StartedWanderMoveTime;
     public float TimeToWanderMove;
+    public PSEngineer Parent;
+    public float MaxLeashDistance;
+    public bool ShouldFollowParent;
 
     // Identification fields
     public uint ID;
@@ -225,12 +222,6 @@ public class Ship
         this.Shields = this.MaxShields;
         this.Energy = this.MaxEnergy;
         this.RecentRotations = new float[RecentRotationsIndexMax];
-        // Set up Default Cooldowns
-        this.DefaultGunCooldownTime = this.GunCooldownTime;
-        this.DefaultGunShotAmount = this.GunShotAmount;
-        this.DefaultGunShotDamage = this.GunShotDamage;
-        this.DefaultGunShotAccuracy = this.GunShotAccuracy;
-        this.DefaultGunEnergyCost = this.GunEnergyCost;
         // Default audio levels
         this.ImpulseEngineAudioStep = 0.05f;
         this.ImpulseEngineAudioMinVol = 0.1f;
@@ -441,19 +432,19 @@ public class Ship
     {
         // TODO: Speed limit is still a bit buggy, when going diagonally player can get to higher speeds than intended
         // If impulse engine is activated by player input or AI and warp engine is not activated
-        if(this.ImpulseEngineInput == true && this.WarpEngineInput == false)
+        if(this.ImpulseEngineInput > 0f && this.WarpEngineInput <= 0f)
         {
             // If below impulse speed limit
             if(this.ShipRigidbody.velocity.magnitude < this.MaxImpulseSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.5f)
             {
                 // Accelerate forward
-                this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.ImpulseAcceleration));
+                this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.ImpulseAcceleration * this.ImpulseEngineInput));
             }
             // Loop through engines
             for(int i = 0; i < this.EngineCount; i++)
             {
                 // Modify particle effects
-                this.ImpulseParticleSystemMains[i].startSpeed = 2.8f;
+                this.ImpulseParticleSystemMains[i].startSpeed = 2.8f * this.ImpulseEngineInput;
                 // Audio fadein
                 AudioController.FadeIn(this.ImpulseAudioSources[i], this.ImpulseEngineAudioStep, this.ImpulseEngineAudioMaxVol);
                 // If this is player
@@ -465,7 +456,7 @@ public class Ship
             }
         }
         // If warp engine is activated by player input or AI
-        else if(this.WarpEngineInput == true)
+        else if(this.WarpEngineInput > 0f)
         {
             // If below warp speed limit
             if(this.ShipRigidbody.velocity.magnitude < this.MaxWarpSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.5f)
@@ -745,7 +736,7 @@ public class Ship
     }
 
     // Called when ship is destroyed by damage, grants XP
-    public void Kill()
+    public virtual void Kill()
     {
         // Set to not alive
         this.Alive = false;
@@ -761,22 +752,10 @@ public class Ship
         this.Explosion = GameObject.Instantiate(this.ExplosionPrefab, this.ShipObject.transform.position, Quaternion.identity);
         // Set explosion object to self destroy after 1 second
         GameObject.Destroy(this.Explosion, 1f);
-        // If this is player
-        if(this.IsPlayer == true)
-        {
-            // Destroy ship model
-            GameObject.Destroy(this.ShipObject.transform.GetChild(0).gameObject);
-            // Show game over screen
-            UIController.GameOver();
-        }
-        // If this is NPC
-        else
-        {
-            // Destroy ship object
-            GameObject.Destroy(this.ShipObject);
-            // Add ship to removal list
-            GameController.ShipsToRemove.Add(this.ID);
-        }
+        // Destroy ship object
+        GameObject.Destroy(this.ShipObject);
+        // Add ship to removal list
+        GameController.ShipsToRemove.Add(this.ID);
     }
 
     // Called when ship is too far away from player, doesn't grant XP
@@ -827,7 +806,13 @@ public class Ship
         // If moving, set impulse to true which causes ship to accelerate forward
         if(this.IsWanderMove == true)
         {
-            this.ImpulseEngineInput = true;
+            this.ImpulseEngineInput = 1f;
         }
+    }
+
+    // Called when drones need to follow their parent ship
+    public void FollowParent()
+    {
+        // TODO: Make follow parent AI for drone
     }
 }

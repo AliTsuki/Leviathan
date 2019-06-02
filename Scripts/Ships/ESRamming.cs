@@ -37,9 +37,9 @@ public class ESRamming : EnemyShip
         this.EnergyRegenSpeed = 1.5f;
         // --Acceleration
         this.EngineCount = 1;
-        this.ImpulseAcceleration = 100f;
+        this.ImpulseAcceleration = 150f;
         // --Max Speed
-        this.MaxImpulseSpeed = 100f;
+        this.MaxImpulseSpeed = 150f;
         this.MaxRotationSpeed = 0.15f;
         // --Weapon stats
         // ----Main gun

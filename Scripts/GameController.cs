@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -21,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.11d";
+    public static string Version = "0.0.11e";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject Cameras;
@@ -66,6 +67,7 @@ public static class GameController
     public const string BackgroundPrefabName = "Environment/Background";
     // Ships
     public const string PlayerPrefabName = "Ships/Player Ships/Player Ship";
+    public const string DronePrefabName = "Ships/Drone Ships/Drone Ship";
     public const string FriendPrefabName = "Ships/Player Ships/Player Ship";
     public const string EnemyShipPrefabName = "Ships/Enemy Ships/Enemy Ship";
     // Ship parts
@@ -115,7 +117,7 @@ public static class GameController
         Logger.Initialize();
         CurrentGameState = GameState.MainMenu;
         // TODO: add an option in settings menu to select a different controller type
-        PlayerInput.Controller = PlayerInput.ControllerType.GenericGamepad;
+        PlayerInput.Controller = PlayerInput.ControllerType.XboxController;
         // TODO: in new game menu have option to select different player ship type
         PlayerShipType = PlayerShip.PlayerShipType.Bomber;
         UIController.Initialize();
@@ -287,8 +289,18 @@ public static class GameController
     public static Bomb SpawnBomb(PSBomber _player, IFF _iff, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
         NextProjectileID();
-        Projectiles.Add(ProjectileID, new Bomb(_player, ProjectileID, _iff, _damage, _radius, _position, _rotation, _velocity, _speed, _lifetime));
-        return Projectiles[ProjectileID] as Bomb;
+        Bomb bomb = new Bomb(_player, ProjectileID, _iff, _damage, _radius, _position, _rotation, _velocity, _speed, _lifetime);
+        Projectiles.Add(ProjectileID, bomb);
+        return bomb;
+    }
+
+    // Spawn drone
+    public static Tuple<uint, DroneShip> SpawnDrone(PSEngineer _parent, DroneShip.DroneShipType _type, Vector3 _startingPosition, float _maxHealth, float _maxShields, float _maxSpeed, uint _gunShotProjectileType, float _gunCooldownTime, uint _gunShotAmount, float _gunShotDamage, float _gunShotAccuracy, float _gunShotSpeed, float _gunShotLifetime, float _maxTargetAcquisitionDistance, float _maxStrafeDistance, float _maxLeashDistance)
+    {
+        NextShipID();
+        DroneShip droneShip = new DroneShip(ShipID, _parent, _type, _startingPosition, _maxHealth, _maxShields, _maxSpeed, _gunShotProjectileType, _gunCooldownTime, _gunShotAmount, _gunShotDamage, _gunShotAccuracy, _gunShotSpeed, _gunShotLifetime, _maxTargetAcquisitionDistance, _maxStrafeDistance, _maxLeashDistance);
+        Ships.Add(ShipID, droneShip);
+        return new Tuple<uint, DroneShip>(ShipID, droneShip);
     }
 
     // Gets next ship ID.
