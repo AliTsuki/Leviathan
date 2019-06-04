@@ -28,6 +28,8 @@ public class Ship
     public GameObject ProjectileHullStrike;
     public GameObject ExplosionPrefab;
     public GameObject Explosion;
+    public GameObject ElectricityEffectPrefab;
+    public GameObject ElectricityEffect;
 
     // Constants
     public float ImpulseEngineAudioStep = 0.05f;
@@ -133,12 +135,32 @@ public class Ship
     public float Ability2CooldownTime; // How long in seconds ability 2 will be on cooldown after use
     public float Ability3CooldownTime; // How long in seconds ability 3 will be on cooldown after use
 
+    // Defaults for ability changes
+    public float DefaultGunCooldownTime;
+    public float DefaultGunShotAmount;
+    public float DefaultGunShotDamage;
+    public float DefaultGunShotAccuracy;
+    public float DefaultGunEnergyCost;
+    public float DefaultEnergyRegenSpeed;
+    public float DefaultShieldRegenSpeed;
+    public float DefaultShieldCooldownTime;
+    public float DefaultMaxRotationSpeed;
+    public float DefaultMaxImpulseSpeed;
+    public float DefaultMaxStrafeSpeed;
+
+    // Status effects
+    public bool IsEMPed;
+    public bool IsEMPApplied;
+    public float EMPEffectDuration;
+    public float EMPStartedTime;
+
     // --Experience worth
     public uint XP;
 
     // AI fields
     public enum AIType
     {
+        None,
         Drone,
         Standard,
         Ramming,
@@ -152,7 +174,7 @@ public class Ship
     public float MaxWeaponsRange;
     public bool StrafeRight;
     public bool ResetStrafeDirection;
-    public bool IsWandering;
+    public bool ShouldWander;
     public bool IsWaiting;
     public float StartedWaitingTime;
     public float TimeToWait;
@@ -161,7 +183,12 @@ public class Ship
     public float TimeToWanderMove;
     public PSEngineer Parent;
     public float MaxLeashDistance;
+    public float OrbitParentRange;
     public bool ShouldFollowParent;
+    public bool ShouldAcquireTargets;
+    public bool ShouldAccelerate;
+    public bool ShouldStrafe;
+    public bool ShouldFireGuns;
 
     // Identification fields
     public uint ID;
@@ -176,59 +203,20 @@ public class Ship
         // Set up universal ship fields
         this.ShipObject.name = $@"{this.ID}";
         this.ShipRigidbody = this.ShipObject.GetComponent<Rigidbody>();
-        this.ShipRigidbody = this.ShipObject.GetComponent<Rigidbody>();
-        // Set up Engine Objects
-        this.ImpulseEngineObjects = new GameObject[this.EngineCount];
-        this.WarpEngineObjects = new GameObject[this.EngineCount];
-        this.ImpulseParticleSystems = new ParticleSystem[this.EngineCount];
-        this.ImpulseParticleSystemMains = new ParticleSystem.MainModule[this.EngineCount];
-        this.WarpParticleSystems = new ParticleSystem[this.EngineCount];
-        this.WarpParticleSystemMains = new ParticleSystem.MainModule[this.EngineCount];
-        this.ImpulseAudioSources = new AudioSource[this.EngineCount];
-        this.WarpAudioSources = new AudioSource[this.EngineCount];
-        for(int i = 0; i < this.EngineCount; i++)
+        this.GetEngineObjects();
+        this.GetGunBarrelObjects();
+        this.GetParticleFXObjects();
+        this.SetupShipDefaultValues();
+        // Player specific values
+        if(this.IsPlayer == true)
         {
-            this.ImpulseEngineObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.ImpulseEngineName + $@" {i}").gameObject;
-            this.ImpulseParticleSystems[i] = this.ImpulseEngineObjects[i].GetComponent<ParticleSystem>();
-            this.ImpulseParticleSystemMains[i] = this.ImpulseParticleSystems[i].main;
-            this.ImpulseAudioSources[i] = this.ImpulseEngineObjects[i].GetComponent<AudioSource>();
-            if(this.IsPlayer == true)
-            {
-                this.WarpEngineObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.WarpEngineName + $@" {i}").gameObject;
-                this.WarpParticleSystems[i] = this.WarpEngineObjects[i].GetComponent<ParticleSystem>();
-                this.WarpParticleSystemMains[i] = this.WarpParticleSystems[i].main;
-                this.WarpAudioSources[i] = this.WarpEngineObjects[i].GetComponent<AudioSource>();
-            }
+            this.ShieldRegenAudio = this.ShipObject.transform.GetChild(0).Find(GameController.ShieldObjectName).GetComponent<AudioSource>();
         }
-        // Set up Gun Objects
-        this.GunBarrelObjects = new GameObject[this.GunBarrelCount];
-        this.GunBarrelLightsObjects = new GameObject[this.GunBarrelCount];
-        this.GunAudioSources = new AudioSource[this.GunBarrelCount];
-        for(int i = 0; i < this.GunBarrelCount; i++)
+        // NPC specific values
+        else
         {
-            this.GunBarrelObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.GunBarrelName + $@" {i}").gameObject;
-            this.GunBarrelLightsObjects[i] = this.GunBarrelObjects[i].transform.Find(GameController.GunBarrelLightsName + $@" {i}").gameObject;
-            this.GunAudioSources[i] = this.GunBarrelObjects[i].GetComponent<AudioSource>();
+            this.SetupAI();
         }
-        // Set up Shield Objects
-        this.ShieldRegenAudio = this.ShipObject.GetComponent<AudioSource>();
-        // Set up Particle Objects
-        this.ProjectileShieldStrikePrefab = Resources.Load<GameObject>(GameController.ProjectileShieldStrikePrefabName);
-        this.ProjectileHullStrikePrefab = Resources.Load<GameObject>(GameController.ProjectileHullStrikePrefabName);
-        this.ExplosionPrefab = Resources.Load<GameObject>(GameController.ExplosionPrefabName);
-        // Set up basic fields
-        this.Alive = true;
-        this.Health = this.MaxHealth;
-        this.Shields = this.MaxShields;
-        this.Energy = this.MaxEnergy;
-        this.RecentRotations = new float[RecentRotationsIndexMax];
-        // Default audio levels
-        this.ImpulseEngineAudioStep = 0.05f;
-        this.ImpulseEngineAudioMinVol = 0.1f;
-        this.ImpulseEngineAudioMaxVol = 0.5f;
-        this.WarpEngineAudioStep = 0.05f;
-        this.WarpEngineAudioMinVol = 0f;
-        this.WarpEngineAudioMaxVol = 1f;
     }
 
     // Update is called once per frame
@@ -241,6 +229,8 @@ public class Ship
             this.ProcessInputs();
             // Check health status
             this.CheckHealth();
+            // Check Buff/Debuff status
+            this.CheckStatusEffects();
         }
     }
 
@@ -261,17 +251,6 @@ public class Ship
         AIController.ProcessAI(this);
     }
 
-    // Updates the state of the ship, turning, accelerating, using weapons etc.
-    public void UpdateShipState()
-    {
-        this.EnergyRegen();
-        this.ShieldRegen();
-        this.RotateShip();
-        this.AccelerateShip();
-        this.StrafeShip();
-        this.CheckAbilities();
-    }
-
     // Check health
     public void CheckHealth()
     {
@@ -284,12 +263,8 @@ public class Ship
         // If health is less than or equal to half
         if(this.Health <= this.MaxHealth * 0.5f)
         {
-            // Spawn fire particles on ship
-            this.ProjectileHullStrike = GameObject.Instantiate(this.ProjectileHullStrikePrefab, this.ShipObject.transform.position, Quaternion.identity);
-            // Hull strike starts with an explosive sound, turn it off in this case
-            this.ProjectileHullStrike.GetComponent<AudioSource>().Stop();
-            // Set fire particles to self destroy after 1 second
-            GameObject.Destroy(this.ProjectileHullStrike, 1f);
+            this.SpawnFireParticleFX();
+
             // If this is player ship
             if(this.IsPlayer == true)
             {
@@ -303,6 +278,56 @@ public class Ship
             // Kill ship
             this.Kill();
         }
+    }
+
+    // Check effect status
+    public void CheckStatusEffects()
+    {
+        if(this.IsEMPed == true && this.IsEMPApplied == false)
+        {
+            this.EMPStartedTime = Time.time;
+            this.DefaultEnergyRegenSpeed = this.EnergyRegenSpeed;
+            this.DefaultShieldRegenSpeed = this.ShieldRegenSpeed;
+            this.DefaultMaxRotationSpeed = this.MaxRotationSpeed;
+            this.DefaultMaxImpulseSpeed = this.MaxImpulseSpeed;
+            this.DefaultMaxStrafeSpeed = this.MaxStrafeSpeed;
+            this.DefaultGunCooldownTime = this.GunCooldownTime;
+            this.EnergyRegenSpeed = 0f;
+            this.ShieldRegenSpeed = 0f;
+            this.MaxRotationSpeed = 0f;
+            this.MaxImpulseSpeed = 0f;
+            this.MaxStrafeSpeed = 0f;
+            this.GunCooldownTime = 10f;
+            this.Energy = 0f;
+            this.Shields = 0f;
+            this.ElectricityEffect = GameObject.Instantiate(this.ElectricityEffectPrefab, this.ShipObject.transform.position, Quaternion.identity, this.ShipObject.transform);
+            GameObject.Destroy(this.ElectricityEffect, this.EMPEffectDuration);
+            this.IsEMPApplied = true;
+        }
+        if(this.IsEMPed == true && this.IsEMPApplied == true && Time.time - this.EMPStartedTime >= this.EMPEffectDuration)
+        {
+            this.IsEMPed = false;
+            this.IsEMPApplied = false;
+            this.EnergyRegenSpeed = this.DefaultEnergyRegenSpeed;
+            this.ShieldRegenSpeed = this.DefaultShieldRegenSpeed;
+            this.MaxRotationSpeed = this.DefaultMaxRotationSpeed;
+            this.MaxImpulseSpeed = this.DefaultMaxImpulseSpeed;
+            this.MaxStrafeSpeed = this.DefaultMaxStrafeSpeed;
+            this.GunCooldownTime = this.DefaultGunCooldownTime;
+        }
+    }
+
+    // Updates the state of the ship, turning, accelerating, using weapons etc.
+    public void UpdateShipState()
+    {
+        this.EnergyRegen();
+        this.ShieldRegen();
+        this.RotateShip();
+        this.AccelerateShip();
+        this.StrafeShip();
+        this.CheckAbilities();
+        this.Wander();
+        this.FollowParent();
     }
 
     // Regenerates energy
@@ -430,15 +455,14 @@ public class Ship
     // Accelerates the ship
     public void AccelerateShip()
     {
-        // TODO: Speed limit is still a bit buggy, when going diagonally player can get to higher speeds than intended
         // If impulse engine is activated by player input or AI and warp engine is not activated
         if(this.ImpulseEngineInput > 0f && this.WarpEngineInput <= 0f)
         {
-            // If below impulse speed limit
-            if(this.ShipRigidbody.velocity.magnitude < this.MaxImpulseSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.5f)
+            // Accelerate forward
+            this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.ImpulseAcceleration * this.ImpulseEngineInput));
+            if(this.ShipRigidbody.velocity.magnitude > this.MaxImpulseSpeed)
             {
-                // Accelerate forward
-                this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.ImpulseAcceleration * this.ImpulseEngineInput));
+                this.ShipRigidbody.velocity = Vector3.Lerp(this.ShipRigidbody.velocity, Vector3.ClampMagnitude(this.ShipRigidbody.velocity, this.MaxImpulseSpeed), 0.05f);
             }
             // Loop through engines
             for(int i = 0; i < this.EngineCount; i++)
@@ -458,12 +482,9 @@ public class Ship
         // If warp engine is activated by player input or AI
         else if(this.WarpEngineInput > 0f)
         {
-            // If below warp speed limit
-            if(this.ShipRigidbody.velocity.magnitude < this.MaxWarpSpeed || Vector3.Dot(this.ShipRigidbody.velocity.normalized, this.ShipObject.transform.forward) < 0.5f)
-            {
-                // Accelerate forward with warp multiplier to speed
-                this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.ImpulseAcceleration * this.WarpAccelerationMultiplier));
-            }
+            // Accelerate forward with warp multiplier to speed
+            this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.ImpulseAcceleration * this.WarpAccelerationMultiplier));
+            this.ShipRigidbody.velocity = Vector3.ClampMagnitude(this.ShipRigidbody.velocity, this.MaxWarpSpeed);
             // Subtract warp energy cost
             this.Energy -= this.WarpEnergyCost;
             // Loop through engines
@@ -661,8 +682,9 @@ public class Ship
     // Called when receiving collision from ship
     public virtual void ReceivedCollisionFromShip(Vector3 _collisionVelocity, GameController.IFF _iff)
     {
+        // TODO: Drones are overlapping frequently, make sure they are knocked away from each other
         // Apply velocity received from collision
-        this.ShipRigidbody.AddRelativeForce(_collisionVelocity * 0.20f, ForceMode.Impulse);
+        this.ShipRigidbody.AddRelativeForce(_collisionVelocity * 0.2f, ForceMode.Impulse);
         // If ship is different faction
         if(_iff != this.IFF)
         {
@@ -735,6 +757,17 @@ public class Ship
         }
     }
 
+    // Spawns fire particle FX on damaged ships
+    public void SpawnFireParticleFX()
+    {
+        // Spawn fire particles on ship
+        this.ProjectileHullStrike = GameObject.Instantiate(this.ProjectileHullStrikePrefab, this.ShipObject.transform.position, Quaternion.identity);
+        // Hull strike starts with an explosive sound, turn it off in this case
+        this.ProjectileHullStrike.GetComponent<AudioSource>().Stop();
+        // Set fire particles to self destroy after 1 second
+        GameObject.Destroy(this.ProjectileHullStrike, 1f);
+    }
+
     // Called when ship is destroyed by damage, grants XP
     public virtual void Kill()
     {
@@ -771,48 +804,174 @@ public class Ship
         GameController.ShipsToRemove.Add(this.ID);
     }
 
+    // Get references to engine objects
+    public void GetEngineObjects()
+    {
+        this.ImpulseEngineObjects = new GameObject[this.EngineCount];
+        this.WarpEngineObjects = new GameObject[this.EngineCount];
+        this.ImpulseParticleSystems = new ParticleSystem[this.EngineCount];
+        this.ImpulseParticleSystemMains = new ParticleSystem.MainModule[this.EngineCount];
+        this.WarpParticleSystems = new ParticleSystem[this.EngineCount];
+        this.WarpParticleSystemMains = new ParticleSystem.MainModule[this.EngineCount];
+        this.ImpulseAudioSources = new AudioSource[this.EngineCount];
+        this.WarpAudioSources = new AudioSource[this.EngineCount];
+        for(int i = 0; i < this.EngineCount; i++)
+        {
+            this.ImpulseEngineObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.ImpulseEngineObjectName + $@" {i}").gameObject;
+            this.ImpulseParticleSystems[i] = this.ImpulseEngineObjects[i].GetComponent<ParticleSystem>();
+            this.ImpulseParticleSystemMains[i] = this.ImpulseParticleSystems[i].main;
+            this.ImpulseAudioSources[i] = this.ImpulseEngineObjects[i].GetComponent<AudioSource>();
+            if(this.IsPlayer == true)
+            {
+                this.WarpEngineObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.WarpEngineObjectName + $@" {i}").gameObject;
+                this.WarpParticleSystems[i] = this.WarpEngineObjects[i].GetComponent<ParticleSystem>();
+                this.WarpParticleSystemMains[i] = this.WarpParticleSystems[i].main;
+                this.WarpAudioSources[i] = this.WarpEngineObjects[i].GetComponent<AudioSource>();
+            }
+        }
+    }
+
+    // Get references to gun objects
+    public void GetGunBarrelObjects()
+    {
+        this.GunBarrelObjects = new GameObject[this.GunBarrelCount];
+        this.GunBarrelLightsObjects = new GameObject[this.GunBarrelCount];
+        this.GunAudioSources = new AudioSource[this.GunBarrelCount];
+        for(int i = 0; i < this.GunBarrelCount; i++)
+        {
+            this.GunBarrelObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.GunBarrelObjectName + $@" {i}").gameObject;
+            this.GunBarrelLightsObjects[i] = this.GunBarrelObjects[i].transform.Find(GameController.GunBarrelLightsObjectName + $@" {i}").gameObject;
+            this.GunAudioSources[i] = this.GunBarrelObjects[i].GetComponent<AudioSource>();
+        }
+    }
+
+    // Get references to particle fx objects
+    public void GetParticleFXObjects()
+    {
+        this.ProjectileShieldStrikePrefab = Resources.Load<GameObject>(GameController.ProjectileShieldStrikePrefabName);
+        this.ProjectileHullStrikePrefab = Resources.Load<GameObject>(GameController.ProjectileHullStrikePrefabName);
+        this.ExplosionPrefab = Resources.Load<GameObject>(GameController.ExplosionPrefabName);
+        this.ElectricityEffectPrefab = Resources.Load<GameObject>(GameController.ElectricityEffectPrefabName);
+    }
+
+    // Set up basic ship default values
+    public void SetupShipDefaultValues()
+    {
+        this.Alive = true;
+        this.Health = this.MaxHealth;
+        this.Shields = this.MaxShields;
+        this.Energy = this.MaxEnergy;
+        this.RecentRotations = new float[RecentRotationsIndexMax];
+        // Default audio levels
+        this.ImpulseEngineAudioStep = 0.05f;
+        this.ImpulseEngineAudioMinVol = 0.1f;
+        this.ImpulseEngineAudioMaxVol = 0.5f;
+        this.WarpEngineAudioStep = 0.05f;
+        this.WarpEngineAudioMinVol = 0f;
+        this.WarpEngineAudioMaxVol = 1f;
+    }
+
+    // Set up AI
+    public void SetupAI()
+    {
+        if(this.AItype == AIType.Standard)
+        {
+            this.ShouldAcquireTargets = true;
+            this.ShouldAccelerate = true;
+            this.ShouldStrafe = true;
+            this.ShouldFireGuns = true;
+        }
+        else if(this.AItype == AIType.Ramming)
+        {
+            this.ShouldAcquireTargets = true;
+            this.ShouldAccelerate = true;
+            this.ShouldStrafe = false;
+            this.ShouldFireGuns = false;
+        }
+        else if(this.AItype == AIType.Broadside)
+        {
+            this.ShouldAcquireTargets = true;
+            this.ShouldAccelerate = true;
+            this.ShouldStrafe = true;
+            this.ShouldFireGuns = true;
+        }
+        else if(this.AItype == AIType.Drone)
+        {
+            this.ShouldAcquireTargets = true;
+            this.ShouldAccelerate = true;
+            this.ShouldStrafe = true;
+            this.ShouldFireGuns = true;
+        }
+    }
+
     // Called when a ship has no target and nothing else to do
     public void Wander()
     {
-        // Stop shooting
-        this.MainGunInput = false;
-        // If not moving(wandering) and not currently waiting around
-        if(this.IsWanderMove == false && this.IsWaiting == false)
+        if(this.ShouldWander == true)
         {
-            // Start waiting for random amount of time between 0-10 seconds
-            this.IsWaiting = true;
-            this.StartedWaitingTime = Time.time;
-            this.TimeToWait = GameController.r.Next(0, 11);
-        }
-        // If done waiting, stop waiting
-        if(Time.time - this.StartedWaitingTime > this.TimeToWait)
-        {
-            this.IsWaiting = false;
-        }
-        // If done waiting and not yet moving
-        if(this.IsWaiting == false && this.IsWanderMove == false)
-        {
-            // Start moving for random amount of time between 0-10 seconds and rotate some random direction
-            this.IsWanderMove = true;
-            this.StartedWanderMoveTime = Time.time;
-            this.TimeToWanderMove = GameController.r.Next(0, 11);
-            this.IntendedRotation = Quaternion.Euler(0, GameController.r.Next(0, 360), 0);
-        }
-        // If done moving, stop moving
-        if(Time.time - this.StartedWanderMoveTime > this.TimeToWanderMove)
-        {
-            this.IsWanderMove = false;
-        }
-        // If moving, set impulse to true which causes ship to accelerate forward
-        if(this.IsWanderMove == true)
-        {
-            this.ImpulseEngineInput = 1f;
+            // Stop shooting
+            this.MainGunInput = false;
+            // If not moving(wandering) and not currently waiting around
+            if(this.IsWanderMove == false && this.IsWaiting == false)
+            {
+                // Start waiting for random amount of time between 0-10 seconds
+                this.IsWaiting = true;
+                this.StartedWaitingTime = Time.time;
+                this.TimeToWait = GameController.r.Next(0, 11);
+                this.ImpulseEngineInput = 0f;
+            }
+            // If done waiting, stop waiting
+            if(Time.time - this.StartedWaitingTime > this.TimeToWait)
+            {
+                this.IsWaiting = false;
+            }
+            // If done waiting and not yet moving
+            if(this.IsWaiting == false && this.IsWanderMove == false)
+            {
+                // Start moving for random amount of time between 0-10 seconds and rotate some random direction
+                this.IsWanderMove = true;
+                this.StartedWanderMoveTime = Time.time;
+                this.TimeToWanderMove = GameController.r.Next(0, 11);
+                this.IntendedRotation = Quaternion.Euler(0, GameController.r.Next(0, 360), 0);
+            }
+            // If done moving, stop moving
+            if(Time.time - this.StartedWanderMoveTime > this.TimeToWanderMove)
+            {
+                this.IsWanderMove = false;
+            }
+            // If moving, set impulse to true which causes ship to accelerate forward
+            if(this.IsWanderMove == true)
+            {
+                this.ImpulseEngineInput = 1f;
+            }
         }
     }
 
     // Called when drones need to follow their parent ship
     public void FollowParent()
     {
-        // TODO: Make follow parent AI for drone
+        if(this.ShouldFollowParent == true)
+        {
+            // Stop shooting
+            this.MainGunInput = false;
+            if(Vector3.Distance(this.ShipObject.transform.position, this.Parent.ShipObject.transform.position) > this.MaxLeashDistance * 1.5f)
+            {
+                this.ShipObject.transform.position = this.Parent.ShipObject.transform.position;
+                this.IntendedRotation = this.Parent.ShipObject.transform.rotation;
+            }
+            else if(Vector3.Distance(this.ShipObject.transform.position, this.Parent.ShipObject.transform.position) > this.OrbitParentRange)
+            {
+                this.CurrentTarget = null;
+                this.IntendedRotation = AIController.GetRotationToTarget(this.ShipObject.transform, this.Parent.ShipObject.transform.position);
+                this.ImpulseEngineInput = 1f;
+            }
+            else if(Vector3.Distance(this.ShipObject.transform.position, this.Parent.ShipObject.transform.position) <= this.OrbitParentRange)
+            {
+                this.ImpulseEngineInput = 0f;
+                this.ShipRigidbody.velocity = this.Parent.ShipRigidbody.velocity;
+                this.IntendedRotation = this.Parent.ShipObject.transform.rotation;
+                this.ShouldFollowParent = false;
+            }
+        }
     }
 }

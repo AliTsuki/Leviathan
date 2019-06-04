@@ -192,11 +192,11 @@ public static class UIController
                                 HealthbarUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 0;
                             }
                             // If Ability 3 is on cooldown or currently active
-                            if(ship.Value.Ability3OnCooldown == true || ship.Value.Ability1Active == true)
+                            if(ship.Value.Ability3OnCooldown == true || ship.Value.Ability3Active == true)
                             {
                                 // Fill Ability 3 cooldown meter accordingly
                                 HealthbarUI.transform.GetChild(4).GetComponent<Image>().fillAmount = 0;
-                                if(ship.Value.Ability1Active == true)
+                                if(ship.Value.Ability3Active == true)
                                 {
                                     HealthbarUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().fillAmount = 1;
                                 }

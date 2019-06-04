@@ -9,13 +9,6 @@ public class PSBomber : PlayerShip
     // On cooldown bools
     public bool BombInFlight = false;
 
-    // Defaults for ability changes
-    public float DefaultGunCooldownTime;
-    public float DefaultGunShotAmount;
-    public float DefaultGunShotDamage;
-    public float DefaultGunShotAccuracy;
-    public float DefaultGunEnergyCost;
-
     // Ship stats
     // ----Ability 1: Barrier
     public float BarrierEnergyDrainCost; // Energy cost deducted when ship takes damage while barrier is active
@@ -39,6 +32,7 @@ public class PSBomber : PlayerShip
         // TODO: Change starting position to be last home zone saved to
         this.StartingPosition = new Vector3(0, 0, 0);
         this.Type = PlayerShipType.Bomber;
+        this.AItype = AIType.None;
         this.IFF = GameController.IFF.Friend;
         this.IsPlayer = true;
         // Ship stats
@@ -104,7 +98,9 @@ public class PSBomber : PlayerShip
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.PlayerPrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
-        this.BarrierObject = this.ShipObject.transform.GetChild(0).Find(GameController.ShieldName).gameObject;
+        // Ship type specific objects
+        this.BarrierObject = this.ShipObject.transform.GetChild(0).Find(GameController.BarrierObjectName).gameObject;
+        this.BarrierObject.SetActive(false);
         // Audio levels
         this.ImpulseEngineAudioStep = 0.05f;
         this.ImpulseEngineAudioMinVol = 0.25f;

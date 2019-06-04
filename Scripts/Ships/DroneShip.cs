@@ -36,9 +36,9 @@ public class DroneShip : Ship
         this.GunEnergyCost = 17f;
         // --Acceleration
         this.EngineCount = 1;
-        this.ImpulseAcceleration = 50f;
+        this.ImpulseAcceleration = 10f;
         this.WarpAccelerationMultiplier = 0f;
-        this.StrafeAcceleration = 20f;
+        this.StrafeAcceleration = 5f;
         // --Max Speed
         this.MaxImpulseSpeed = _maxSpeed;
         this.MaxWarpSpeed = 0f;
@@ -62,6 +62,7 @@ public class DroneShip : Ship
         this.MaxOrbitRange = _maxStrafeDistance;
         this.MaxWeaponsRange = _maxTargetAcquisitionDistance;
         this.MaxLeashDistance = _maxLeashDistance;
+        this.OrbitParentRange = 25f;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.DronePrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
@@ -84,6 +85,6 @@ public class DroneShip : Ship
         GameObject.Destroy(this.ShipObject);
         // Add ship to removal list
         GameController.ShipsToRemove.Add(this.ID);
-        this.Parent.Drones.Remove(this.ID);
+        this.Parent.Drones.Remove(this);
     }
 }
