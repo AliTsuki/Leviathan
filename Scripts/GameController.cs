@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.12a";
+    public static string Version = "0.0.12b";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject Cameras;
@@ -36,7 +36,7 @@ public static class GameController
     public static List<uint> ProjectilesToRemove = new List<uint>();
 
     // Player fields
-    private static PlayerShip.PlayerShipType PlayerShipType;
+    public static PlayerShip.PlayerShipType PlayerShipType;
 
     // Enemy spawn fields
     private static uint EnemyCount = 0;
@@ -51,12 +51,14 @@ public static class GameController
     public const string FollowCameraName = "Follow Camera";
     // UI
     public const string MainMenuName = "Main Menu";
+    public const string MainMenuContainerName = "Main Menu Container";
+    public const string NewGameContainerName = "New Game Menu Container";
     public const string UIName = "UI";
-    public const string CanvasName = "UI Canvas";
+    public const string UICanvasName = "UI Canvas";
     public const string ShieldDamageEffectName = "Shield Damage Effect";
     public const string HealthDamageEffectName = "Health Damage Effect";
-    public const string PauseMenuScreenName = "Pause Menu Screen";
-    public const string GameOverScreenName = "Game Over Screen";
+    public const string PauseMenuName = "Pause Menu";
+    public const string GameOverMenuName = "Game Over Menu";
     public const string GameOverTextName = "Game Over Text";
     public const string GameOverRestartButtonName = "Restart Button";
     public const string PlayerUIName = "Player UI";
@@ -122,8 +124,6 @@ public static class GameController
         CurrentGameState = GameState.MainMenu;
         // TODO: add an option in settings menu to select a different controller type
         PlayerInput.Controller = PlayerInput.ControllerType.XboxController;
-        // TODO: in new game menu have option to select different player ship type
-        PlayerShipType = PlayerShip.PlayerShipType.Engineer;
         UIController.Initialize();
         InitializeCamera();
     }
@@ -138,6 +138,8 @@ public static class GameController
             // If gameplay has yet to be initialized
             if(GameplayInitialized == false)
             {
+                // TODO: this is a shitty workaround so player doens't fire a shot the moment they spawn
+                PlayerInput.MainGunInput = false;
                 InitializeGameplay();
                 TimeStarted = Time.time;
                 GameplayInitialized = true;
@@ -149,6 +151,10 @@ public static class GameController
             CleanupShipList();
             CleanupProjectileList();
             Background.Update();
+        }
+        else if(CurrentGameState == GameState.MainMenu)
+        {
+            ResetCamera();
         }
         UIController.Update();
         Logger.Update();
@@ -217,6 +223,12 @@ public static class GameController
             // Set up follow camera
             Cameras.transform.position = Player.ShipObject.transform.position + new Vector3(0, 120, 0);
         }
+    }
+
+    // Reset camera to default position
+    private static void ResetCamera()
+    {
+        Cameras.transform.position = new Vector3(0, 0, 0);
     }
 
     // Initialize gameplay
@@ -499,8 +511,8 @@ public static class GameController
                 if(reporter.Alive == true && collidedWith.Alive == true && reporter.Parent != collidedWith && reporter != collidedWith.Parent)
                 {
                     // Send collision report
-                    reporter.ReceivedCollisionFromShip(collidedWith.ShipRigidbody.velocity, collidedWith.IFF);
-                    collidedWith.ReceivedCollisionFromShip(reporter.ShipRigidbody.velocity, reporter.IFF);
+                    reporter.ReceivedCollisionFromShip(collidedWith.ShipObject.transform.position, collidedWith.IFF);
+                    collidedWith.ReceivedCollisionFromShip(reporter.ShipObject.transform.position, reporter.IFF);
                 }
             }
             catch(Exception e)

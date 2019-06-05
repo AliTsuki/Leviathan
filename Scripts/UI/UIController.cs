@@ -12,8 +12,10 @@ public static class UIController
 {
     // GameObjects
     private static GameObject MainMenu;
+    private static GameObject MainMenuContainer;
+    private static GameObject NewGameContainer;
     private static GameObject UI;
-    private static GameObject canvas;
+    private static GameObject UICanvas;
     private static RectTransform rectTransform;
     private static GameObject PlayerUI;
     private static GameObject NPCUIPrefab;
@@ -23,7 +25,7 @@ public static class UIController
     private static GameObject ShieldDamageEffect;
     private static GameObject HealthDamageEffect;
     private static GameObject PauseMenuScreen;
-    private static GameObject GameOverScreen;
+    private static GameObject GameOverMenuScreen;
     private static GameObject GameOverText;
 
     // Dictionary of Healthbar UIs
@@ -47,20 +49,26 @@ public static class UIController
     {
         HealthbarUIs.Clear();
         MainMenu = GameObject.Find(GameController.MainMenuName);
+        MainMenuContainer = GameObject.Find(GameController.MainMenuContainerName);
+        MainMenuContainer.SetActive(true);
+        NewGameContainer = GameObject.Find(GameController.NewGameContainerName);
+        NewGameContainer.SetActive(false);
         UI = GameObject.Find(GameController.UIName);
-        canvas = GameObject.Find(GameController.CanvasName);
-        rectTransform = canvas.GetComponent<RectTransform>();
+        UICanvas = GameObject.Find(GameController.UICanvasName);
+        rectTransform = UICanvas.GetComponent<RectTransform>();
+        PlayerUI = GameObject.Find(GameController.PlayerUIName);
         MinimapCoords = GameObject.Find(GameController.MinimapCoordsName);
         InfoLabel = GameObject.Find(GameController.InfoLabelName).GetComponent<TextMeshProUGUI>();
         ShieldDamageEffect = GameObject.Find(GameController.ShieldDamageEffectName);
         ShieldDamageEffect.SetActive(false);
         HealthDamageEffect = GameObject.Find(GameController.HealthDamageEffectName);
         HealthDamageEffect.SetActive(false);
-        PauseMenuScreen = GameObject.Find(GameController.PauseMenuScreenName);
-        GameOverScreen = GameObject.Find(GameController.GameOverScreenName);
-        GameOverScreen.SetActive(false);
+        UI.SetActive(false);
+        PauseMenuScreen = GameObject.Find(GameController.PauseMenuName);
+        PauseMenuScreen.SetActive(false);
+        GameOverMenuScreen = GameObject.Find(GameController.GameOverMenuName);
         GameOverText = GameObject.Find(GameController.GameOverTextName);
-        PlayerUI = GameObject.Find(GameController.PlayerUIName);
+        GameOverMenuScreen.SetActive(false);
         NPCUIPrefab = Resources.Load<GameObject>(GameController.NPCUIPrefabName);
     }
 
@@ -69,16 +77,42 @@ public static class UIController
     {
         if(GameController.CurrentGameState == GameController.GameState.MainMenu)
         {
-            ShowMainMenu();
-            HideUI();
-            HidePauseMenu();
+            if(MainMenu.activeSelf == false)
+            {
+                ShowMainMenu();
+            }
+            if(UI.activeSelf == true)
+            {
+                HideUI();
+            }
+            if(PauseMenuScreen.activeSelf == true)
+            {
+                HidePauseMenu();
+            }
+            if(Cursor.visible == false)
+            {
+                Cursor.visible = true;
+            }
         }
         // If game state is playing
         else if(GameController.CurrentGameState == GameController.GameState.Playing)
         {
-            HideMainMenu();
-            ShowUI();
-            HidePauseMenu();
+            if(MainMenu.activeSelf == true)
+            {
+                HideMainMenu();
+            }
+            if(UI.activeSelf == false)
+            {
+                ShowUI();
+            }
+            if(PauseMenuScreen.activeSelf == true)
+            {
+                HidePauseMenu();
+            }
+            if(Cursor.visible == true)
+            {
+                Cursor.visible = false;
+            }
             if(HealthbarUIs.Count < 1)
             {
                 HealthbarUIs.Add(1, PlayerUI); // TODO: replace 1 with actual player ID
@@ -110,8 +144,12 @@ public static class UIController
                         HealthbarUIs.Add(ship.Key, GameObject.Instantiate(NPCUIPrefab));
                         // Set the parent and name of healthbar object
                         HealthbarUI = HealthbarUIs[ship.Key];
-                        HealthbarUI.transform.SetParent(canvas.transform, false);
+                        HealthbarUI.transform.SetParent(UICanvas.transform, false);
                         HealthbarUI.name = $@"Healthbar: {ship.Key}";
+                        if(ship.Value.AItype == Ship.AIType.Drone)
+                        {
+                            HealthbarUI.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                        }
                     }
                 }
                 // If ship has a healthbar and is alive
@@ -237,7 +275,19 @@ public static class UIController
         // If game state is paused
         else if(GameController.CurrentGameState == GameController.GameState.Paused)
         {
-            ShowPauseMenu();
+            if(Cursor.visible == false)
+            {
+                Cursor.visible = true;
+            }
+            if(PauseMenuScreen.activeSelf == false)
+            {
+                ShowPauseMenu();
+                PlayerInput.PauseButtonInput = false;
+            }
+            if(PlayerInput.PauseButtonInput == true)
+            {
+                GameController.CurrentGameState = GameController.GameState.Playing;
+            }
         }
     }
 
@@ -272,7 +322,7 @@ public static class UIController
     // Game over screen
     public static void GameOver()
     {
-        GameOverScreen.SetActive(true);
+        GameOverMenuScreen.SetActive(true);
         GameOverText = GameObject.Find(GameController.GameOverTextName);
         GameOverText.GetComponent<TextMeshProUGUI>().text = $@"GAME OVER{Environment.NewLine}{Environment.NewLine}TIME: {TimeString}{Environment.NewLine}SCORE: {GameController.Score}";
     }
@@ -281,12 +331,28 @@ public static class UIController
     public static void ShowMainMenu()
     {
         MainMenu.SetActive(true);
+        MainMenuContainer.SetActive(true);
+        NewGameContainer.SetActive(false);
     }
 
     // Hide main menu screen
     public static void HideMainMenu()
     {
         MainMenu.SetActive(false);
+    }
+
+    // Show new game menu screen
+    public static void ShowNewGameMenu()
+    {
+        MainMenuContainer.SetActive(false);
+        NewGameContainer.SetActive(true);
+    }
+
+    // Exit new game menu screen
+    public static void ExitNewGameMenu()
+    {
+        MainMenuContainer.SetActive(true);
+        NewGameContainer.SetActive(false);
     }
 
     // Show UI
@@ -320,7 +386,7 @@ public static class UIController
     // Restart
     public static void Restart()
     {
-        GameOverScreen.SetActive(false);
+        GameOverMenuScreen.SetActive(false);
         // Loop through healthbar uis
         foreach(KeyValuePair<uint, GameObject> healthbarui in HealthbarUIs)
         {

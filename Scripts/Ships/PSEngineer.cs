@@ -98,7 +98,7 @@ public class PSEngineer : PlayerShip
         this.DroneMaxSpeed = 50f;
         this.DroneGunCooldownTime = 1f;
         this.DroneGunShotAmount = 1;
-        this.DroneGunShotProjectileType = 4;
+        this.DroneGunShotProjectileType = 0;
         this.DroneGunShotDamage = 5f;
         this.DroneGunShotAccuracy = 97f;
         this.DroneGunShotSpeed = 150f;

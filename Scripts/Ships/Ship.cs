@@ -684,14 +684,15 @@ public class Ship
     {
         // TODO: Drones are overlapping frequently, make sure they are knocked away from each other
         // Apply velocity received from collision
-        this.ShipRigidbody.AddRelativeForce(_collisionVelocity * 0.2f, ForceMode.Impulse);
+        Quaternion rotationToTarget = AIController.GetRotationToTarget(this.ShipObject.transform, _collisionVelocity);
+        this.ShipRigidbody.AddRelativeForce(rotationToTarget * new Vector3(0, 0, -1000));
         // If ship is different faction
         if(_iff != this.IFF)
         {
             // If armor percentage is above 100, cap it at 100
             Mathf.Clamp(this.Armor, 0f, 100f);
             // Take impact damage less armor percentage
-            this.TakeDamage(_collisionVelocity.magnitude * ((100f - this.Armor) / 100f));
+            this.TakeDamage(this.MaxHealth * 0.25f * ((100f - this.Armor) / 100f));
         }
     }
 

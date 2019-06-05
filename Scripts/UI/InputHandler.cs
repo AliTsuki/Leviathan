@@ -12,8 +12,24 @@ public class InputHandler : MonoBehaviour
         }
         else if(_input == "NewGame")
         {
+            UIController.ShowNewGameMenu();
+        }
+        else if(_input == "SelectBomber")
+        {
+            GameController.PlayerShipType = PlayerShip.PlayerShipType.Bomber;
+        }
+        else if(_input == "SelectEngineer")
+        {
+            GameController.PlayerShipType = PlayerShip.PlayerShipType.Engineer;
+        }
+        else if(_input == "StartGame")
+        {
             GameController.Restart();
             GameController.CurrentGameState = GameController.GameState.Playing;
+        }
+        else if(_input == "BackButton")
+        {
+            UIController.ExitNewGameMenu();
         }
         else if(_input == "LoadGame")
         {

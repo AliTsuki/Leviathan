@@ -36,9 +36,9 @@ public class DroneShip : Ship
         this.GunEnergyCost = 17f;
         // --Acceleration
         this.EngineCount = 1;
-        this.ImpulseAcceleration = 10f;
+        this.ImpulseAcceleration = 100f;
         this.WarpAccelerationMultiplier = 0f;
-        this.StrafeAcceleration = 5f;
+        this.StrafeAcceleration = 50f;
         // --Max Speed
         this.MaxImpulseSpeed = _maxSpeed;
         this.MaxWarpSpeed = 0f;
