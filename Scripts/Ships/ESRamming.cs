@@ -24,11 +24,11 @@ public class ESRamming : EnemyShip
         this.IsPlayer = false;
         // Ship stats
         // --Health/Armor/Shields
-        this.Health = 25f;
-        this.MaxHealth = 25f;
+        this.Health = 10f;
+        this.MaxHealth = 10f;
         this.Armor = 50f;
-        this.Shields = 10f;
-        this.MaxShields = 10f;
+        this.Shields = 5f;
+        this.MaxShields = 5f;
         this.ShieldRegenSpeed = 1f;
         this.ShieldCooldownTime = 3f;
         // --Current/Max energy
@@ -45,8 +45,8 @@ public class ESRamming : EnemyShip
         // ----Main gun
         this.GunBarrelCount = 0;
         // ----Bomb
-        this.BombDamage = 50f;
-        this.BombRadius = 50f;
+        this.BombDamage = 25f;
+        this.BombRadius = 25f;
         // AI fields
         this.AIAimAssist = false;
         this.MaxTargetAcquisitionRange = 80f;
@@ -71,8 +71,12 @@ public class ESRamming : EnemyShip
             Mathf.Clamp(this.Armor, 0, 100);
             // Take impact damage less armor percentage
             this.TakeDamage(_collisionVelocity.magnitude * ((100 - this.Armor) / 100));
-            // Detonate warhead
-            this.Detonate();
+            // If this ship is not EMPed
+            if(this.IsEMPed == false)
+            {
+                // Detonate warhead
+                this.Detonate();
+            }
         }
     }
 

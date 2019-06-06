@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -65,6 +66,34 @@ public class Zone
         {PurpleZone.Type, PurpleZone},
         {BlueZone.Type, BlueZone}
     };
+    
+    // Color dictionaries
+    private static readonly Dictionary<string, Vector3> TilemapColorsByName = new Dictionary<string, Vector3>
+    {
+        {"white", new Vector3(1, 1, 1)},
+        {"gray", new Vector3(0.5f, 0.5f, 0.5f)},
+        {"black", new Vector3(0, 0, 0)},
+        {"red", new Vector3(1, 0, 0)},
+        {"orange", new Vector3(1, 0.5f, 0)},
+        {"yellow", new Vector3(1, 1, 0)},
+        {"green", new Vector3(0, 1, 0)},
+        {"blue", new Vector3(0, 0, 1)},
+        {"indigo", new Vector3(0, 1, 1)},
+        {"purple", new Vector3(1, 0, 1)},
+    };
+    private static readonly Dictionary<Vector3, string> TilemapColorsByValue = new Dictionary<Vector3, string>
+    {
+        {new Vector3(1, 1, 1), "white"},
+        {new Vector3(0.5f, 0.5f, 0.5f), "gray"},
+        {new Vector3(0, 0, 0), "black"},
+        {new Vector3(1, 0, 0), "red"},
+        {new Vector3(1, 0.5f, 0), "orange"},
+        {new Vector3(1, 1, 0), "yellow"},
+        {new Vector3(0, 1, 0), "green"},
+        {new Vector3(0, 0, 1), "blue"},
+        {new Vector3(0, 1, 1), "indigo"},
+        {new Vector3(1, 0, 1), "purple"},
+    };
 
     // Constructor fields
     public EnemyAndSpawnRate[] ZoneEnemyTypeArray;
@@ -82,14 +111,14 @@ public class Zone
     }
 
 
-    // Get zone type at position
+    // Get zone type at pixel coords
     public static ZoneType GetZoneAtPixelCoords(Vector2Int _pixelCoords)
     {
         Color color = Background.TilemapTexture.GetPixel(_pixelCoords.x, _pixelCoords.y);
         return GetZoneIDByColor(color);
     }
 
-    // Get zone type at position
+    // Get zone type at world coords
     public static ZoneType GetZoneAtWorldCoords(Vector3 _worldCoords)
     {
         Vector2Int TileCoords = Background.WorldCoordsToTileCoords(_worldCoords);
@@ -100,28 +129,46 @@ public class Zone
     private static ZoneType GetZoneIDByColor(Color color)
     {
         // TODO: Color Tilemap file and add corresponding colors here and background prefabs with the byte number suffix
-        if(color == Color.black)
+        try
         {
-            return DefaultZone.Type;
+            string TilemapColor = TilemapColorsByValue[new Vector3(Mathematics.RoundToNearestHalf(color.r), Mathematics.RoundToNearestHalf(color.g), Mathematics.RoundToNearestHalf(color.b))];
+            switch(TilemapColor)
+            {
+                case "black":
+                {
+                    return DefaultZone.Type;
+                }
+                case "green":
+                {
+                    return GreenZone.Type;
+                }
+                case "orange":
+                {
+                    return OrangeZone.Type;
+                }
+                case "red":
+                {
+                    return RedZone.Type;
+                }
+                case "purple":
+                {
+                    return PurpleZone.Type;
+                }
+                case "blue":
+                {
+                    return BlueZone.Type;
+                }
+                default:
+                {
+                    return DefaultZone.Type;
+                }
+            }
         }
-        else if(color == Color.green)
+        catch(Exception e)
         {
-            return GreenZone.Type;
-        }
-        else if(color == Color.red)
-        {
-            return OrangeZone.Type;
-        }
-        else if(color == new Color(1, 0, 1, 1)) // Purple
-        {
-            return PurpleZone.Type;
-        }
-        else if(color == Color.blue)
-        {
-            return BlueZone.Type;
-        }
-        else
-        {
+            Debug.Log($@"Tilemap Color Not found: {color.r}:{color.g}:{color.b}");
+            Logger.Log(e);
+            Logger.Log($@"Tilemap Color Not found: {color.r}:{color.g}:{color.b}");
             return DefaultZone.Type;
         }
     }
@@ -158,21 +205,24 @@ public class Zone
         // Get enemy type
         EnemyShip.EnemyShipType EnemyType = GetRandomEnemyTypeInZone(GetZoneAtWorldCoords(_startingPosition));
         // Return enemy indicated by enemyID
-        if(EnemyType == EnemyShip.EnemyShipType.Standard)
+        switch(EnemyType)
         {
-            return new ESStandard(_shipID, _startingPosition);
-        }
-        else if(EnemyType == EnemyShip.EnemyShipType.Ramming)
-        {
-            return new ESRamming(_shipID, _startingPosition);
-        }
-        else if(EnemyType == EnemyShip.EnemyShipType.Broadside)
-        {
-            return new ESBroadside(_shipID, _startingPosition);
-        }
-        else
-        {
-            return null;
+            case EnemyShip.EnemyShipType.Standard:
+            {
+                return new ESStandard(_shipID, _startingPosition);
+            }
+            case EnemyShip.EnemyShipType.Ramming:
+            {
+                return new ESRamming(_shipID, _startingPosition);
+            }
+            case EnemyShip.EnemyShipType.Broadside:
+            {
+                return new ESBroadside(_shipID, _startingPosition);
+            }
+            default:
+            {
+                return null;
+            }
         }
     }
 }

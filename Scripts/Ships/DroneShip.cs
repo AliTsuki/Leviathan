@@ -85,6 +85,7 @@ public class DroneShip : Ship
         GameObject.Destroy(this.ShipObject);
         // Add ship to removal list
         GameController.ShipsToRemove.Add(this.ID);
+        // Remove drone from parents drone list
         this.Parent.Drones.Remove(this);
     }
 }

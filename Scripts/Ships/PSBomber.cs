@@ -22,7 +22,7 @@ public class PSBomber : PlayerShip
     public float BombDamage; // Maximum damage bomb explosion will do to targets in its direct center, damage is calculated as linear falloff percentage of target distance to center of bomb explosion
     public float BombRadius; // Radius in which bomb will deal damage to ships
     public float BombSpeed; // Maximum velocity of fired bombs
-    public float BombLiftime; // Number of seconds bomb will fly before it self destructs
+    public float BombLifetime; // Number of seconds bomb will fly before it self destructs
     public float BombPrimerTime; // Number of seconds the bomb must fly before it can be detonated
 
     // Player ship constructor
@@ -69,13 +69,13 @@ public class PSBomber : PlayerShip
         this.GunShotAmount = 1;
         this.GunShotCurvature = 0.05f;
         this.GunShotSightCone = 0.8f;
-        this.GunShotDamage = 30f;
+        this.GunShotDamage = 20f;
         this.GunShotAccuracy = 99f;
         this.GunShotSpeed = 100f;
         this.GunShotLifetime = 2f;
         // -- Abilities
         // ----Ability 1: Barrier
-        this.BarrierEnergyDrainCost = 10f;
+        this.BarrierEnergyDrainCost = 20f;
         // ----Ability 2: Barrage
         this.BarrageGunCooldownTimeMultiplier = 0.5f;
         this.BarrageShotAmountIncrease = 1;
@@ -85,16 +85,16 @@ public class PSBomber : PlayerShip
         // ----Ability 3: Bombs
         this.BombDamage = 150f;
         this.BombRadius = 50f;
-        this.BombSpeed = 35f;
-        this.BombLiftime = 3f;
+        this.BombSpeed = 40f;
+        this.BombLifetime = 3f;
         this.BombPrimerTime = 0.25f;
         // ---- Ability Cooldowns
-        this.Ability1Duration = 5f;
-        this.Ability1CooldownTime = 10f;
-        this.Ability2Duration = 5f;
-        this.Ability2CooldownTime = 10f;
+        this.Ability1Duration = 2.5f;
+        this.Ability1CooldownTime = 12f;
+        this.Ability2Duration = 4f;
+        this.Ability2CooldownTime = 14f;
         this.Ability3Duration = 0f;
-        this.Ability3CooldownTime = 15f;
+        this.Ability3CooldownTime = 12f;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.PlayerPrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
@@ -181,7 +181,7 @@ public class PSBomber : PlayerShip
         // If barrage is currently active and last barrage activated time is greater than barrage duration
         if(this.Ability2Active == true && Time.time - this.LastAbility2ActivatedTime > this.Ability2Duration)
         {
-            // Set barrage to off
+            // Set barrage to inactive
             this.Ability2Active = false;
             // Set barrage on cooldown
             this.Ability2OnCooldown = true;
@@ -208,9 +208,9 @@ public class PSBomber : PlayerShip
         // If bomb input is active, bomb is not on cooldown, and there is no bomb in flight
         if(this.Ability3Input == true && this.Ability3OnCooldown == false && this.BombInFlight == false)
         {
-            // TODO: Now that a ship can have more than one main gun, need to think of something better than just having bomb use the 0th gun barrel location/rotation
+            // TODO: Now that a ship can have more than one main gun, need to think of something better than just having bomb use the 0th gun barrel location/rotation. IDEA: make a game object child of ship to use as bomb firing location
             // Spawn a bomb
-            this.bomb = GameController.SpawnBomb(this, this.IFF, this.BombDamage, this.BombRadius, this.GunBarrelObjects[0].transform.position, this.GunBarrelObjects[0].transform.rotation, this.ShipRigidbody.velocity, this.BombSpeed, this.BombLiftime);
+            this.bomb = GameController.SpawnBomb(this, this.IFF, this.BombDamage, this.BombRadius, this.GunBarrelObjects[0].transform.position, this.GunBarrelObjects[0].transform.rotation, this.ShipRigidbody.velocity, this.BombSpeed, this.BombLifetime);
             // Set bomb on cooldown
             this.Ability3OnCooldown = true;
             // Set bomb in flight

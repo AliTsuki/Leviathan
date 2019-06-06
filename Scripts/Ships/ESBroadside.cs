@@ -43,7 +43,7 @@ public class ESBroadside : EnemyShip
         this.GunShotAmount = 2;
         this.GunShotCurvature = 0f;
         this.GunShotSightCone = 0f;
-        this.GunShotDamage = 4f;
+        this.GunShotDamage = 3f;
         this.GunShotAccuracy = 75f;
         this.GunShotSpeed = 100f;
         this.GunShotLifetime = 2f;

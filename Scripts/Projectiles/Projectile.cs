@@ -40,37 +40,35 @@ public class Projectile
     // Fixed Update is called a fixed number of times per second, Physics updates should be done in FixedUpdate
     public virtual void FixedUpdate()
     {
-        if(this.Alive == true)
+        // If this is alive and object still exists
+        if(this.Alive == true && this.ProjectileObject != null)
         {
-            // If projectile still exists
-            if(this.ProjectileObject != null)
+            // If shot has curvature
+            if(this.Curvature > 0)
             {
-                // If shot has curvature
-                if(this.Curvature > 0)
+                // If there is no current target or current target is dead
+                if(this.Target == null || this.Target.Alive == false)
                 {
-                    // If there is no current target or current target is dead
-                    if(this.Target == null || this.Target.Alive == false)
-                    {
-                        // Acquire new target
-                        this.Target = AIController.AcquireForwardTarget(this.ProjectileObject.transform, this.IFF, 30, this.SightCone);
-                    }
-                    // If there is a target and it is alive
-                    else if(this.Target != null && this.Target.Alive == true)
-                    {
-                        this.RotateToTarget();
-                    }
+                    // Acquire new target
+                    this.Target = AIController.AcquireForwardTarget(this.ProjectileObject.transform, this.IFF, 30, this.SightCone);
                 }
-                // Accelerate forward
-                this.ProjectileRigidbody.velocity = this.ProjectileObject.transform.forward * this.Speed;
+                // If there is a target and it is alive
+                else if(this.Target != null && this.Target.Alive == true)
+                {
+                    // Rotate toward target
+                    this.RotateToTarget();
+                }
             }
-            // If projectile has burnt out
-            else
-            {
-                // Set to dead
-                this.Alive = false;
-                // Add to projectile removal list
-                GameController.ProjectilesToRemove.Add(this.ID);
-            }
+            // Accelerate forward
+            this.ProjectileRigidbody.velocity = this.ProjectileObject.transform.forward * this.Speed;
+        }
+        // If projectile has burnt out
+        else
+        {
+            // Set to dead
+            this.Alive = false;
+            // Add to projectile removal list
+            GameController.ProjectilesToRemove.Add(this.ID);
         }
     }
 

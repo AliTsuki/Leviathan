@@ -50,8 +50,6 @@ public class PlayerShip : Ship
     {
         // Set to not alive
         this.Alive = false;
-        // Tell UI to remove healthbar for this ship
-        UIController.RemoveHealthbar(this.ID);
         // Create an explosion
         this.Explosion = GameObject.Instantiate(this.ExplosionPrefab, this.ShipObject.transform.position, Quaternion.identity);
         // Set explosion object to self destroy after 1 second
@@ -60,6 +58,6 @@ public class PlayerShip : Ship
         // Destroy ship model
         GameObject.Destroy(this.ShipObject.transform.GetChild(0).gameObject);
         // Show game over screen
-        UIController.GameOver();
+        UIController.SetupUIType(UIController.UITypeEnum.GameOver);
     }
 }

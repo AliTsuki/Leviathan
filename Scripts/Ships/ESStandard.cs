@@ -43,7 +43,7 @@ public class ESStandard : EnemyShip
         this.GunShotAmount = 1;
         this.GunShotCurvature = 0f;
         this.GunShotSightCone = 0f;
-        this.GunShotDamage = 4f;
+        this.GunShotDamage = 6f;
         this.GunShotAccuracy = 95f;
         this.GunShotSpeed = 120f;
         this.GunShotLifetime = 2f;

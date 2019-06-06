@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.12b";
+    public static string Version = "0.0.12c";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject Cameras;
@@ -55,16 +55,32 @@ public static class GameController
     public const string NewGameContainerName = "New Game Menu Container";
     public const string UIName = "UI";
     public const string UICanvasName = "UI Canvas";
-    public const string ShieldDamageEffectName = "Shield Damage Effect";
     public const string HealthDamageEffectName = "Health Damage Effect";
-    public const string PauseMenuName = "Pause Menu";
+    public const string ShieldDamageEffectName = "Shield Damage Effect";
+    public const string MinimapCoordsName = "Minimap Coords";
+    public const string InfoLabelName = "Info Label";
+    public const string PlayerUIName = "Player UI";
+    public const string PlayerHealthForegroundName = "Health Bar Foreground";
+    public const string PlayerHealthTextName = "Health Bar Text";
+    public const string PlayerShieldForegroundName = "Shield Bar Foreground";
+    public const string PlayerShieldTextName = "Shield Bar Text";
+    public const string PlayerEnergyForegroundName = "Energy Bar Foreground";
+    public const string PlayerEnergyTextName = "Energy Bar Text";
+    public const string PlayerAbility1BackgroundName = "Ability 1 Background";
+    public const string PlayerAbility1CooldownName = "Ability 1 Cooldown";
+    public const string PlayerAbility1CDTextName = "Ability 1 Cooldown Text";
+    public const string PlayerAbility2BackgroundName = "Ability 2 Background";
+    public const string PlayerAbility2CooldownName = "Ability 2 Cooldown";
+    public const string PlayerAbility2CDTextName = "Ability 2 Cooldown Text";
+    public const string PlayerAbility3BackgroundName = "Ability 3 Background";
+    public const string PlayerAbility3CooldownName = "Ability 3 Cooldown";
+    public const string PlayerAbility3CDTextName = "Ability 3 Cooldown Text";
     public const string GameOverMenuName = "Game Over Menu";
     public const string GameOverTextName = "Game Over Text";
     public const string GameOverRestartButtonName = "Restart Button";
-    public const string PlayerUIName = "Player UI";
+    public const string PauseMenuName = "Pause Menu";
     public const string NPCUIPrefabName = "NPC UI";
-    public const string MinimapCoordsName = "Minimap Coords";
-    public const string InfoLabelName = "Info Label";
+
     // Background tiles
     public const string TilemapName = "Tilemap/Tilemap";
     public const string BackgroundPrefabName = "Environment/Background";
@@ -335,7 +351,7 @@ public static class GameController
             // Update ship
             ship.Value.Update();
         }
-        // Loop trhough all ships to add to scene
+        // Loop through all ships to add to scene
         foreach(KeyValuePair<uint, Ship> ship in ShipsToAdd)
         {
             // Add to ships list
@@ -497,6 +513,7 @@ public static class GameController
             catch(Exception e)
             {
                 Debug.Log(e.ToString());
+                Logger.Log(e);
             }
         }
         // If two ships collided
@@ -518,6 +535,7 @@ public static class GameController
             catch(Exception e)
             {
                 Debug.Log(e.ToString());
+                Logger.Log(e);
             }
         }
     }

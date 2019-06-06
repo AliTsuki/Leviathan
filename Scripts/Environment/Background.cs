@@ -37,22 +37,38 @@ public static class Background
         // Clear lists
         Backgrounds.Clear();
         BackgroundsToRemove.Clear();
-        // Load tilemap
+        // If tilemap and prefabs are not loaded
         if(BackgroundDependenciesLoaded == false)
         {
+            // Load tilemap
             TilemapTexture = Resources.Load<Texture2D>(GameController.TilemapName);
+            // Read tilemap
             StoreTilemapInDict();
-            // Load background prefabs
+            // Loop through zone types
             foreach(Zone.ZoneType ZoneType in (Zone.ZoneType[])Enum.GetValues(typeof(Zone.ZoneType)))
             {
+                // Loop through tile types
                 foreach(BackgroundTile.TileTypeEnum TileType in (BackgroundTile.TileTypeEnum[])Enum.GetValues(typeof(BackgroundTile.TileTypeEnum)))
                 {
+                    // Loop through tile rotations
                     foreach(BackgroundTile.TileDirectionEnum TileRotation in (BackgroundTile.TileDirectionEnum[])Enum.GetValues(typeof(BackgroundTile.TileDirectionEnum)))
                     {
-                        BackgroundPrefabs.Add($@"{ZoneType}:{TileType}:{TileRotation}", Resources.Load<GameObject>(GameController.BackgroundPrefabName + $@"/{ZoneType}/{TileType} {TileRotation}"));
+                        try
+                        {
+                            // Load background prefab by zone type, tile type, and rotation
+                            BackgroundPrefabs.Add($@"{ZoneType}:{TileType}:{TileRotation}", Resources.Load<GameObject>(GameController.BackgroundPrefabName + $@"/{ZoneType}/{TileType} {TileRotation}"));
+                        }
+                        catch(Exception e)
+                        {
+                            Debug.Log(e);
+                            Debug.Log($@"Failed to find background prefab");
+                            Logger.Log(e);
+                            Logger.Log($@"Failed to find background prefab");
+                        }
                     }
                 }
             }
+            // Acknowledge tilemaps and prefabs loaded
             BackgroundDependenciesLoaded = true;
         }
         // Initialize background
@@ -89,32 +105,50 @@ public static class Background
     // Store tilemap in Dict
     private static void StoreTilemapInDict()
     {
-        for(int x = 0; x < TilemapTexture.width; x++)
+        try
         {
-            for(int z = 0; z < TilemapTexture.height; z++)
+            // Loop through width of tilemap
+            for(int x = 0; x < TilemapTexture.width; x++)
             {
-                Vector2Int PixelCoords = new Vector2Int(x, z);
-                Zone.ZoneType ZoneType = Zone.GetZoneAtPixelCoords(new Vector2Int(x, z));
-                byte TileTypeAndRotation = 0;
-                if(Zone.GetZoneAtPixelCoords(new Vector2Int(x + 1, z - 1)) == ZoneType)
+                // Loop through height of tilemap
+                for(int z = 0; z < TilemapTexture.height; z++)
                 {
-                    TileTypeAndRotation += 8;
+                    // Set pixel coords
+                    Vector2Int PixelCoords = new Vector2Int(x, z);
+                    // Get zone at pixel coords
+                    Zone.ZoneType ZoneType = Zone.GetZoneAtPixelCoords(new Vector2Int(x, z));
+                    // Reset tile type and rotation
+                    byte TileTypeAndRotation = 0;
+                    // Get tile type and rotation by checking nearby tiles and adding a byte value for each case
+                    if(Zone.GetZoneAtPixelCoords(new Vector2Int(x + 1, z - 1)) == ZoneType)
+                    {
+                        TileTypeAndRotation += 8;
+                    }
+                    if(Zone.GetZoneAtPixelCoords(new Vector2Int(x - 1, z - 1)) == ZoneType)
+                    {
+                        TileTypeAndRotation += 4;
+                    }
+                    if(Zone.GetZoneAtPixelCoords(new Vector2Int(x + 1, z + 1)) == ZoneType)
+                    {
+                        TileTypeAndRotation += 2;
+                    }
+                    if(Zone.GetZoneAtPixelCoords(new Vector2Int(x - 1, z + 1)) == ZoneType)
+                    {
+                        TileTypeAndRotation += 1;
+                    }
+                    // Convert pixel coords to tile coords
+                    Vector2Int TileCoords = TilemapPixelCoordsToTileCoords(PixelCoords);
+                    // Add a new tile at tile coords of zone type with specified tile type and rotation
+                    Tilemap.Add(TileCoords, new BackgroundTile(ZoneType, TileTypeAndRotation));
                 }
-                if(Zone.GetZoneAtPixelCoords(new Vector2Int(x - 1, z - 1)) == ZoneType)
-                {
-                    TileTypeAndRotation += 4;
-                }
-                if(Zone.GetZoneAtPixelCoords(new Vector2Int(x + 1, z + 1)) == ZoneType)
-                {
-                    TileTypeAndRotation += 2;
-                }
-                if(Zone.GetZoneAtPixelCoords(new Vector2Int(x - 1, z + 1)) == ZoneType)
-                {
-                    TileTypeAndRotation += 1;
-                }
-                Vector2Int TileCoords = TilemapPixelCoordsToTileCoords(PixelCoords);
-                Tilemap.Add(TileCoords, new BackgroundTile(ZoneType, TileTypeAndRotation));
             }
+        }
+        catch(Exception e)
+        {
+            Debug.Log(e);
+            Debug.Log($@"Failed to parse tilemap image");
+            Logger.Log(e);
+            Logger.Log($@"Failed to parse tilemap image");
         }
     }
 
@@ -198,15 +232,19 @@ public static class Background
     // Restart
     public static void Restart()
     {
+        // Loop through all backgrounds
         foreach(KeyValuePair<Vector2Int, GameObject> background in Backgrounds)
         {
+            // Destroy backgrounds
             GameObject.Destroy(background.Value);
         }
     }
 }
 
+// Stores specific background tiles including zone type, tile type, and rotation
 public struct BackgroundTile
 {
+    // Fields
     public enum TileTypeEnum
     {
         Full,
@@ -228,9 +266,12 @@ public struct BackgroundTile
     public TileTypeEnum TileType;
     public TileDirectionEnum Rotation;
 
+    // Background tile constructor
     public BackgroundTile(Zone.ZoneType _zoneType, byte _tileTypeAndRotation)
     {
+        // Assign zone type to zone type passed in
         this.ZoneType = _zoneType;
+        // Set tile type and rotation to byte value passed in
         if(_tileTypeAndRotation == 0)
         {
             this.TileType = TileTypeEnum.Full;
