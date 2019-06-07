@@ -12,7 +12,7 @@ public class InputHandler : MonoBehaviour
         }
         else if(_input == "NewGame")
         {
-            UIController.ShowNewGameMenu();
+            GameController.CurrentGameState = GameController.GameState.NewGameMenu;
         }
         else if(_input == "SelectBomber")
         {

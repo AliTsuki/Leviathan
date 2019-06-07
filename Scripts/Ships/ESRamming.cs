@@ -103,7 +103,7 @@ public class ESRamming : EnemyShip
                 }
             }
         }
-        // Take full life in damage
-        this.TakeDamage(this.MaxShields + this.MaxHealth);
+        // Ship dies in attack
+        this.Kill();
     }
 }

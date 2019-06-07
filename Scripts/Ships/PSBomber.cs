@@ -99,7 +99,7 @@ public class PSBomber : PlayerShip
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.PlayerPrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
         // Ship type specific objects
-        this.BarrierObject = this.ShipObject.transform.GetChild(0).Find(GameController.BarrierObjectName).gameObject;
+        this.BarrierObject = this.ShipObject.transform.Find(GameController.BarrierObjectName).gameObject;
         this.BarrierObject.SetActive(false);
         // Audio levels
         this.ImpulseEngineAudioStep = 0.05f;

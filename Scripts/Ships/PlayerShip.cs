@@ -55,9 +55,12 @@ public class PlayerShip : Ship
         // Set explosion object to self destroy after 1 second
         GameObject.Destroy(this.Explosion, 1f);
         // If this is player
-        // Destroy ship model
-        GameObject.Destroy(this.ShipObject.transform.GetChild(0).gameObject);
+        // Destroy ship objects
+        for(int i = 0; i < this.ShipObject.transform.childCount; i++)
+        {
+            GameObject.Destroy(this.ShipObject.transform.GetChild(i).gameObject);
+        }
         // Show game over screen
-        UIController.SetupUIType(UIController.UITypeEnum.GameOver);
+        GameController.CurrentGameState = GameController.GameState.GameOver;
     }
 }

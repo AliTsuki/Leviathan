@@ -120,6 +120,10 @@ public static class UIController
         {
             MainMenuUIUpdate();
         }
+        else if(GameController.CurrentGameState == GameController.GameState.NewGameMenu)
+        {
+            NewGameMenuUpdate();
+        }
         // If game state is playing
         else if(GameController.CurrentGameState == GameController.GameState.Playing)
         {
@@ -130,12 +134,22 @@ public static class UIController
         {
             PauseMenuUIUpdate();
         }
+        else if(GameController.CurrentGameState == GameController.GameState.GameOver)
+        {
+            GameOverUIUpdate();
+        }
     }
 
     // Called during update when gamestate is main menu
     private static void MainMenuUIUpdate()
     {
         SetupUIType(UITypeEnum.MainMenu);
+    }
+
+    // Called during update when gamestate is new game menu
+    private static void NewGameMenuUpdate()
+    {
+        SetupUIType(UITypeEnum.NewGameMenu);
     }
 
     // Called during update if gamestate is playing
@@ -152,6 +166,16 @@ public static class UIController
     private static void PauseMenuUIUpdate()
     {
         SetupUIType(UITypeEnum.Paused);
+    }
+
+    // Called during update if gamestate is gameover
+    private static void GameOverUIUpdate()
+    {
+        SetupUIType(UITypeEnum.GameOver);
+        UpdateMinimapCoords();
+        UpdateInfoLabel();
+        UpdateNPCHealthbars();
+        UpdatePlayerUI();
     }
 
     // Setup UI to type
@@ -177,6 +201,11 @@ public static class UIController
                 {
                     HidePauseMenu();
                 }
+                // Hide pause menu if not currently hidden
+                if(GameOverMenuScreen.activeSelf == true)
+                {
+                    HideGameOver();
+                }
                 // Show cursor if not currently shown
                 if(Cursor.visible == false)
                 {
@@ -187,6 +216,12 @@ public static class UIController
             case UITypeEnum.NewGameMenu:
             {
                 UIType = UITypeEnum.NewGameMenu;
+                // Show cursor if not currently shown
+                if(Cursor.visible == false)
+                {
+                    Cursor.visible = true;
+                }
+                ShowNewGameMenu();
                 break;
             }
             case UITypeEnum.Playing:
@@ -207,6 +242,11 @@ public static class UIController
                 {
                     HidePauseMenu();
                 }
+                // Hide pause menu if not currently hidden
+                if(GameOverMenuScreen.activeSelf == true)
+                {
+                    HideGameOver();
+                }
                 // Hide cursor if not currently hidden
                 if(Cursor.visible == true)
                 {
@@ -217,11 +257,6 @@ public static class UIController
             case UITypeEnum.Paused:
             {
                 UIType = UITypeEnum.Paused;
-                // Show cursor
-                if(Cursor.visible == false)
-                {
-                    Cursor.visible = true;
-                }
                 // Show pause menu
                 if(PauseMenuScreen.activeSelf == false)
                 {
@@ -229,20 +264,36 @@ public static class UIController
                     // Momentarily disable pause button input so pause menu doesn't disappear immediately after showing
                     PlayerInput.PauseButtonInput = false;
                 }
+                // Hide pause menu if not currently hidden
+                if(GameOverMenuScreen.activeSelf == true)
+                {
+                    HideGameOver();
+                }
                 // If pause is pressed
                 if(PlayerInput.PauseButtonInput == true)
                 {
                     // Get out of pause menu and back into playing state
                     GameController.CurrentGameState = GameController.GameState.Playing;
                 }
+                // Show cursor
+                if(Cursor.visible == false)
+                {
+                    Cursor.visible = true;
+                }
                 break;
             }
             case UITypeEnum.GameOver:
             {
                 UIType = UITypeEnum.GameOver;
+                // Show game over menu if it is currently hidden
                 if(GameOverMenuScreen.activeSelf == false)
                 {
-                    GameOver();
+                    ShowGameOver();
+                }
+                // Show cursor
+                if(Cursor.visible == false)
+                {
+                    Cursor.visible = true;
                 }
                 break;
             }
@@ -456,11 +507,17 @@ public static class UIController
     }
 
     // Game over screen
-    public static void GameOver()
+    public static void ShowGameOver()
     {
         GameOverMenuScreen.SetActive(true);
         GameOverText = GameObject.Find(GameController.GameOverTextName);
         GameOverText.GetComponent<TextMeshProUGUI>().text = $@"GAME OVER{Environment.NewLine}{Environment.NewLine}TIME: {TimeString}{Environment.NewLine}SCORE: {GameController.Score}";
+    }
+
+    // Hide game over screen
+    public static void HideGameOver()
+    {
+        GameOverMenuScreen.SetActive(false);
     }
 
     // Show main menu screen
@@ -480,7 +537,6 @@ public static class UIController
     // Show new game menu screen
     public static void ShowNewGameMenu()
     {
-        UIType = UITypeEnum.NewGameMenu;
         MainMenuContainer.SetActive(false);
         NewGameContainer.SetActive(true);
     }
@@ -524,7 +580,6 @@ public static class UIController
     // Restart
     public static void Restart()
     {
-        GameOverMenuScreen.SetActive(false);
         // Loop through healthbar uis
         foreach(KeyValuePair<uint, GameObject> healthbarui in HealthbarUIs)
         {

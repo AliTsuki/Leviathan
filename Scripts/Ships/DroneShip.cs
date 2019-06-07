@@ -1,7 +1,16 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class DroneShip : Ship
 {
+    // Drone ship-only GameObjects
+    private readonly GameObject BombExplosionPrefab;
+    private GameObject BombExplosionObject;
+
+    // Ship stats
+    private readonly float BombDamage;
+    private readonly float BombRadius;
+
     // Drone ship types
     public enum DroneShipType
     {
@@ -56,6 +65,9 @@ public class DroneShip : Ship
         this.GunShotAccuracy = _gunShotAccuracy;
         this.GunShotSpeed = _gunShotSpeed;
         this.GunShotLifetime = _gunShotLifetime;
+        // Self Destruct
+        this.BombRadius = 25f;
+        this.BombDamage = 25f;
         // AI fields
         this.AIAimAssist = true;
         this.MaxTargetAcquisitionRange = _maxTargetAcquisitionDistance;
@@ -66,9 +78,38 @@ public class DroneShip : Ship
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.DronePrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
+        this.BombExplosionPrefab = Resources.Load<GameObject>(GameController.BombExplostionPrefabName);
         this.Initialize();
     }
 
+
+    // Self destruct ship
+    public void Detonate()
+    {
+        // Spawn explosion object
+        this.BombExplosionObject = GameObject.Instantiate(this.BombExplosionPrefab, this.ShipObject.transform.position, Quaternion.identity);
+        this.BombExplosionObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        // Set explosion object to self destroy after 1 second
+        GameObject.Destroy(this.BombExplosionObject, 1);
+        // Loop through all ships
+        foreach(KeyValuePair<uint, Ship> ship in GameController.Ships)
+        {
+            // If ship is other faction and currently alive
+            if(ship.Value.IFF != this.IFF && ship.Value.Alive == true)
+            {
+                // Get distance from ship
+                float distance = Vector3.Distance(this.ShipObject.transform.position, ship.Value.ShipObject.transform.position);
+                // If distance is less than radius
+                if(distance <= this.BombRadius)
+                {
+                    // Tell ship to take damage relative to it's distance
+                    ship.Value.TakeDamage(this.BombDamage - (distance / this.BombRadius * this.BombDamage));
+                }
+            }
+        }
+        // Ship dies in attack
+        this.Kill();
+    }
 
     // Called when ship is destroyed by damage, grants XP
     public override void Kill()

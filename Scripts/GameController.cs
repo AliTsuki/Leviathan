@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.12c";
+    public static string Version = "0.0.12d";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject Cameras;
@@ -126,8 +126,10 @@ public static class GameController
     public enum GameState
     {
         MainMenu,
+        NewGameMenu,
         Playing,
-        Paused
+        Paused,
+        GameOver
     }
     public static GameState CurrentGameState;
     public static bool GameplayInitialized = false;
@@ -149,7 +151,7 @@ public static class GameController
     {
         PlayerInput.Update();
         // If gamestate is playing
-        if(CurrentGameState == GameState.Playing)
+        if(CurrentGameState == GameState.Playing || CurrentGameState == GameState.GameOver)
         {
             // If gameplay has yet to be initialized
             if(GameplayInitialized == false)
@@ -168,7 +170,7 @@ public static class GameController
             CleanupProjectileList();
             Background.Update();
         }
-        else if(CurrentGameState == GameState.MainMenu)
+        else if(CurrentGameState == GameState.MainMenu || CurrentGameState == GameState.NewGameMenu)
         {
             ResetCamera();
         }
@@ -180,7 +182,7 @@ public static class GameController
     public static void FixedUpdate()
     {
         // If gamestate is playing
-        if(CurrentGameState == GameState.Playing)
+        if(CurrentGameState == GameState.Playing || CurrentGameState == GameState.GameOver)
         {
             ProcessShipPhysicsUpdate();
             ProcessProjectilePhysicsUpdate();
@@ -221,6 +223,7 @@ public static class GameController
         UIController.Restart();
         // Set gameplay initialized to default value of false
         GameplayInitialized = false;
+        CurrentGameState = GameState.Playing;
     }
 
     // Initialize camera

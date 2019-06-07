@@ -14,11 +14,11 @@ public class ESStandard : EnemyShip
         this.IsPlayer = false;
         // Ship stats
         // --Health/Armor/Shields
-        this.Health = 50f;
-        this.MaxHealth = 50f;
+        this.Health = 70f;
+        this.MaxHealth = 70f;
         this.Armor = 75f;
-        this.Shields = 15f;
-        this.MaxShields = 15f;
+        this.Shields = 25f;
+        this.MaxShields = 25f;
         this.ShieldRegenSpeed = 1f;
         this.ShieldCooldownTime = 3f;
         // --Current/Max energy

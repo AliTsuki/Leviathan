@@ -14,11 +14,11 @@ public class ESBroadside : EnemyShip
         this.IsPlayer = false;
         // Ship stats
         // --Health/Armor/Shields
-        this.Health = 100f;
-        this.MaxHealth = 100f;
+        this.Health = 125f;
+        this.MaxHealth = 125f;
         this.Armor = 80f;
-        this.Shields = 25f;
-        this.MaxShields = 25f;
+        this.Shields = 40f;
+        this.MaxShields = 40f;
         this.ShieldRegenSpeed = 1f;
         this.ShieldCooldownTime = 3f;
         // --Current/Max energy
@@ -28,7 +28,7 @@ public class ESBroadside : EnemyShip
         // --Energy costs
         this.GunEnergyCost = 17f;
         // --Acceleration
-        this.EngineCount = 1;
+        this.EngineCount = 2;
         this.ImpulseAcceleration = 40f;
         this.StrafeAcceleration = 20f;
         // --Max Speed

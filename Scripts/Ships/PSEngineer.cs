@@ -120,9 +120,9 @@ public class PSEngineer : PlayerShip
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.PlayerPrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
         // Ship type specific objects
-        this.ShieldOverchargeObject = this.ShipObject.transform.GetChild(0).Find(GameController.ShieldOverchargeObjectName).gameObject;
+        this.ShieldOverchargeObject = this.ShipObject.transform.Find(GameController.ShieldOverchargeObjectName).gameObject;
         this.ShieldOverchargeObject.SetActive(false);
-        this.EMPObject = this.ShipObject.transform.GetChild(0).Find(GameController.EMPObjectName).gameObject;
+        this.EMPObject = this.ShipObject.transform.Find(GameController.EMPObjectName).gameObject;
         this.EMPObject.SetActive(false);
         // Audio levels
         this.ImpulseEngineAudioStep = 0.05f;
@@ -196,7 +196,7 @@ public class PSEngineer : PlayerShip
     private void CheckDrones()
     {
         // If ability 2 input activated and ability 2 is not currently on cooldown and ability 2 is not currently active and drones are less than max amount
-        if(this.Ability2Input == true && this.Ability2OnCooldown == false && this.Ability2Active == false && this.Drones.Count < this.MaxDroneAmount)
+        if(this.Ability2Input == true && this.Ability2OnCooldown == false && this.Ability2Active == false)
         {
             // Loop through drone summon amount
             for(int i = 0; i < this.DroneAmount; i++)
@@ -204,6 +204,18 @@ public class PSEngineer : PlayerShip
                 // If current drone count is less than max
                 if(this.Drones.Count < this.MaxDroneAmount)
                 {
+                    // Get a new drone spawn position
+                    Vector3 DroneSpawnPosition = new Vector3(this.ShipObject.transform.position.x + GameController.r.Next(-5, 6), 0, this.ShipObject.transform.position.z + GameController.r.Next(-5, 6));
+                    // Create a new drone at position
+                    DroneShip drone = GameController.SpawnDrone(this, this.DroneType, DroneSpawnPosition, this.DroneMaxHealth, this.DroneMaxShields, this.DroneMaxSpeed, this.DroneGunShotProjectileType, this.DroneGunCooldownTime, this.DroneGunShotAmount, this.DroneGunShotDamage, this.DroneGunShotAccuracy, this.DroneGunShotSpeed, this.DroneGunShotLifetime, this.DroneTargetAcquisitionDistance, this.DroneStrafeDistance, this.DroneLeashDistance);
+                    // Add drone to list
+                    this.Drones.Add(drone);
+                }
+                // If Drones are maxed out
+                else
+                {
+                    // Detonate oldest drone
+                    this.Drones[0].Detonate();
                     // Get a new drone spawn position
                     Vector3 DroneSpawnPosition = new Vector3(this.ShipObject.transform.position.x + GameController.r.Next(-5, 6), 0, this.ShipObject.transform.position.z + GameController.r.Next(-5, 6));
                     // Create a new drone at position

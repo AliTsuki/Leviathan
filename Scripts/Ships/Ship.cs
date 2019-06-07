@@ -210,7 +210,7 @@ public class Ship
         // Player specific values
         if(this.IsPlayer == true)
         {
-            this.ShieldRegenAudio = this.ShipObject.transform.GetChild(0).Find(GameController.ShieldObjectName).GetComponent<AudioSource>();
+            this.ShieldRegenAudio = this.ShipObject.transform.Find(GameController.ShieldObjectName).GetComponent<AudioSource>();
         }
         // NPC specific values
         else
@@ -824,7 +824,7 @@ public class Ship
         for(int i = 0; i < this.EngineCount; i++)
         {
             // Fill arrays with references to gameobjects
-            this.ImpulseEngineObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.ImpulseEngineObjectName + $@" {i}").gameObject;
+            this.ImpulseEngineObjects[i] = this.ShipObject.transform.Find(GameController.ImpulseEngineObjectName + $@" {i}").gameObject;
             this.ImpulseParticleSystems[i] = this.ImpulseEngineObjects[i].GetComponent<ParticleSystem>();
             this.ImpulseParticleSystemMains[i] = this.ImpulseParticleSystems[i].main;
             this.ImpulseAudioSources[i] = this.ImpulseEngineObjects[i].GetComponent<AudioSource>();
@@ -832,7 +832,7 @@ public class Ship
             if(this.IsPlayer == true)
             {
                 // Fill warp arrays also
-                this.WarpEngineObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.WarpEngineObjectName + $@" {i}").gameObject;
+                this.WarpEngineObjects[i] = this.ShipObject.transform.Find(GameController.WarpEngineObjectName + $@" {i}").gameObject;
                 this.WarpParticleSystems[i] = this.WarpEngineObjects[i].GetComponent<ParticleSystem>();
                 this.WarpParticleSystemMains[i] = this.WarpParticleSystems[i].main;
                 this.WarpAudioSources[i] = this.WarpEngineObjects[i].GetComponent<AudioSource>();
@@ -851,7 +851,7 @@ public class Ship
         for(int i = 0; i < this.GunBarrelCount; i++)
         {
             // Fill arrays with references to gameobjects
-            this.GunBarrelObjects[i] = this.ShipObject.transform.GetChild(0).Find(GameController.GunBarrelObjectName + $@" {i}").gameObject;
+            this.GunBarrelObjects[i] = this.ShipObject.transform.Find(GameController.GunBarrelObjectName + $@" {i}").gameObject;
             this.GunBarrelLightsObjects[i] = this.GunBarrelObjects[i].transform.Find(GameController.GunBarrelLightsObjectName + $@" {i}").gameObject;
             this.GunAudioSources[i] = this.GunBarrelObjects[i].GetComponent<AudioSource>();
         }
