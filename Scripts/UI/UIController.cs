@@ -414,7 +414,8 @@ public static class UIController
             else
             {
                 PlayerAbility1Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbility1CooldownStartedTime) / Player.Ability1CooldownTime);
-                PlayerAbility1CDText.text = (Player.Ability1CooldownTime - (Time.time - Player.LastAbility1CooldownStartedTime)).ToString("0.0");
+                float Ability1CooldownLeftTime = Player.Ability1CooldownTime - (Time.time - Player.LastAbility1CooldownStartedTime);
+                PlayerAbility1CDText.text = Ability1CooldownLeftTime > 10f ? Ability1CooldownLeftTime.ToString("0") : Ability1CooldownLeftTime.ToString("0.0");
             }
         }
         // If Ability 1 is not on cooldown
@@ -437,7 +438,8 @@ public static class UIController
             else
             {
                 PlayerAbility2Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbility2CooldownStartedTime) / Player.Ability2CooldownTime);
-                PlayerAbility2CDText.text = (Player.Ability2CooldownTime - (Time.time - Player.LastAbility2CooldownStartedTime)).ToString("0.0");
+                float Ability2CooldownLeftTime = Player.Ability2CooldownTime - (Time.time - Player.LastAbility2CooldownStartedTime);
+                PlayerAbility2CDText.text = Ability2CooldownLeftTime > 10f ? Ability2CooldownLeftTime.ToString("0") : Ability2CooldownLeftTime.ToString("0.0");
             }
         }
         // If Ability 2 is not on cooldown
@@ -460,7 +462,8 @@ public static class UIController
             else
             {
                 PlayerAbility3Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbility3CooldownStartedTime) / Player.Ability3CooldownTime);
-                PlayerAbility3CDText.text = (Player.Ability3CooldownTime - (Time.time - Player.LastAbility3CooldownStartedTime)).ToString("0.0");
+                float Ability3CooldownLeftTime = Player.Ability3CooldownTime - (Time.time - Player.LastAbility3CooldownStartedTime);
+                PlayerAbility3CDText.text = Ability3CooldownLeftTime > 10f ? Ability3CooldownLeftTime.ToString("0") : Ability3CooldownLeftTime.ToString("0.0");
             }
         }
         // If Ability 3 is not on cooldown
