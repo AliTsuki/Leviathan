@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
 // Controls UI menu input
-public class InputHandler : MonoBehaviour
+public class UIInputHandler : MonoBehaviour
 {
     // Main menu input
-    public void MainMenuInput(string _input)
+    public void UIInput(string _input)
     {
         if(_input == "ContinueGame")
         {
@@ -27,7 +27,7 @@ public class InputHandler : MonoBehaviour
             GameController.Restart();
             GameController.CurrentGameState = GameController.GameState.Playing;
         }
-        else if(_input == "BackButton")
+        else if(_input == "NewGameBackButton")
         {
             UIController.ExitNewGameMenu();
         }
@@ -37,7 +37,11 @@ public class InputHandler : MonoBehaviour
         }
         else if(_input == "Settings")
         {
-            // TODO: Add a settings screen, rebind keys, change graphics, etc
+            GameController.CurrentGameState = GameController.GameState.SettingsMenu;
+        }
+        else if(_input == "SettingsBackButton")
+        {
+            UIController.ExitSettingsMenu();
         }
         else if(_input == "Quit")
         {

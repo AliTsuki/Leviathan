@@ -110,12 +110,12 @@ public class PSEngineer : PlayerShip
         this.EMPDuration = 4f;
         this.EMPEnergyCost = 60f;
         // ---- Ability Cooldowns
-        this.Ability1Duration = 4f;
-        this.Ability1CooldownTime = 12f;
-        this.Ability2Duration = 0f;
-        this.Ability2CooldownTime = 20f;
-        this.Ability3Duration = 1f;
-        this.Ability3CooldownTime = 14f;
+        this.AbilityDuration[0] = 4f;
+        this.AbilityCooldownTime[0] = 12f;
+        this.AbilityDuration[1] = 0f;
+        this.AbilityCooldownTime[1] = 20f;
+        this.AbilityDuration[2] = 1f;
+        this.AbilityCooldownTime[2] = 14f;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.PlayerPrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
@@ -157,7 +157,7 @@ public class PSEngineer : PlayerShip
     private void CheckShieldOvercharge()
     {
         // If ability 1 input activated and ability 1 is not currently on cooldown and ability 1 is not currently active
-        if(this.Ability1Input == true && this.Ability1OnCooldown == false && this.Ability1Active == false)
+        if(this.AbilityInput[0] == true && this.AbilityOnCooldown[0] == false && this.AbilityActive[0] == false)
         {
             // Activate shield overcharge gameobject
             this.ShieldOverchargeObject.SetActive(true);
@@ -165,12 +165,12 @@ public class PSEngineer : PlayerShip
             this.ShieldRegenSpeed *= this.ShieldRegenSpeedMultiplier;
             this.ShieldCooldownTime *= this.ShieldCooldownMultiplier;
             // Set ability one active
-            this.Ability1Active = true;
+            this.AbilityActive[0] = true;
             // Record ability 1 activated time
-            this.LastAbility1ActivatedTime = Time.time;
+            this.LastAbilityActivatedTime[0] = Time.time;
         }
         // If difference between current time and ability 1 last activated time is greater than ability 1 duration
-        if(this.Ability1Active == true && Time.time - this.LastAbility1ActivatedTime > this.Ability1Duration)
+        if(this.AbilityActive[0] == true && Time.time - this.LastAbilityActivatedTime[0] > this.AbilityDuration[0])
         {
             // Deactivate shield overcharge gameobject
             this.ShieldOverchargeObject.SetActive(false);
@@ -178,17 +178,17 @@ public class PSEngineer : PlayerShip
             this.ShieldRegenSpeed = this.DefaultShieldRegenSpeed;
             this.ShieldCooldownTime = this.DefaultShieldCooldownTime;
             // Set ability one to inactive
-            this.Ability1Active = false;
+            this.AbilityActive[0] = false;
             // Set ability one to on cooldown
-            this.Ability1OnCooldown = true;
+            this.AbilityOnCooldown[0] = true;
             // Record cooldown started time
-            this.LastAbility1CooldownStartedTime = Time.time;
+            this.LastAbilityCooldownStartedTime[0] = Time.time;
         }
         // If difference between current time and ability 1 started cooldown time is greater than ability 1 cooldown time
-        if(this.Ability1OnCooldown == true && Time.time - this.LastAbility1CooldownStartedTime > this.Ability1CooldownTime)
+        if(this.AbilityOnCooldown[0] == true && Time.time - this.LastAbilityCooldownStartedTime[0] > this.AbilityCooldownTime[0])
         {
             // Take ability 1 off cooldown
-            this.Ability1OnCooldown = false;
+            this.AbilityOnCooldown[0] = false;
         }
     }
 
@@ -196,7 +196,7 @@ public class PSEngineer : PlayerShip
     private void CheckDrones()
     {
         // If ability 2 input activated and ability 2 is not currently on cooldown and ability 2 is not currently active and drones are less than max amount
-        if(this.Ability2Input == true && this.Ability2OnCooldown == false && this.Ability2Active == false)
+        if(this.AbilityInput[1] == true && this.AbilityOnCooldown[1] == false && this.AbilityActive[1] == false)
         {
             // Loop through drone summon amount
             for(int i = 0; i < this.DroneAmount; i++)
@@ -225,25 +225,25 @@ public class PSEngineer : PlayerShip
                 }
             }
             // Set ability 2 to active
-            this.Ability2Active = true;
+            this.AbilityActive[1] = true;
             // Record ability 2 activated time
-            this.LastAbility2ActivatedTime = Time.time;
+            this.LastAbilityActivatedTime[1] = Time.time;
         }
         // If difference between current time and ability 2 last activated time is greater than ability 2 duration
-        if(this.Ability2Active == true && Time.time - this.LastAbility2ActivatedTime > this.Ability2Duration)
+        if(this.AbilityActive[1] == true && Time.time - this.LastAbilityActivatedTime[1] > this.AbilityDuration[1])
         {
             // Set ability 2 to inactive
-            this.Ability2Active = false;
+            this.AbilityActive[1] = false;
             // Set ability 2 on cooldown
-            this.Ability2OnCooldown = true;
+            this.AbilityOnCooldown[1] = true;
             // Record cooldown started time
-            this.LastAbility2CooldownStartedTime = Time.time;
+            this.LastAbilityCooldownStartedTime[1] = Time.time;
         }
         // If difference between current time and ability 2 started cooldown time is greater than ability 2 cooldown time
-        if(this.Ability2OnCooldown == true && Time.time - this.LastAbility2CooldownStartedTime > this.Ability2CooldownTime)
+        if(this.AbilityOnCooldown[1] == true && Time.time - this.LastAbilityCooldownStartedTime[1] > this.AbilityCooldownTime[1])
         {
             // Take ability 2 off cooldown
-            this.Ability2OnCooldown = false;
+            this.AbilityOnCooldown[1] = false;
         }
     }
 
@@ -251,7 +251,7 @@ public class PSEngineer : PlayerShip
     private void CheckEMP()
     {
         // If ability 3 input activated and ability 3 is not currently on cooldown and ability 3 is not currently active
-        if(this.Ability3Input == true && this.Ability3OnCooldown == false && this.Ability3Active == false)
+        if(this.AbilityInput[2] == true && this.AbilityOnCooldown[2] == false && this.AbilityActive[2] == false)
         {
             // Loop through all ships
             foreach(KeyValuePair<uint, Ship> ship in GameController.Ships)
@@ -270,27 +270,27 @@ public class PSEngineer : PlayerShip
             // Activate EMP gameobject
             this.EMPObject.SetActive(true);
             // Set ability 3 active
-            this.Ability3Active = true;
+            this.AbilityActive[2] = true;
             // Record ability 3 activated time
-            this.LastAbility3ActivatedTime = Time.time;
+            this.LastAbilityActivatedTime[2] = Time.time;
         }
         // If difference between current time and ability 3 last activated time is greater than ability 3 duration
-        if(this.Ability3Active == true && Time.time - this.LastAbility3ActivatedTime > this.Ability3Duration)
+        if(this.AbilityActive[2] == true && Time.time - this.LastAbilityActivatedTime[2] > this.AbilityDuration[2])
         {
             // Set EMP object inactive
             this.EMPObject.SetActive(false);
             // Set ability 3 inactive
-            this.Ability3Active = false;
+            this.AbilityActive[2] = false;
             // Set ability 3 on cooldown
-            this.Ability3OnCooldown = true;
+            this.AbilityOnCooldown[2] = true;
             // Record cooldown started time
-            this.LastAbility3CooldownStartedTime = Time.time;
+            this.LastAbilityCooldownStartedTime[2] = Time.time;
         }
         // If difference between current time and ability 1 started cooldown time is greater than ability 1 cooldown time
-        if(this.Ability3OnCooldown == true && Time.time - this.LastAbility3CooldownStartedTime > this.Ability3CooldownTime)
+        if(this.AbilityOnCooldown[2] == true && Time.time - this.LastAbilityCooldownStartedTime[2] > this.AbilityCooldownTime[2])
         {
             // Take ability 1 off cooldown
-            this.Ability3OnCooldown = false;
+            this.AbilityOnCooldown[2] = false;
         }
     }
 }

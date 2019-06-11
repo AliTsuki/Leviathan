@@ -89,12 +89,12 @@ public class PSBomber : PlayerShip
         this.BombLifetime = 3f;
         this.BombPrimerTime = 0.25f;
         // ---- Ability Cooldowns
-        this.Ability1Duration = 2.5f;
-        this.Ability1CooldownTime = 12f;
-        this.Ability2Duration = 4f;
-        this.Ability2CooldownTime = 14f;
-        this.Ability3Duration = 0f;
-        this.Ability3CooldownTime = 12f;
+        this.AbilityDuration[0] = 2.5f;
+        this.AbilityCooldownTime[0] = 12f;
+        this.AbilityDuration[1] = 4f;
+        this.AbilityCooldownTime[1] = 14f;
+        this.AbilityDuration[2] = 0f;
+        this.AbilityCooldownTime[2] = 12f;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.PlayerPrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
@@ -137,27 +137,27 @@ public class PSBomber : PlayerShip
     private void CheckBarrier()
     {
         // If barrier input activated and barrier is not currently on cooldown and barrier is not currently active
-        if(this.Ability1Input == true && this.Ability1OnCooldown == false && this.Ability1Active == false)
+        if(this.AbilityInput[0] == true && this.AbilityOnCooldown[0] == false && this.AbilityActive[0] == false)
         {
             // Activate barrier object, set barrier active to true, and record time barrier was activated
             this.BarrierObject.SetActive(true);
-            this.Ability1Active = true;
-            this.LastAbility1ActivatedTime = Time.time;
+            this.AbilityActive[0] = true;
+            this.LastAbilityActivatedTime[0] = Time.time;
         }
         // If difference between current time and shield last activated time is greater than barrier duration
-        if(this.Ability1Active == true && Time.time - this.LastAbility1ActivatedTime > this.Ability1Duration)
+        if(this.AbilityActive[0] == true && Time.time - this.LastAbilityActivatedTime[0] > this.AbilityDuration[0])
         {
             // Disable barrier object, set barrier to not active, set barrier to on cooldown, and record time cooldown started
             this.BarrierObject.SetActive(false);
-            this.Ability1Active = false;
-            this.Ability1OnCooldown = true;
-            this.LastAbility1CooldownStartedTime = Time.time;
+            this.AbilityActive[0] = false;
+            this.AbilityOnCooldown[0] = true;
+            this.LastAbilityCooldownStartedTime[0] = Time.time;
         }
         // If difference between current time and barrier started cooldown time is greater than barrier cooldown time
-        if(this.Ability1OnCooldown == true && Time.time - this.LastAbility1CooldownStartedTime > this.Ability1CooldownTime)
+        if(this.AbilityOnCooldown[0] == true && Time.time - this.LastAbilityCooldownStartedTime[0] > this.AbilityCooldownTime[0])
         {
             // Take barrier off cooldown
-            this.Ability1OnCooldown = false;
+            this.AbilityOnCooldown[0] = false;
         }
     }
 
@@ -165,12 +165,12 @@ public class PSBomber : PlayerShip
     private void CheckBarrage()
     {
         // If barrage input is active, barrage is not on cooldown, and barrage is not currently active
-        if(this.Ability2Input == true && this.Ability2OnCooldown == false && this.Ability2Active == false)
+        if(this.AbilityInput[1] == true && this.AbilityOnCooldown[1] == false && this.AbilityActive[1] == false)
         {
             // Set barrage to active
-            this.Ability2Active = true;
+            this.AbilityActive[1] = true;
             // Record last barrage activated time
-            this.LastAbility2ActivatedTime = Time.time;
+            this.LastAbilityActivatedTime[1] = Time.time;
             // Apply barrage multipliers
             this.GunCooldownTime *= this.BarrageGunCooldownTimeMultiplier;
             this.GunShotAmount += this.BarrageShotAmountIncrease;
@@ -179,14 +179,14 @@ public class PSBomber : PlayerShip
             this.GunEnergyCost *= this.BarrageEnergyCostMultiplier;
         }
         // If barrage is currently active and last barrage activated time is greater than barrage duration
-        if(this.Ability2Active == true && Time.time - this.LastAbility2ActivatedTime > this.Ability2Duration)
+        if(this.AbilityActive[1] == true && Time.time - this.LastAbilityActivatedTime[1] > this.AbilityDuration[1])
         {
             // Set barrage to inactive
-            this.Ability2Active = false;
+            this.AbilityActive[1] = false;
             // Set barrage on cooldown
-            this.Ability2OnCooldown = true;
+            this.AbilityOnCooldown[1] = true;
             // Record barrage cooldown started time
-            this.LastAbility2CooldownStartedTime = Time.time;
+            this.LastAbilityCooldownStartedTime[1] = Time.time;
             // Remove barrage multipliers
             this.GunCooldownTime = this.DefaultGunCooldownTime;
             this.GunShotAmount = this.DefaultGunShotAmount;
@@ -195,10 +195,10 @@ public class PSBomber : PlayerShip
             this.GunEnergyCost = this.DefaultGunEnergyCost;
         }
         // If barrage is on cooldown and last barrage cooldown started time is greater than barrage cooldown time
-        if(this.Ability2OnCooldown == true && Time.time - this.LastAbility2CooldownStartedTime > this.Ability2CooldownTime)
+        if(this.AbilityOnCooldown[1] == true && Time.time - this.LastAbilityCooldownStartedTime[1] > this.AbilityCooldownTime[1])
         {
             // Take barrage off cooldown
-            this.Ability2OnCooldown = false;
+            this.AbilityOnCooldown[1] = false;
         }
     }
 
@@ -206,20 +206,20 @@ public class PSBomber : PlayerShip
     private void CheckBomb()
     {
         // If bomb input is active, bomb is not on cooldown, and there is no bomb in flight
-        if(this.Ability3Input == true && this.Ability3OnCooldown == false && this.BombInFlight == false)
+        if(this.AbilityInput[2] == true && this.AbilityOnCooldown[2] == false && this.BombInFlight == false)
         {
             // TODO: Now that a ship can have more than one main gun, need to think of something better than just having bomb use the 0th gun barrel location/rotation. IDEA: make a game object child of ship to use as bomb firing location
             // Spawn a bomb
             this.bomb = GameController.SpawnBomb(this, this.IFF, this.BombDamage, this.BombRadius, this.GunBarrelObjects[0].transform.position, this.GunBarrelObjects[0].transform.rotation, this.ShipRigidbody.velocity, this.BombSpeed, this.BombLifetime);
             // Set bomb on cooldown
-            this.Ability3OnCooldown = true;
+            this.AbilityOnCooldown[2] = true;
             // Set bomb in flight
             this.BombInFlight = true;
             // Record bomb activated time
-            this.LastAbility3CooldownStartedTime = Time.time;
+            this.LastAbilityCooldownStartedTime[2] = Time.time;
         }
         // If bomb is in flight, bomb input is pressed, and time since bomb was activated is more than the bomb primer time
-        if(this.BombInFlight == true && this.Ability3Input == true && Time.time - this.LastAbility3CooldownStartedTime > this.BombPrimerTime)
+        if(this.BombInFlight == true && this.AbilityInput[2] == true && Time.time - this.LastAbilityCooldownStartedTime[2] > this.BombPrimerTime)
         {
             // Set bomb not in flight
             this.BombInFlight = false;
@@ -228,10 +228,10 @@ public class PSBomber : PlayerShip
             this.bomb = null;
         }
         // If bomb is on cooldown and time since bomb was last activated is greater than bomb cooldown time
-        if(this.Ability3OnCooldown == true && Time.time - this.LastAbility3CooldownStartedTime > this.Ability3CooldownTime)
+        if(this.AbilityOnCooldown[2] == true && Time.time - this.LastAbilityCooldownStartedTime[2] > this.AbilityCooldownTime[2])
         {
             // Take bomb off cooldown
-            this.Ability3OnCooldown = false;
+            this.AbilityOnCooldown[2] = false;
         }
     }
 
@@ -239,7 +239,7 @@ public class PSBomber : PlayerShip
     public override void ReceivedCollisionFromProjectile(float _damage, Vector3 _projectileStrikeLocation)
     {
         // If shields are above 0 or barrier is active
-        if(this.Shields > 0f || this.Ability1Active == true)
+        if(this.Shields > 0f || this.AbilityActive[0] == true)
         {
             // Spawn a shield strike particle effect
             this.ProjectileShieldStrike = GameObject.Instantiate(this.ProjectileShieldStrikePrefab, _projectileStrikeLocation, Quaternion.identity);
@@ -262,7 +262,7 @@ public class PSBomber : PlayerShip
     public override void TakeDamage(float _damage)
     {
         // If barrier is not active
-        if(this.Ability1Active == false)
+        if(this.AbilityActive[0] == false)
         {
             // Apply damage to shields
             this.Shields -= _damage;

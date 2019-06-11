@@ -47,9 +47,7 @@ public class Ship
     public float WarpEngineInput;
     public bool StrafeInput;
     public bool MainGunInput;
-    public bool Ability1Input;
-    public bool Ability2Input;
-    public bool Ability3Input;
+    public bool[] AbilityInput = new bool[3];
     public bool PauseInput;
 
     // Rotation fields
@@ -72,22 +70,14 @@ public class Ship
     // Cooldown times
     public float LastGunFireTime = 0f;
     public float LastDamageTakenTime = 0f;
-    public float LastAbility1ActivatedTime = 0f;
-    public float LastAbility2ActivatedTime = 0f;
-    public float LastAbility3ActivatedTime = 0f;
-    public float LastAbility1CooldownStartedTime = 0f;
-    public float LastAbility2CooldownStartedTime = 0f;
-    public float LastAbility3CooldownStartedTime = 0f;
+    public float[] LastAbilityActivatedTime = new float[3];
+    public float[] LastAbilityCooldownStartedTime = new float[3];
 
     // On cooldown bools
     public bool GunOnCooldown = false;
     public bool ShieldOnCooldown = false;
-    public bool Ability1OnCooldown = false;
-    public bool Ability2OnCooldown = false;
-    public bool Ability3OnCooldown = false;
-    public bool Ability1Active = false;
-    public bool Ability2Active = false;
-    public bool Ability3Active = false;
+    public bool[] AbilityOnCooldown = new bool[3];
+    public bool[] AbilityActive = new bool[3];
 
     // Ship stats
     // --Health/Armor/Shields
@@ -128,12 +118,8 @@ public class Ship
     public float GunShotLifetime; // Number of seconds projectile lasts before burning out
     // --Cooldowns
     public float ShieldCooldownTime; // How long in seconds the regenerating shield must go without taking damage before it will recharge
-    public float Ability1Duration; // How long in seconds ability 1 lasts
-    public float Ability2Duration; // How long in seconds ability 2 lasts
-    public float Ability3Duration; // How long in seconds ability 3 lasts
-    public float Ability1CooldownTime; // How long in seconds ability 1 will be on cooldown after use
-    public float Ability2CooldownTime; // How long in seconds ability 2 will be on cooldown after use
-    public float Ability3CooldownTime; // How long in seconds ability 3 will be on cooldown after use
+    public float[] AbilityDuration = new float[3];
+    public float[] AbilityCooldownTime = new float[3];
 
     // Defaults for ability changes
     public float DefaultGunCooldownTime;

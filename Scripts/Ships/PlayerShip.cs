@@ -21,9 +21,9 @@ public class PlayerShip : Ship
         this.ImpulseEngineInput = PlayerInput.ImpulseEngineInput;
         this.WarpEngineInput = PlayerInput.WarpEngineInput;
         this.MainGunInput = PlayerInput.MainGunInput;
-        this.Ability3Input = PlayerInput.Ability1Input;
-        this.Ability1Input = PlayerInput.Ability2Input;
-        this.Ability2Input = PlayerInput.Ability3Input;
+        this.AbilityInput[0] = PlayerInput.Ability1Input;
+        this.AbilityInput[1] = PlayerInput.Ability2Input;
+        this.AbilityInput[2] = PlayerInput.Ability3Input;
         this.PauseInput = PlayerInput.PauseButtonInput;
         // Pause game if pause is pressed
         if(this.PauseInput == true)

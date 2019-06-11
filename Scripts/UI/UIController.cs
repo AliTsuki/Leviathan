@@ -14,6 +14,11 @@ public static class UIController
     private static GameObject MainMenu;
     private static GameObject MainMenuContainer;
     private static GameObject NewGameContainer;
+    private static GameObject SettingsMenuContainer;
+    private static TextMeshProUGUI MainGunCurrentInputText;
+    private static TextMeshProUGUI Ability1CurrentInputText;
+    private static TextMeshProUGUI Ability2CurrentInputText;
+    private static TextMeshProUGUI Ability3CurrentInputText;
     private static GameObject UI;
     private static GameObject UICanvas;
     private static RectTransform rectTransform;
@@ -58,17 +63,6 @@ public static class UIController
     private static int Hours = 0;
     private static string TimeString = "";
 
-    // UI type
-    public enum UITypeEnum
-    {
-        MainMenu,
-        NewGameMenu,
-        Playing,
-        Paused,
-        GameOver
-    }
-    public static UITypeEnum UIType;
-
 
     // Initialize
     public static void Initialize()
@@ -79,6 +73,12 @@ public static class UIController
         MainMenuContainer.SetActive(true);
         NewGameContainer = GameObject.Find(GameController.NewGameContainerName);
         NewGameContainer.SetActive(false);
+        SettingsMenuContainer = GameObject.Find(GameController.SettingsMenuContainerName);
+        MainGunCurrentInputText = GameObject.Find(GameController.MainGunCurrentInputTextName).GetComponent<TextMeshProUGUI>();
+        Ability1CurrentInputText = GameObject.Find(GameController.Ability1CurrentInputTextName).GetComponent<TextMeshProUGUI>();
+        Ability2CurrentInputText = GameObject.Find(GameController.Ability2CurrentInputTextName).GetComponent<TextMeshProUGUI>();
+        Ability3CurrentInputText = GameObject.Find(GameController.Ability3CurrentInputTextName).GetComponent<TextMeshProUGUI>();
+        SettingsMenuContainer.SetActive(false);
         UI = GameObject.Find(GameController.UIName);
         UICanvas = GameObject.Find(GameController.UICanvasName);
         rectTransform = UICanvas.GetComponent<RectTransform>();
@@ -116,13 +116,20 @@ public static class UIController
     // Update is called once per frame
     public static void Update()
     {
+        // If game state is main menu
         if(GameController.CurrentGameState == GameController.GameState.MainMenu)
         {
             MainMenuUIUpdate();
         }
+        // If game state is new game menu
         else if(GameController.CurrentGameState == GameController.GameState.NewGameMenu)
         {
             NewGameMenuUpdate();
+        }
+        // If game state is settings menu
+        else if(GameController.CurrentGameState == GameController.GameState.SettingsMenu)
+        {
+            SettingsMenuUpdate();
         }
         // If game state is playing
         else if(GameController.CurrentGameState == GameController.GameState.Playing)
@@ -134,44 +141,52 @@ public static class UIController
         {
             PauseMenuUIUpdate();
         }
+        // If game state is game over
         else if(GameController.CurrentGameState == GameController.GameState.GameOver)
         {
             GameOverUIUpdate();
         }
     }
 
-    // Called during update when gamestate is main menu
+    // Called during update when game state is main menu
     private static void MainMenuUIUpdate()
     {
-        SetupUIType(UITypeEnum.MainMenu);
+        SetupUIType(GameController.GameState.MainMenu);
     }
 
-    // Called during update when gamestate is new game menu
+    // Called during update when game state is new game menu
     private static void NewGameMenuUpdate()
     {
-        SetupUIType(UITypeEnum.NewGameMenu);
+        SetupUIType(GameController.GameState.NewGameMenu);
     }
 
-    // Called during update if gamestate is playing
+    // Called during update when game state is settings menu
+    private static void SettingsMenuUpdate()
+    {
+        SetupUIType(GameController.GameState.SettingsMenu);
+        UpdateRebindInputsText();
+    }
+
+    // Called during update if game state is playing
     private static void PlayingUIUpdate()
     {
-        SetupUIType(UITypeEnum.Playing);
+        SetupUIType(GameController.GameState.Playing);
         UpdateMinimapCoords();
         UpdateInfoLabel();
         UpdateNPCHealthbars();
         UpdatePlayerUI();
     }
 
-    // Called during update if gamestate is paused
+    // Called during update if game state is paused
     private static void PauseMenuUIUpdate()
     {
-        SetupUIType(UITypeEnum.Paused);
+        SetupUIType(GameController.GameState.Paused);
     }
 
-    // Called during update if gamestate is gameover
+    // Called during update if game state is gameover
     private static void GameOverUIUpdate()
     {
-        SetupUIType(UITypeEnum.GameOver);
+        SetupUIType(GameController.GameState.GameOver);
         UpdateMinimapCoords();
         UpdateInfoLabel();
         UpdateNPCHealthbars();
@@ -179,13 +194,12 @@ public static class UIController
     }
 
     // Setup UI to type
-    public static void SetupUIType(UITypeEnum _uiType)
+    public static void SetupUIType(GameController.GameState _uiType)
     {
         switch(_uiType)
         {
-            case UITypeEnum.MainMenu:
+            case GameController.GameState.MainMenu:
             {
-                UIType = UITypeEnum.MainMenu;
                 // Show main menu if not currently shown
                 if(MainMenu.activeSelf == false)
                 {
@@ -213,9 +227,8 @@ public static class UIController
                 }
                 break;
             }
-            case UITypeEnum.NewGameMenu:
+            case GameController.GameState.NewGameMenu:
             {
-                UIType = UITypeEnum.NewGameMenu;
                 // Show cursor if not currently shown
                 if(Cursor.visible == false)
                 {
@@ -224,9 +237,18 @@ public static class UIController
                 ShowNewGameMenu();
                 break;
             }
-            case UITypeEnum.Playing:
+            case GameController.GameState.SettingsMenu:
             {
-                UIType = UITypeEnum.Playing;
+                // Show cursor if not currently shown
+                if(Cursor.visible == false)
+                {
+                    Cursor.visible = true;
+                }
+                ShowSettingsMenu();
+                break;
+            }
+            case GameController.GameState.Playing:
+            {
                 // Hide main menu if not currently hidden
                 if(MainMenu.activeSelf == true)
                 {
@@ -254,9 +276,8 @@ public static class UIController
                 }
                 break;
             }
-            case UITypeEnum.Paused:
+            case GameController.GameState.Paused:
             {
-                UIType = UITypeEnum.Paused;
                 // Show pause menu
                 if(PauseMenuScreen.activeSelf == false)
                 {
@@ -282,9 +303,8 @@ public static class UIController
                 }
                 break;
             }
-            case UITypeEnum.GameOver:
+            case GameController.GameState.GameOver:
             {
-                UIType = UITypeEnum.GameOver;
                 // Show game over menu if it is currently hidden
                 if(GameOverMenuScreen.activeSelf == false)
                 {
@@ -298,6 +318,15 @@ public static class UIController
                 break;
             }
         }
+    }
+
+    // Update rebind inputs text
+    private static void UpdateRebindInputsText()
+    {
+        MainGunCurrentInputText.text = PlayerInput.InputBindings["Main Gun Input"].InputButton;
+        Ability1CurrentInputText.text = PlayerInput.InputBindings["Ability 1 Input"].InputButton;
+        Ability2CurrentInputText.text = PlayerInput.InputBindings["Ability 2 Input"].InputButton;
+        Ability3CurrentInputText.text = PlayerInput.InputBindings["Ability 3 Input"].InputButton;
     }
 
     // Update minimap coords
@@ -403,18 +432,18 @@ public static class UIController
         PlayerEnergyForeground.fillAmount = Player.Energy / Player.MaxEnergy;
         PlayerEnergyText.text = $@"{Player.Energy.ToString("0")} / {Player.MaxEnergy.ToString("0")}";
         // If Ability 1 is on cooldown or currently active
-        if(Player.Ability1OnCooldown == true || Player.Ability1Active == true)
+        if(Player.AbilityOnCooldown[0] == true || Player.AbilityActive[0] == true)
         {
             // Fill Ablity 1 cooldown meter accordingly
             PlayerAbility1Background.fillAmount = 0;
-            if(Player.Ability1Active == true)
+            if(Player.AbilityActive[0] == true)
             {
                 PlayerAbility1Cooldown.fillAmount = 1;
             }
             else
             {
-                PlayerAbility1Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbility1CooldownStartedTime) / Player.Ability1CooldownTime);
-                float Ability1CooldownLeftTime = Player.Ability1CooldownTime - (Time.time - Player.LastAbility1CooldownStartedTime);
+                PlayerAbility1Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbilityCooldownStartedTime[0]) / Player.AbilityCooldownTime[0]);
+                float Ability1CooldownLeftTime = Player.AbilityCooldownTime[0] - (Time.time - Player.LastAbilityCooldownStartedTime[0]);
                 PlayerAbility1CDText.text = Ability1CooldownLeftTime > 10f ? Ability1CooldownLeftTime.ToString("0") : Ability1CooldownLeftTime.ToString("0.0");
             }
         }
@@ -427,18 +456,18 @@ public static class UIController
             PlayerAbility1CDText.text = "";
         }
         // If Ability 2 is on cooldown or currently active
-        if(Player.Ability2OnCooldown == true || Player.Ability2Active == true)
+        if(Player.AbilityOnCooldown[1] == true || Player.AbilityActive[1] == true)
         {
             // Fill Ability 2 cooldown meter accordingly
             PlayerAbility2Background.fillAmount = 0;
-            if(Player.Ability2Active == true)
+            if(Player.AbilityActive[1] == true)
             {
                 PlayerAbility2Cooldown.fillAmount = 1;
             }
             else
             {
-                PlayerAbility2Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbility2CooldownStartedTime) / Player.Ability2CooldownTime);
-                float Ability2CooldownLeftTime = Player.Ability2CooldownTime - (Time.time - Player.LastAbility2CooldownStartedTime);
+                PlayerAbility2Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbilityCooldownStartedTime[1]) / Player.AbilityCooldownTime[1]);
+                float Ability2CooldownLeftTime = Player.AbilityCooldownTime[1] - (Time.time - Player.LastAbilityCooldownStartedTime[1]);
                 PlayerAbility2CDText.text = Ability2CooldownLeftTime > 10f ? Ability2CooldownLeftTime.ToString("0") : Ability2CooldownLeftTime.ToString("0.0");
             }
         }
@@ -451,18 +480,18 @@ public static class UIController
             PlayerAbility2CDText.text = "";
         }
         // If Ability 3 is on cooldown or currently active
-        if(Player.Ability3OnCooldown == true || Player.Ability3Active == true)
+        if(Player.AbilityOnCooldown[2] == true || Player.AbilityActive[2] == true)
         {
             // Fill Ability 3 cooldown meter accordingly
             PlayerAbility3Background.fillAmount = 0;
-            if(Player.Ability3Active == true)
+            if(Player.AbilityActive[2] == true)
             {
                 PlayerAbility3Cooldown.fillAmount = 1;
             }
             else
             {
-                PlayerAbility3Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbility3CooldownStartedTime) / Player.Ability3CooldownTime);
-                float Ability3CooldownLeftTime = Player.Ability3CooldownTime - (Time.time - Player.LastAbility3CooldownStartedTime);
+                PlayerAbility3Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbilityCooldownStartedTime[2]) / Player.AbilityCooldownTime[2]);
+                float Ability3CooldownLeftTime = Player.AbilityCooldownTime[2] - (Time.time - Player.LastAbilityCooldownStartedTime[2]);
                 PlayerAbility3CDText.text = Ability3CooldownLeftTime > 10f ? Ability3CooldownLeftTime.ToString("0") : Ability3CooldownLeftTime.ToString("0.0");
             }
         }
@@ -547,9 +576,24 @@ public static class UIController
     // Exit new game menu screen
     public static void ExitNewGameMenu()
     {
-        UIType = UITypeEnum.MainMenu;
+        GameController.CurrentGameState = GameController.GameState.MainMenu;
         MainMenuContainer.SetActive(true);
         NewGameContainer.SetActive(false);
+    }
+
+    // Show settings menu
+    public static void ShowSettingsMenu()
+    {
+        MainMenuContainer.SetActive(false);
+        SettingsMenuContainer.SetActive(true);
+    }
+
+    // Exit settings menu screen
+    public static void ExitSettingsMenu()
+    {
+        GameController.CurrentGameState = GameController.GameState.MainMenu;
+        MainMenuContainer.SetActive(true);
+        SettingsMenuContainer.SetActive(false);
     }
 
     // Show UI

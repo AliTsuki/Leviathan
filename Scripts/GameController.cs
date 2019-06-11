@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.12e";
+    public static string Version = "0.0.13a";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject Cameras;
@@ -53,6 +53,11 @@ public static class GameController
     public const string MainMenuName = "Main Menu";
     public const string MainMenuContainerName = "Main Menu Container";
     public const string NewGameContainerName = "New Game Menu Container";
+    public const string SettingsMenuContainerName = "Settings Menu Container";
+    public const string MainGunCurrentInputTextName = "Main Gun Current Input Text";
+    public const string Ability1CurrentInputTextName = "Ability 1 Current Input Text";
+    public const string Ability2CurrentInputTextName = "Ability 2 Current Input Text";
+    public const string Ability3CurrentInputTextName = "Ability 3 Current Input Text";
     public const string UIName = "UI";
     public const string UICanvasName = "UI Canvas";
     public const string HealthDamageEffectName = "Health Damage Effect";
@@ -127,6 +132,7 @@ public static class GameController
     {
         MainMenu,
         NewGameMenu,
+        SettingsMenu,
         Playing,
         Paused,
         GameOver
@@ -140,8 +146,6 @@ public static class GameController
     {
         Logger.Initialize();
         CurrentGameState = GameState.MainMenu;
-        // TODO: add an option in settings menu to select a different controller type
-        PlayerInput.Controller = PlayerInput.ControllerType.XboxController;
         UIController.Initialize();
         InitializeCamera();
     }
@@ -151,7 +155,7 @@ public static class GameController
     {
         PlayerInput.Update();
         // If gamestate is playing
-        if(CurrentGameState == GameState.Playing || CurrentGameState == GameState.GameOver)
+        if(CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused || CurrentGameState == GameState.GameOver)
         {
             // If gameplay has yet to be initialized
             if(GameplayInitialized == false)
@@ -170,7 +174,7 @@ public static class GameController
             CleanupProjectileList();
             Background.Update();
         }
-        else if(CurrentGameState == GameState.MainMenu || CurrentGameState == GameState.NewGameMenu)
+        else if(CurrentGameState == GameState.MainMenu || CurrentGameState == GameState.NewGameMenu || CurrentGameState == GameState.SettingsMenu)
         {
             ResetCamera();
         }
@@ -515,7 +519,9 @@ public static class GameController
             }
             catch(Exception e)
             {
+                Debug.Log($@"Projectile Collision Error");
                 Debug.Log(e.ToString());
+                Logger.Log($@"Projectile Collision Error");
                 Logger.Log(e);
             }
         }
@@ -537,7 +543,9 @@ public static class GameController
             }
             catch(Exception e)
             {
+                Debug.Log($@"Ship Collision Error");
                 Debug.Log(e.ToString());
+                Logger.Log($@"Ship Collision Error");
                 Logger.Log(e);
             }
         }
