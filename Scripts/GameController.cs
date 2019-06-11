@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.13a";
+    public static string Version = "0.0.13b";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject Cameras;
@@ -54,6 +54,7 @@ public static class GameController
     public const string MainMenuContainerName = "Main Menu Container";
     public const string NewGameContainerName = "New Game Menu Container";
     public const string SettingsMenuContainerName = "Settings Menu Container";
+    public const string SettingsErrorTextName = "Settings Error Text";
     public const string MainGunCurrentInputTextName = "Main Gun Current Input Text";
     public const string Ability1CurrentInputTextName = "Ability 1 Current Input Text";
     public const string Ability2CurrentInputTextName = "Ability 2 Current Input Text";

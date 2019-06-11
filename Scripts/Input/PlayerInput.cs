@@ -56,11 +56,13 @@ public static class PlayerInput
         if(Time.time - RebindingStartedTime >= MaxRebindingInputDuration)
         {
             RebindingInputs = false;
+            UIController.UpdateSettingsErrorText($@"Input Rebinding has timed out");
             Logger.Log($@"Input Rebinding has timed out");
         }
         else if(IsAnyButtonPressed() == true)
         {
             Logger.Log($@"Input detected: {GetPressedButton()}");
+            UIController.UpdateSettingsErrorText($@"Input detected: {GetPressedButton()}");
             InputBindings[InputToRebind].UpdateInputButton(GetPressedButton());
             RebindingInputs = false;
             Logger.Log($@"Input binding for {InputBindings[InputToRebind].InputName} is currently {InputBindings[InputToRebind].InputButton}");
@@ -68,7 +70,12 @@ public static class PlayerInput
         else if(Input.GetKeyDown(KeyCode.Escape) == true)
         {
             RebindingInputs = false;
+            UIController.UpdateSettingsErrorText($@"Input Rebinding has been cancelled");
             Logger.Log($@"Input Rebinding has been cancelled");
+        }
+        else
+        {
+            UIController.UpdateSettingsErrorText($@"Press Input you wish to rebind to {InputBindings[InputToRebind].InputName}. Press Esc to cancel. Cancelling in 5 seconds...");
         }
     }
 

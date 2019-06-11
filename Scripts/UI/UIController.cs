@@ -15,6 +15,7 @@ public static class UIController
     private static GameObject MainMenuContainer;
     private static GameObject NewGameContainer;
     private static GameObject SettingsMenuContainer;
+    private static TextMeshProUGUI SettingsErrorText;
     private static TextMeshProUGUI MainGunCurrentInputText;
     private static TextMeshProUGUI Ability1CurrentInputText;
     private static TextMeshProUGUI Ability2CurrentInputText;
@@ -74,6 +75,7 @@ public static class UIController
         NewGameContainer = GameObject.Find(GameController.NewGameContainerName);
         NewGameContainer.SetActive(false);
         SettingsMenuContainer = GameObject.Find(GameController.SettingsMenuContainerName);
+        SettingsErrorText = GameObject.Find(GameController.SettingsErrorTextName).GetComponent<TextMeshProUGUI>();
         MainGunCurrentInputText = GameObject.Find(GameController.MainGunCurrentInputTextName).GetComponent<TextMeshProUGUI>();
         Ability1CurrentInputText = GameObject.Find(GameController.Ability1CurrentInputTextName).GetComponent<TextMeshProUGUI>();
         Ability2CurrentInputText = GameObject.Find(GameController.Ability2CurrentInputTextName).GetComponent<TextMeshProUGUI>();
@@ -234,7 +236,10 @@ public static class UIController
                 {
                     Cursor.visible = true;
                 }
-                ShowNewGameMenu();
+                if(NewGameContainer.activeSelf == false)
+                {
+                    ShowNewGameMenu();
+                }
                 break;
             }
             case GameController.GameState.SettingsMenu:
@@ -244,7 +249,10 @@ public static class UIController
                 {
                     Cursor.visible = true;
                 }
-                ShowSettingsMenu();
+                if(SettingsMenuContainer.activeSelf == false)
+                {
+                    ShowSettingsMenu();
+                }
                 break;
             }
             case GameController.GameState.Playing:
@@ -318,6 +326,12 @@ public static class UIController
                 break;
             }
         }
+    }
+
+    // Update settings screen error text
+    public static void UpdateSettingsErrorText(string _text)
+    {
+        SettingsErrorText.text = _text;
     }
 
     // Update rebind inputs text
@@ -584,6 +598,7 @@ public static class UIController
     // Show settings menu
     public static void ShowSettingsMenu()
     {
+        SettingsErrorText.text = "";
         MainMenuContainer.SetActive(false);
         SettingsMenuContainer.SetActive(true);
     }
