@@ -5,14 +5,14 @@ using UnityEngine;
 public class Bomb : Projectile
 {
     // Constructor criteria
-    private readonly PSBomber Player;
+    private readonly Ship Player;
     private readonly GameObject BombExplosionPrefab;
     private GameObject BombExplosionObject;
     private readonly float FiredTime;
     private readonly float Radius;
 
     // Projectile constructor
-    public Bomb(PSBomber _player, uint _id, GameController.IFF _iff, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public Bomb(Ship _player, uint _id, GameController.IFF _iff, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
         this.Player = _player;
         this.ID = _id;
@@ -55,8 +55,6 @@ public class Bomb : Projectile
         // If bomb has hit lifetime
         else
         {
-            // Remove bomb from in flight
-            this.Player.BombInFlight = false;
             // Detonate bomb
             this.Detonate();
         }

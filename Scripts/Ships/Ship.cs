@@ -109,7 +109,7 @@ public class Ship
     public uint GunBarrelCount; // Number of gun barrels from which to spawn projectiles
     public uint GunShotProjectileType; // Visual FX identifier for projectiles (references projectile prefab numbering system)
     public float GunCooldownTime; // How long in seconds to wait between each shot fired from main gun
-    public float GunShotAmount; // Amount of projectiles to spawn from each gun barrel
+    public uint GunShotAmount; // Amount of projectiles to spawn from each gun barrel
     public float GunShotCurvature; // Maximum rotation per game tick that projectiles can turn when homing on target (values of 0 produce no homing effect)
     public float GunShotSightCone; // Value describing the sight cone within which projectiles can acquire target if they have a curvature above 0 (-1 is full 360°, 0 is 180°, 1 is 0° cone)
     public float GunShotDamage; // Amount of damage each projectile inflicts on target collided with
@@ -123,7 +123,7 @@ public class Ship
 
     // Defaults for ability changes
     public float DefaultGunCooldownTime;
-    public float DefaultGunShotAmount;
+    public uint DefaultGunShotAmount;
     public float DefaultGunShotDamage;
     public float DefaultGunShotAccuracy;
     public float DefaultGunEnergyCost;
@@ -167,7 +167,7 @@ public class Ship
     public bool IsWanderMove;
     public float StartedWanderMoveTime;
     public float TimeToWanderMove;
-    public PSEngineer Parent;
+    public Ship Parent;
     public float MaxLeashDistance;
     public float OrbitParentRange;
     public bool ShouldFollowParent;

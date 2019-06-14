@@ -10,6 +10,10 @@ public class DroneShip : Ship
     // Ship stats
     private readonly float BombDamage;
     private readonly float BombRadius;
+    private readonly Vector3 BombScale = new Vector3(0.5f, 0.5f, 0.5f);
+
+    // Parent list
+    private readonly List<DroneShip> ParentDroneList;
 
     // Drone ship types
     public enum DroneShipType
@@ -18,10 +22,11 @@ public class DroneShip : Ship
     }
     public DroneShipType Type;
 
-    public DroneShip(uint _id, PSEngineer _parent, DroneShipType _type, Vector3 _startingPosition, float _maxHealth, float _maxShields, float _maxSpeed, uint _gunShotProjectileType, float _gunCooldownTime, uint _gunShotAmount, float _gunShotDamage, float _gunShotAccuracy, float _gunShotSpeed, float _gunShotLifetime, float _maxTargetAcquisitionDistance, float _maxStrafeDistance, float _maxLeashDistance)
+    public DroneShip(uint _id, Ship _parent, List<DroneShip> _parentDroneList, DroneShipType _type, Vector3 _startingPosition, float _maxHealth, float _maxShields, float _maxSpeed, uint _gunShotProjectileType, float _gunCooldownTime, uint _gunShotAmount, float _gunShotDamage, float _gunShotAccuracy, float _gunShotSpeed, float _gunShotLifetime, float _maxTargetAcquisitionDistance, float _maxStrafeDistance, float _maxLeashDistance)
     {
         this.ID = _id;
         this.Parent = _parent;
+        this.ParentDroneList = _parentDroneList;
         this.Type = _type;
         this.AItype = AIType.Drone;
         this.StartingPosition = _startingPosition;
@@ -86,29 +91,7 @@ public class DroneShip : Ship
     // Self destruct ship
     public void Detonate()
     {
-        // Spawn explosion object
-        this.BombExplosionObject = GameObject.Instantiate(this.BombExplosionPrefab, this.ShipObject.transform.position, Quaternion.identity);
-        this.BombExplosionObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-        // Set explosion object to self destroy after 1 second
-        GameObject.Destroy(this.BombExplosionObject, 1);
-        // Loop through all ships
-        foreach(KeyValuePair<uint, Ship> ship in GameController.Ships)
-        {
-            // If ship is other faction and currently alive
-            if(ship.Value.IFF != this.IFF && ship.Value.Alive == true)
-            {
-                // Get distance from ship
-                float distance = Vector3.Distance(this.ShipObject.transform.position, ship.Value.ShipObject.transform.position);
-                // If distance is less than radius
-                if(distance <= this.BombRadius)
-                {
-                    // Tell ship to take damage relative to it's distance
-                    ship.Value.TakeDamage(this.BombDamage - (distance / this.BombRadius * this.BombDamage));
-                }
-            }
-        }
-        // Ship dies in attack
-        this.Kill();
+        Abilities.Detonate(this, this.BombExplosionPrefab, this.BombScale, this.BombDamage, this.BombRadius);
     }
 
     // Called when ship is destroyed by damage, grants XP
@@ -127,6 +110,6 @@ public class DroneShip : Ship
         // Add ship to removal list
         GameController.ShipsToRemove.Add(this.ID);
         // Remove drone from parents drone list
-        this.Parent.Drones.Remove(this);
+        this.ParentDroneList.Remove(this);
     }
 }

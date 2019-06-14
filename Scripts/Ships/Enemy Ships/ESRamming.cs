@@ -7,11 +7,11 @@ public class ESRamming : EnemyShip
 {
     // Ramming ship-only GameObjects
     private readonly GameObject BombExplosionPrefab;
-    private GameObject BombExplosionObject;
 
     // Ship stats
     private readonly float BombDamage;
     private readonly float BombRadius;
+    private readonly Vector3 BombScale = new Vector3(1, 1, 1);
 
     // Enemy ship constructor
     public ESRamming(uint _id, Vector3 _startingPosition)
@@ -75,35 +75,8 @@ public class ESRamming : EnemyShip
             if(this.IsEMPed == false)
             {
                 // Detonate warhead
-                this.Detonate();
+                Abilities.Detonate(this, this.BombExplosionPrefab, this.BombScale, this.BombDamage, this.BombRadius);
             }
         }
-    }
-
-    // Self destruct ship
-    public void Detonate()
-    {
-        // Spawn explosion object
-        this.BombExplosionObject = GameObject.Instantiate(this.BombExplosionPrefab, this.ShipObject.transform.position, Quaternion.identity);
-        // Set explosion object to self destroy after 1 second
-        GameObject.Destroy(this.BombExplosionObject, 1);
-        // Loop through all ships
-        foreach(KeyValuePair<uint, Ship> ship in GameController.Ships)
-        {
-            // If ship is other faction and currently alive
-            if(ship.Value.IFF != this.IFF && ship.Value.Alive == true)
-            {
-                // Get distance from ship
-                float distance = Vector3.Distance(this.ShipObject.transform.position, ship.Value.ShipObject.transform.position);
-                // If distance is less than radius
-                if(distance <= this.BombRadius)
-                {
-                    // Tell ship to take damage relative to it's distance
-                    ship.Value.TakeDamage(this.BombDamage - (distance / this.BombRadius * this.BombDamage));
-                }
-            }
-        }
-        // Ship dies in attack
-        this.Kill();
     }
 }

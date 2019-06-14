@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.13b";
+    public static string Version = "0.0.13c";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject Cameras;
@@ -318,7 +318,7 @@ public static class GameController
     }
 
     // Spawn bomb
-    public static Bomb SpawnBomb(PSBomber _player, IFF _iff, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public static Bomb SpawnBomb(Ship _player, IFF _iff, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
         NextProjectileID();
         Bomb bomb = new Bomb(_player, ProjectileID, _iff, _damage, _radius, _position, _rotation, _velocity, _speed, _lifetime);
@@ -327,10 +327,10 @@ public static class GameController
     }
 
     // Spawn drone
-    public static DroneShip SpawnDrone(PSEngineer _parent, DroneShip.DroneShipType _type, Vector3 _startingPosition, float _maxHealth, float _maxShields, float _maxSpeed, uint _gunShotProjectileType, float _gunCooldownTime, uint _gunShotAmount, float _gunShotDamage, float _gunShotAccuracy, float _gunShotSpeed, float _gunShotLifetime, float _maxTargetAcquisitionDistance, float _maxStrafeDistance, float _maxLeashDistance)
+    public static DroneShip SpawnDrone(Ship _parent, List<DroneShip> _parentDroneList, DroneShip.DroneShipType _type, Vector3 _startingPosition, float _maxHealth, float _maxShields, float _maxSpeed, uint _gunShotProjectileType, float _gunCooldownTime, uint _gunShotAmount, float _gunShotDamage, float _gunShotAccuracy, float _gunShotSpeed, float _gunShotLifetime, float _maxTargetAcquisitionDistance, float _maxStrafeDistance, float _maxLeashDistance)
     {
         NextShipID();
-        DroneShip droneShip = new DroneShip(ShipID, _parent, _type, _startingPosition, _maxHealth, _maxShields, _maxSpeed, _gunShotProjectileType, _gunCooldownTime, _gunShotAmount, _gunShotDamage, _gunShotAccuracy, _gunShotSpeed, _gunShotLifetime, _maxTargetAcquisitionDistance, _maxStrafeDistance, _maxLeashDistance);
+        DroneShip droneShip = new DroneShip(ShipID, _parent, _parentDroneList, _type, _startingPosition, _maxHealth, _maxShields, _maxSpeed, _gunShotProjectileType, _gunCooldownTime, _gunShotAmount, _gunShotDamage, _gunShotAccuracy, _gunShotSpeed, _gunShotLifetime, _maxTargetAcquisitionDistance, _maxStrafeDistance, _maxLeashDistance);
         // This gets called during a ship update, so it can't modify the ships list directly. As such, it adds to a list of ships to add and gets added after ships list finishes enumerating
         ShipsToAdd.Add(ShipID, droneShip);
         return droneShip;

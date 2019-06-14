@@ -14,7 +14,7 @@ public class PSBomber : PlayerShip
     public float BarrierEnergyDrainCost; // Energy cost deducted when ship takes damage while barrier is active
     // ----Ability 2: Barrage
     public float BarrageGunCooldownTimeMultiplier; // Main gun cooldown is multiplied by this value during barrage, 0.5f means gun shoots twice as fast
-    public float BarrageShotAmountIncrease; // Number of shots to add per gun barrel fired while barrage is active
+    public uint BarrageShotAmountIncrease; // Number of shots to add per gun barrel fired while barrage is active
     public float BarrageDamageMultiplier; // Shot damage is multiplied by this value
     public float BarrageAccuracyMultiplier; // Shot accuracy is multiplied by this value
     public float BarrageEnergyCostMultiplier; // Shot energy cost is multiplied by this value
@@ -118,121 +118,19 @@ public class PSBomber : PlayerShip
     // Check ability 1
     public override void CheckAbility1()
     {
-        this.CheckBarrier();
+        Abilities.CheckBarrier(this, 0, this.BarrierObject);
     }
 
     // Check ability 2
     public override void CheckAbility2()
     {
-        this.CheckBarrage();
+        Abilities.CheckBarrage(this, 1, this.BarrageGunCooldownTimeMultiplier, this.BarrageShotAmountIncrease, this.BarrageDamageMultiplier, this.BarrageAccuracyMultiplier, this.BarrageEnergyCostMultiplier);
     }
 
     // Check ability 3
     public override void CheckAbility3()
     {
-        this.CheckBomb();
-    }
-
-    // Check barrier
-    private void CheckBarrier()
-    {
-        // If barrier input activated and barrier is not currently on cooldown and barrier is not currently active
-        if(this.AbilityInput[0] == true && this.AbilityOnCooldown[0] == false && this.AbilityActive[0] == false)
-        {
-            // Activate barrier object, set barrier active to true, and record time barrier was activated
-            this.BarrierObject.SetActive(true);
-            this.AbilityActive[0] = true;
-            this.LastAbilityActivatedTime[0] = Time.time;
-        }
-        // If difference between current time and shield last activated time is greater than barrier duration
-        if(this.AbilityActive[0] == true && Time.time - this.LastAbilityActivatedTime[0] > this.AbilityDuration[0])
-        {
-            // Disable barrier object, set barrier to not active, set barrier to on cooldown, and record time cooldown started
-            this.BarrierObject.SetActive(false);
-            this.AbilityActive[0] = false;
-            this.AbilityOnCooldown[0] = true;
-            this.LastAbilityCooldownStartedTime[0] = Time.time;
-        }
-        // If difference between current time and barrier started cooldown time is greater than barrier cooldown time
-        if(this.AbilityOnCooldown[0] == true && Time.time - this.LastAbilityCooldownStartedTime[0] > this.AbilityCooldownTime[0])
-        {
-            // Take barrier off cooldown
-            this.AbilityOnCooldown[0] = false;
-        }
-    }
-
-    // Check barrage
-    private void CheckBarrage()
-    {
-        // If barrage input is active, barrage is not on cooldown, and barrage is not currently active
-        if(this.AbilityInput[1] == true && this.AbilityOnCooldown[1] == false && this.AbilityActive[1] == false)
-        {
-            // Set barrage to active
-            this.AbilityActive[1] = true;
-            // Record last barrage activated time
-            this.LastAbilityActivatedTime[1] = Time.time;
-            // Apply barrage multipliers
-            this.GunCooldownTime *= this.BarrageGunCooldownTimeMultiplier;
-            this.GunShotAmount += this.BarrageShotAmountIncrease;
-            this.GunShotDamage *= this.BarrageDamageMultiplier;
-            this.GunShotAccuracy *= this.BarrageAccuracyMultiplier;
-            this.GunEnergyCost *= this.BarrageEnergyCostMultiplier;
-        }
-        // If barrage is currently active and last barrage activated time is greater than barrage duration
-        if(this.AbilityActive[1] == true && Time.time - this.LastAbilityActivatedTime[1] > this.AbilityDuration[1])
-        {
-            // Set barrage to inactive
-            this.AbilityActive[1] = false;
-            // Set barrage on cooldown
-            this.AbilityOnCooldown[1] = true;
-            // Record barrage cooldown started time
-            this.LastAbilityCooldownStartedTime[1] = Time.time;
-            // Remove barrage multipliers
-            this.GunCooldownTime = this.DefaultGunCooldownTime;
-            this.GunShotAmount = this.DefaultGunShotAmount;
-            this.GunShotDamage = this.DefaultGunShotDamage;
-            this.GunShotAccuracy = this.DefaultGunShotAccuracy;
-            this.GunEnergyCost = this.DefaultGunEnergyCost;
-        }
-        // If barrage is on cooldown and last barrage cooldown started time is greater than barrage cooldown time
-        if(this.AbilityOnCooldown[1] == true && Time.time - this.LastAbilityCooldownStartedTime[1] > this.AbilityCooldownTime[1])
-        {
-            // Take barrage off cooldown
-            this.AbilityOnCooldown[1] = false;
-        }
-    }
-
-    // Check bomb
-    private void CheckBomb()
-    {
-        // If bomb input is active, bomb is not on cooldown, and there is no bomb in flight
-        if(this.AbilityInput[2] == true && this.AbilityOnCooldown[2] == false && this.BombInFlight == false)
-        {
-            // TODO: Now that a ship can have more than one main gun, need to think of something better than just having bomb use the 0th gun barrel location/rotation. IDEA: make a game object child of ship to use as bomb firing location
-            // Spawn a bomb
-            this.bomb = GameController.SpawnBomb(this, this.IFF, this.BombDamage, this.BombRadius, this.GunBarrelObjects[0].transform.position, this.GunBarrelObjects[0].transform.rotation, this.ShipRigidbody.velocity, this.BombSpeed, this.BombLifetime);
-            // Set bomb on cooldown
-            this.AbilityOnCooldown[2] = true;
-            // Set bomb in flight
-            this.BombInFlight = true;
-            // Record bomb activated time
-            this.LastAbilityCooldownStartedTime[2] = Time.time;
-        }
-        // If bomb is in flight, bomb input is pressed, and time since bomb was activated is more than the bomb primer time
-        if(this.BombInFlight == true && this.AbilityInput[2] == true && Time.time - this.LastAbilityCooldownStartedTime[2] > this.BombPrimerTime)
-        {
-            // Set bomb not in flight
-            this.BombInFlight = false;
-            // Detonate bomb
-            this.bomb.Detonate();
-            this.bomb = null;
-        }
-        // If bomb is on cooldown and time since bomb was last activated is greater than bomb cooldown time
-        if(this.AbilityOnCooldown[2] == true && Time.time - this.LastAbilityCooldownStartedTime[2] > this.AbilityCooldownTime[2])
-        {
-            // Take bomb off cooldown
-            this.AbilityOnCooldown[2] = false;
-        }
+        this.bomb = Abilities.CheckBomb(this, 2, this.bomb, this.BombDamage, this.BombRadius, this.BombPrimerTime, this.BombSpeed, this.BombLifetime);
     }
 
     // Called when receiving collision from projectile
