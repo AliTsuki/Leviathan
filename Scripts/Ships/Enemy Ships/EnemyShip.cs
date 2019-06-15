@@ -6,7 +6,8 @@ public class EnemyShip : Ship
     {
         Standard,
         Ramming,
-        Broadside
+        Broadside,
+        Flanker
     }
     public EnemyShipType Type;
 }

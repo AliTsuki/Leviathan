@@ -150,7 +150,8 @@ public class Ship
         Drone,
         Standard,
         Ramming,
-        Broadside
+        Broadside,
+        Flanker
     }
     public AIType AItype;
     public Ship CurrentTarget;
@@ -158,6 +159,7 @@ public class Ship
     public float MaxTargetAcquisitionRange;
     public float MaxOrbitRange;
     public float MaxWeaponsRange;
+    public float MaxAbilityRange;
     public bool StrafeRight;
     public bool ResetStrafeDirection;
     public bool ShouldWander;
@@ -175,6 +177,7 @@ public class Ship
     public bool ShouldAccelerate;
     public bool ShouldStrafe;
     public bool ShouldFireGuns;
+    public bool ShouldUseAbilities;
 
     // Identification fields
     public uint ID;
@@ -899,6 +902,15 @@ public class Ship
                 this.ShouldAccelerate = true;
                 this.ShouldStrafe = true;
                 this.ShouldFireGuns = true;
+                break;
+            }
+            case AIType.Flanker:
+            {
+                this.ShouldAcquireTargets = true;
+                this.ShouldAccelerate = true;
+                this.ShouldStrafe = true;
+                this.ShouldFireGuns = true;
+                this.ShouldUseAbilities = true;
                 break;
             }
             case AIType.Drone:

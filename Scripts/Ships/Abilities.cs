@@ -8,7 +8,7 @@ public static class Abilities
     // Check Shield Overcharge
     public static void CheckShieldOvercharge(Ship _ship, byte _abilityID, GameObject _shieldOverchargeObject, float _shieldRegenSpeedMultiplier, float _shieldCooldownMultiplier)
     {
-        // If ability 1 input activated and ability 1 is not currently on cooldown and ability 1 is not currently active
+        // If ability input activated and ability is not currently on cooldown and ability is not currently active
         if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _ship.AbilityActive[_abilityID] == false)
         {
             // Activate shield overcharge gameobject
@@ -16,12 +16,12 @@ public static class Abilities
             // Multiply shield regen speed and cooldown time by multipliers
             _ship.ShieldRegenSpeed *= _shieldRegenSpeedMultiplier;
             _ship.ShieldCooldownTime *= _shieldCooldownMultiplier;
-            // Set ability one active
+            // Set ability active
             _ship.AbilityActive[_abilityID] = true;
-            // Record ability 1 activated time
+            // Record ability activated time
             _ship.LastAbilityActivatedTime[_abilityID] = Time.time;
         }
-        // If difference between current time and ability 1 last activated time is greater than ability 1 duration
+        // If difference between current time and ability last activated time is greater than ability duration
         else if(_ship.AbilityActive[_abilityID] == true && Time.time - _ship.LastAbilityActivatedTime[_abilityID] > _ship.AbilityDuration[_abilityID])
         {
             // Deactivate shield overcharge gameobject
@@ -29,17 +29,17 @@ public static class Abilities
             // Set shield regen speed and cooldown back to defaults
             _ship.ShieldRegenSpeed = _ship.DefaultShieldRegenSpeed;
             _ship.ShieldCooldownTime = _ship.DefaultShieldCooldownTime;
-            // Set ability one to inactive
+            // Set ability to inactive
             _ship.AbilityActive[_abilityID] = false;
-            // Set ability one to on cooldown
+            // Set ability to on cooldown
             _ship.AbilityOnCooldown[_abilityID] = true;
             // Record cooldown started time
             _ship.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
         }
-        // If difference between current time and ability 1 started cooldown time is greater than ability 1 cooldown time
+        // If difference between current time and ability started cooldown time is greater than ability cooldown time
         else if(_ship.AbilityOnCooldown[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _ship.AbilityCooldownTime[_abilityID])
         {
-            // Take ability 1 off cooldown
+            // Take ability off cooldown
             _ship.AbilityOnCooldown[_abilityID] = false;
         }
     }
@@ -47,7 +47,7 @@ public static class Abilities
     // Check Drone
     public static void CheckDrones(Ship _ship, byte _abilityID, List<DroneShip> _drones, uint _droneAmount, uint _maxDroneAmount, DroneShip.DroneShipType _droneType, float _droneMaxHealth, float _droneMaxShields, float _droneMaxSpeed, uint _droneGunShotProjectileType, float _droneGunCooldownTime, uint _droneGunShotAmount, float _droneGunShotDamage, float _droneGunShotAccuracy, float _droneGunShotSpeed, float _droneGunShotLifetime, float _droneTargetAcquisitionDistance, float _droneStrafeDistance, float _droneLeashDistance)
     {
-        // If ability 2 input activated and ability 2 is not currently on cooldown and ability 2 is not currently active and drones are less than max amount
+        // If ability input activated and ability is not currently on cooldown and ability is not currently active and drones are less than max amount
         if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _ship.AbilityActive[_abilityID] == false)
         {
             // Loop through drone summon amount
@@ -76,25 +76,25 @@ public static class Abilities
                     _drones.Add(drone);
                 }
             }
-            // Set ability 2 to active
+            // Set ability to active
             _ship.AbilityActive[_abilityID] = true;
-            // Record ability 2 activated time
+            // Record ability activated time
             _ship.LastAbilityActivatedTime[_abilityID] = Time.time;
         }
-        // If difference between current time and ability 2 last activated time is greater than ability 2 duration
+        // If difference between current time and ability last activated time is greater than ability duration
         else if(_ship.AbilityActive[_abilityID] == true && Time.time - _ship.LastAbilityActivatedTime[_abilityID] > _ship.AbilityDuration[_abilityID])
         {
-            // Set ability 2 to inactive
+            // Set ability to inactive
             _ship.AbilityActive[_abilityID] = false;
-            // Set ability 2 on cooldown
+            // Set ability on cooldown
             _ship.AbilityOnCooldown[_abilityID] = true;
             // Record cooldown started time
             _ship.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
         }
-        // If difference between current time and ability 2 started cooldown time is greater than ability 2 cooldown time
+        // If difference between current time and ability started cooldown time is greater than ability cooldown time
         else if(_ship.AbilityOnCooldown[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _ship.AbilityCooldownTime[_abilityID])
         {
-            // Take ability 2 off cooldown
+            // Take ability off cooldown
             _ship.AbilityOnCooldown[_abilityID] = false;
         }
     }
@@ -102,7 +102,7 @@ public static class Abilities
     // Check EMP
     public static void CheckEMP(Ship _ship, byte _abilityID, GameObject _EMPObject, float _EMPRadius, float _EMPDuration, float _EMPEnergyCost)
     {
-        // If ability 3 input activated and ability 3 is not currently on cooldown and ability 3 is not currently active
+        // If ability input activated and ability is not currently on cooldown and ability is not currently active
         if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _ship.AbilityActive[_abilityID] == false)
         {
             // Loop through all ships
@@ -121,27 +121,27 @@ public static class Abilities
             _ship.Energy -= _EMPEnergyCost;
             // Activate EMP gameobject
             _EMPObject.SetActive(true);
-            // Set ability 3 active
+            // Set ability active
             _ship.AbilityActive[2] = true;
-            // Record ability 3 activated time
+            // Record ability activated time
             _ship.LastAbilityActivatedTime[_abilityID] = Time.time;
         }
-        // If difference between current time and ability 3 last activated time is greater than ability 3 duration
+        // If difference between current time and ability last activated time is greater than ability duration
         else if(_ship.AbilityActive[_abilityID] == true && Time.time - _ship.LastAbilityActivatedTime[_abilityID] > _ship.AbilityDuration[_abilityID])
         {
             // Set EMP object inactive
             _EMPObject.SetActive(false);
-            // Set ability 3 inactive
+            // Set ability inactive
             _ship.AbilityActive[_abilityID] = false;
-            // Set ability 3 on cooldown
+            // Set ability on cooldown
             _ship.AbilityOnCooldown[_abilityID] = true;
             // Record cooldown started time
             _ship.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
         }
-        // If difference between current time and ability 1 started cooldown time is greater than ability 1 cooldown time
+        // If difference between current time and ability started cooldown time is greater than ability cooldown time
         else if(_ship.AbilityOnCooldown[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _ship.AbilityCooldownTime[_abilityID])
         {
-            // Take ability 1 off cooldown
+            // Take ability off cooldown
             _ship.AbilityOnCooldown[_abilityID] = false;
         }
     }
@@ -149,7 +149,7 @@ public static class Abilities
     // Check barrier
     public static void CheckBarrier(Ship _ship, byte _abilityID, GameObject _barrierObject)
     {
-        // If barrier input activated and barrier is not currently on cooldown and barrier is not currently active
+        // If ability input activated and ability is not currently on cooldown and ability is not currently active
         if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _ship.AbilityActive[_abilityID] == false)
         {
             // Activate barrier object, set barrier active to true, and record time barrier was activated
@@ -276,5 +276,37 @@ public static class Abilities
         }
         // Ship dies in attack
         _ship.Kill();
+    }
+
+    // Check Flank Teleport
+    public static void CheckFlankTeleport(Ship _ship, byte _abilityID, GameObject _flankTeleportPrefab, float _flankTeleportRange)
+    {
+        // If ability input activated and ability is not currently on cooldown and ability is not currently active
+        if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _ship.AbilityActive[_abilityID] == false && _ship.CurrentTarget != null)
+        {
+            _flankTeleportPrefab.SetActive(true);
+            _ship.ShipObject.transform.position = _ship.CurrentTarget.ShipObject.transform.position + (_ship.CurrentTarget.ShipObject.transform.forward * -_flankTeleportRange);
+            // Set ability active
+            _ship.AbilityActive[_abilityID] = true;
+            // Record ability activated time
+            _ship.LastAbilityActivatedTime[_abilityID] = Time.time;
+        }
+        // If difference between current time and ability last activated time is greater than ability duration
+        else if(_ship.AbilityActive[_abilityID] == true && Time.time - _ship.LastAbilityActivatedTime[_abilityID] > _ship.AbilityDuration[_abilityID])
+        {
+            _flankTeleportPrefab.SetActive(false);
+            // Set ability to inactive
+            _ship.AbilityActive[_abilityID] = false;
+            // Set ability to on cooldown
+            _ship.AbilityOnCooldown[_abilityID] = true;
+            // Record cooldown started time
+            _ship.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
+        }
+        // If difference between current time and ability started cooldown time is greater than ability cooldown time
+        else if(_ship.AbilityOnCooldown[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _ship.AbilityCooldownTime[_abilityID])
+        {
+            // Take ability off cooldown
+            _ship.AbilityOnCooldown[_abilityID] = false;
+        }
     }
 }

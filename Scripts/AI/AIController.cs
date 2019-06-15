@@ -75,6 +75,19 @@ public static class AIController
                         _ship.MainGunInput = false;
                     }
                 }
+                // If ship should use ability
+                if(_ship.ShouldUseAbilities == true)
+                {
+                    // Use AI to figure out if ship should use ability
+                    if(ShouldUseAbility(_ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position, _ship.MaxAbilityRange))
+                    {
+                        _ship.AbilityInput[0] = true;
+                    }
+                    else
+                    {
+                        _ship.AbilityInput[0] = false;
+                    }
+                }
             }
         }
         // Drone AI
@@ -295,6 +308,19 @@ public static class AIController
     public static bool ShouldFireGun(Vector3 _userPosition, Vector3 _targetPosition, float _maxWeaponsRange)
     {
         if(Vector3.Distance(_userPosition, _targetPosition) < _maxWeaponsRange)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    // Checks if the ship should use an ability
+    public static bool ShouldUseAbility(Vector3 _userPosition, Vector3 _targetPosition, float _abilityUsageRange)
+    {
+        if(Vector3.Distance(_userPosition, _targetPosition) < _abilityUsageRange)
         {
             return true;
         }

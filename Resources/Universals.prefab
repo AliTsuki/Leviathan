@@ -7867,8 +7867,7 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 5703128526847793934}
+  m_Children: []
   m_Father: {fileID: 1388696891088071297}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7905,11 +7904,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: "Abilities\r\n\n1.    Shield Overcharge: Increases shield recharge rate
-    and decreases shield cooldown time (Duration 5s, CD 10s)\r\n\r\n2.    Summon Drones:
-    Summons 3 drones to follow you around and damage your enemies (Duration \x1E,
-    CD 15s)\r\n\r\n3.    EMP: Creates a massive EMP shockwave that disables enemy
-    ships (Duration 5s, CD: 10s)"
+  m_text: "Health: 150\nShields: 150\nGun: Shotgun Spread Attacks\n\nAbilities\r\n\n1.
+    \   Shield Overcharge: Increases shield recharge rate and decreases shield cooldown
+    time (Duration 4s, CD 12s)\r\n\r\n2.    Summon Drones: Summons 1 drone to follow
+    you around and damage your enemies each use, use when maximum drones summoned
+    (3) and oldest drone detonates  (Duration inf, CD 20s)\r\n\r\n3.    EMP: Creates
+    a massive EMP shockwave that disables enemy ships (Duration 4s, CD: 14s)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: faeb63a3d35de8749ae0df3a4045c4e8, type: 2}
   m_sharedMaterial: {fileID: 3059357532944219773, guid: faeb63a3d35de8749ae0df3a4045c4e8,
@@ -7938,8 +7938,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -7955,7 +7955,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: 304
+  m_firstOverflowCharacterIndex: -1
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -7979,21 +7979,21 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 6069127055173731839}
-    characterCount: 326
+    characterCount: 456
     spriteCount: 0
-    spaceCount: 61
-    wordCount: 49
+    spaceCount: 83
+    wordCount: 70
     linkCount: 0
-    lineCount: 14
+    lineCount: 17
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
   m_hasFontAssetChanged: 0
   m_subTextObjects:
   - {fileID: 0}
-  - {fileID: 8757287245372810958}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -10669,19 +10669,26 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: 'Abilities
+  m_text: 'Health: 200
+
+    Shields: 100
+
+    Gun: Homing Attacks
+
+
+    Abilities
 
 
     1.    Barrier: Absorbs all incoming damage at the expense of energy (Duration
-    5s, CD 10s)
+    2.5s, CD 12s)
 
 
     2.    Barrage: Increases fire rate and shot amount, decreases accuracy and damage
-    (Duration 5s, CD 10s)
+    (Duration 4s, CD 14s)
 
 
     3.    Bomb: Fires a large bomb, on second use it detonates the bomb for massive
-    AoE damage (CD 15s)'
+    AoE damage (CD 12s)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: faeb63a3d35de8749ae0df3a4045c4e8, type: 2}
   m_sharedMaterial: {fileID: 3059357532944219773, guid: faeb63a3d35de8749ae0df3a4045c4e8,
@@ -10710,8 +10717,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -10751,12 +10758,12 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 722268667273745355}
-    characterCount: 306
+    characterCount: 354
     spriteCount: 0
-    spaceCount: 62
-    wordCount: 51
+    spaceCount: 70
+    wordCount: 59
     linkCount: 0
-    lineCount: 13
+    lineCount: 16
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
@@ -12316,80 +12323,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!1 &7378801561018152925
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5703128526847793934}
-  - component: {fileID: 8050511589409247446}
-  - component: {fileID: 8757287245372810958}
-  m_Layer: 5
-  m_Name: TMP SubMeshUI [Armata-Regular Atlas Material + LiberationSans SDF Atlas]
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &5703128526847793934
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7378801561018152925}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2046849902094999433}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &8050511589409247446
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7378801561018152925}
-  m_CullTransparentMesh: 0
---- !u!114 &8757287245372810958
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7378801561018152925}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 058cba836c1846c3aa1c5fd2e28aea77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_spriteAsset: {fileID: 0}
-  m_material: {fileID: 0}
-  m_sharedMaterial: {fileID: 0}
-  m_isDefaultMaterial: 0
-  m_padding: 8.5625
-  m_canvasRenderer: {fileID: 8050511589409247446}
-  m_TextComponent: {fileID: 6069127055173731839}
-  m_materialReferenceIndex: 1
 --- !u!1 &7402340365657485539
 GameObject:
   m_ObjectHideFlags: 0

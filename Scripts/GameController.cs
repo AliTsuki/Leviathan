@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.13c";
+    public static string Version = "0.0.14a";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject Cameras;

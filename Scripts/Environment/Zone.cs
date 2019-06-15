@@ -9,31 +9,35 @@ public class Zone
     // Enemies in zone
     public static EnemyAndSpawnRate[] DefaultZoneEnemies = new EnemyAndSpawnRate[]
     {
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 85),
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 5),
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 10)
+        // NONE
     };
     public static EnemyAndSpawnRate[] GreenZoneEnemies = new EnemyAndSpawnRate[]
     {
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 85),
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 5),
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 10)
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 2),
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 13)
     };
     public static EnemyAndSpawnRate[] RedZoneEnemies = new EnemyAndSpawnRate[]
     {
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 100)
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 10),
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Flanker, 90)
     };
     public static EnemyAndSpawnRate[] OrangeZoneEnemies = new EnemyAndSpawnRate[]
     {
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 100)
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 10),
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Flanker, 90)
     };
     public static EnemyAndSpawnRate[] PurpleZoneEnemies = new EnemyAndSpawnRate[]
     {
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 100)
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 25),
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 75)
     };
     public static EnemyAndSpawnRate[] BlueZoneEnemies = new EnemyAndSpawnRate[]
     {
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 100)
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 40),
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 5),
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 15),
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Flanker, 40)
     };
 
     // Zone types
@@ -218,6 +222,10 @@ public class Zone
             case EnemyShip.EnemyShipType.Broadside:
             {
                 return new ESBroadside(_shipID, _startingPosition);
+            }
+            case EnemyShip.EnemyShipType.Flanker:
+            {
+                return new ESFlanker(_shipID, _startingPosition);
             }
             default:
             {

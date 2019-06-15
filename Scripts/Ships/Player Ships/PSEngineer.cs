@@ -63,7 +63,7 @@ public class PSEngineer : PlayerShip
         this.WarpEnergyCost = 3f;
         this.GunEnergyCost = 30f;
         // --Acceleration
-        this.EngineCount = 1;
+        this.EngineCount = 2;
         this.ImpulseAcceleration = 100f;
         this.WarpAccelerationMultiplier = 3f;
         this.StrafeAcceleration = 0f;
