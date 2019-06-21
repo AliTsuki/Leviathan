@@ -1,14 +1,14 @@
 ﻿// Pools objects for reuse
-public class ObjectPooler
+public static class ObjectPooler
 {
     // Initialize
-    public void Initialize()
+    public static void Initialize()
     {
         
     }
 
     // Update is called once per frame
-    public void Update()
+    public static void Update()
     {
 
     }

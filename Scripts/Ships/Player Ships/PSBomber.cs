@@ -159,57 +159,60 @@ public class PSBomber : PlayerShip
     // Called when ship receives a damaging attack
     public override void TakeDamage(float _damage)
     {
-        // If barrier is not active
-        if(this.AbilityActive[0] == false)
+        if(this.Health > 0f)
         {
-            // Apply damage to shields
-            this.Shields -= _damage;
-            // If shields are knocked below 0
-            if(this.Shields < 0f)
+            // If barrier is not active
+            if(this.AbilityActive[0] == false)
             {
-                // Add negative shield amount to health
-                this.Health += this.Shields;
-                // Reset shield to 0
-                this.Shields = 0f;
-                // If this is player
-                if(this.IsPlayer == true)
+                // Apply damage to shields
+                this.Shields -= _damage;
+                // If shields are knocked below 0
+                if(this.Shields < 0f)
                 {
-                    // Show health damage vignette
-                    UIController.ShowHealthDamageEffect();
+                    // Add negative shield amount to health
+                    this.Health += this.Shields;
+                    // Reset shield to 0
+                    this.Shields = 0f;
+                    // If this is player
+                    if(this.IsPlayer == true)
+                    {
+                        // Show health damage vignette
+                        UIController.ShowHealthDamageEffect();
+                    }
+                }
+                // If shields are still above 0
+                else
+                {
+                    // If this is player
+                    if(this.IsPlayer == true)
+                    {
+                        // Show shield damage vignette
+                        UIController.ShowShieldDamageEffect();
+                    }
+                }
+                // Set last damage taken time
+                this.LastDamageTakenTime = Time.time;
+                // Put shield on cooldown
+                this.ShieldOnCooldown = true;
+                // If this is player and shield regen audio is currently playing
+                if(this.IsPlayer == true && this.ShieldRegenAudio.isPlaying == true)
+                {
+                    // Fade out shield regen audio
+                    AudioController.FadeOut(this.ShieldRegenAudio, 0.25f, 0f);
+                }
+                // If ship is currently alive
+                if(this.Alive == true)
+                {
+                    // Show damage shader
+                    this.ShowDamageShaderEffect(true);
                 }
             }
-            // If shields are still above 0
+            // If shield is active
             else
             {
-                // If this is player
-                if(this.IsPlayer == true)
-                {
-                    // Show shield damage vignette
-                    UIController.ShowShieldDamageEffect();
-                }
+                // Subtract barrier energy drain cost from energy
+                this.SubtractEnergy(this.BarrierEnergyDrainCost);
             }
-            // Set last damage taken time
-            this.LastDamageTakenTime = Time.time;
-            // Put shield on cooldown
-            this.ShieldOnCooldown = true;
-            // If this is player and shield regen audio is currently playing
-            if(this.IsPlayer == true && this.ShieldRegenAudio.isPlaying == true)
-            {
-                // Fade out shield regen audio
-                AudioController.FadeOut(this.ShieldRegenAudio, 0.25f, 0f);
-            }
-            // If ship is currently alive
-            if(this.Alive == true)
-            {
-                // Show damage shader
-                this.ShowDamageShaderEffect(true);
-            }
-        }
-        // If shield is active
-        else
-        {
-            // Subtract barrier energy drain cost from energy
-            this.Energy -= this.BarrierEnergyDrainCost;
         }
     }
 }

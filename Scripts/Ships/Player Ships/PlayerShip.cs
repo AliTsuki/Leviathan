@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 // Controls the player ships
-public class PlayerShip : Ship
+public abstract class PlayerShip : Ship
 {
     // Player ship types
     public enum PlayerShipType
@@ -50,6 +50,12 @@ public class PlayerShip : Ship
     {
         // Set to not alive
         this.Alive = false;
+        // Reset cooldowns
+        for(int i = 0; i < 3; i++)
+        {
+            this.AbilityActive[i] = false;
+            this.AbilityOnCooldown[i] = false;
+        }
         // Create an explosion
         this.Explosion = GameObject.Instantiate(this.ExplosionPrefab, this.ShipObject.transform.position, Quaternion.identity);
         // Set explosion object to self destroy after 1 second

@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.14a";
+    public static string Version = "0.0.14b";
     // GameObjects and Components
     public static Ship Player;
     private static GameObject Cameras;
@@ -52,6 +52,7 @@ public static class GameController
     // UI
     public const string MainMenuName = "Main Menu";
     public const string MainMenuContainerName = "Main Menu Container";
+    public const string VersionTextName = "Version Text";
     public const string NewGameContainerName = "New Game Menu Container";
     public const string SettingsMenuContainerName = "Settings Menu Container";
     public const string SettingsErrorTextName = "Settings Error Text";
@@ -299,7 +300,7 @@ public static class GameController
     private static void SpawnFriendly()
     {
         NextShipID();
-        Ships.Add(ShipID, new FriendlyShip(ShipID));
+        //Ships.Add(ShipID, new FriendlyShip(ShipID));
     }
 
     // Spawn enemy ship

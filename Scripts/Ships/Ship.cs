@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Ship
+public abstract class Ship
 {
     // GameObjects and Components
     public GameObject ShipObject;
@@ -264,6 +264,8 @@ public class Ship
         // If health has reached 0
         if(this.Health <= 0f)
         {
+            this.Shields = 0f;
+            this.Health = 0f;
             // Kill ship
             this.Kill();
         }
@@ -356,7 +358,7 @@ public class Ship
         if(this.ShieldOnCooldown == false && this.Shields < this.MaxShields)
         {
             // Remove energy for regenerating shield
-            this.Energy -= Mathf.Min(this.MaxShields - this.Shields, this.ShieldRegenSpeed);
+            this.SubtractEnergy(Mathf.Min(this.MaxShields - this.Shields, this.ShieldRegenSpeed));
             // Add shield regen speed to shields
             this.Shields += this.ShieldRegenSpeed;
             // If this is player and shield regen audio is not currently playing
@@ -483,7 +485,7 @@ public class Ship
             // Clamp magnitude at maximum warp speed
             this.ShipRigidbody.velocity = Vector3.ClampMagnitude(this.ShipRigidbody.velocity, this.MaxWarpSpeed);
             // Subtract warp energy cost
-            this.Energy -= this.WarpEnergyCost;
+            this.SubtractEnergy(this.WarpEnergyCost);
             // Loop through engines
             for(int i = 0; i < this.EngineCount; i++)
             {
@@ -616,7 +618,7 @@ public class Ship
             // Put weapon on cooldown
             this.GunOnCooldown = true;
             // Subtract energy for shot
-            this.Energy -= this.GunEnergyCost;
+            this.SubtractEnergy(this.GunEnergyCost);
         }
         // If weapons fire input is not active, weapon is on cooldown, or not enough energy to fire
         else
@@ -687,50 +689,63 @@ public class Ship
         }
     }
 
+    // Subtract energy
+    public void SubtractEnergy(float _energyCost)
+    {
+        this.Energy -= _energyCost;
+        if(this.Energy < 0f)
+        {
+            this.Energy = 0f;
+        }
+    }
+
     // Called when ship receives a damaging attack
     public virtual void TakeDamage(float _damage)
     {
-        // Apply damage to shields
-        this.Shields -= _damage;
-        // If shields are knocked below 0
-        if(this.Shields < 0f)
+        if(this.Health > 0f)
         {
-            // Add negative shield amount to health
-            this.Health += this.Shields;
-            // Reset shield to 0
-            this.Shields = 0f;
-            // If this is player
-            if(this.IsPlayer == true)
+            // Apply damage to shields
+            this.Shields -= _damage;
+            // If shields are knocked below 0
+            if(this.Shields < 0f)
             {
-                // Show health damage vignette
-                UIController.ShowHealthDamageEffect();
+                // Add negative shield amount to health
+                this.Health += this.Shields;
+                // Reset shield to 0
+                this.Shields = 0f;
+                // If this is player
+                if(this.IsPlayer == true)
+                {
+                    // Show health damage vignette
+                    UIController.ShowHealthDamageEffect();
+                }
             }
-        }
-        // If shields are still above 0
-        else
-        {
-            // If this is player
-            if(this.IsPlayer == true)
+            // If shields are still above 0
+            else
             {
-                // Show shield damage vignette
-                UIController.ShowShieldDamageEffect();
+                // If this is player
+                if(this.IsPlayer == true)
+                {
+                    // Show shield damage vignette
+                    UIController.ShowShieldDamageEffect();
+                }
             }
-        }
-        // Set last damage taken time
-        this.LastDamageTakenTime = Time.time;
-        // Put shield on cooldown
-        this.ShieldOnCooldown = true;
-        // If this is player and shield regen audio is currently playing
-        if(this.IsPlayer == true && this.ShieldRegenAudio.isPlaying == true)
-        {
-            // Fade out shield regen audio
-            AudioController.FadeOut(this.ShieldRegenAudio, 0.25f, 0f);
-        }
-        // If ship is currently alive
-        if(this.Alive == true)
-        {
-            // Show damage shader
-            this.ShowDamageShaderEffect(true);
+            // Set last damage taken time
+            this.LastDamageTakenTime = Time.time;
+            // Put shield on cooldown
+            this.ShieldOnCooldown = true;
+            // If this is player and shield regen audio is currently playing
+            if(this.IsPlayer == true && this.ShieldRegenAudio.isPlaying == true)
+            {
+                // Fade out shield regen audio
+                AudioController.FadeOut(this.ShieldRegenAudio, 0.25f, 0f);
+            }
+            // If ship is currently alive
+            if(this.Alive == true)
+            {
+                // Show damage shader
+                this.ShowDamageShaderEffect(true);
+            }
         }
     }
 
@@ -766,6 +781,12 @@ public class Ship
     {
         // Set to not alive
         this.Alive = false;
+        // Reset cooldowns
+        for(int i = 0; i < 3; i++)
+        {
+            this.AbilityActive[i] = false;
+            this.AbilityOnCooldown[i] = false;
+        }
         // Tell UI to remove healthbar for this ship
         UIController.RemoveHealthbar(this.ID);
         // If ship is an enemy

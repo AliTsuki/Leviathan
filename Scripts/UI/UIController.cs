@@ -13,6 +13,7 @@ public static class UIController
     // GameObjects
     private static GameObject MainMenu;
     private static GameObject MainMenuContainer;
+    private static TextMeshProUGUI VersionText;
     private static GameObject NewGameContainer;
     private static GameObject SettingsMenuContainer;
     private static TextMeshProUGUI SettingsErrorText;
@@ -71,6 +72,8 @@ public static class UIController
         HealthbarUIs.Clear();
         MainMenu = GameObject.Find(GameController.MainMenuName);
         MainMenuContainer = GameObject.Find(GameController.MainMenuContainerName);
+        VersionText = GameObject.Find(GameController.VersionTextName).GetComponent<TextMeshProUGUI>();
+        VersionText.text = GameController.Version;
         MainMenuContainer.SetActive(true);
         NewGameContainer = GameObject.Find(GameController.NewGameContainerName);
         NewGameContainer.SetActive(false);

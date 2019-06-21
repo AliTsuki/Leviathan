@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 // Controls the friendly ships
-public class FriendlyShip : Ship
+public abstract class FriendlyShip : Ship
 {
     // Enemy ship constructor
     public FriendlyShip(uint _id)

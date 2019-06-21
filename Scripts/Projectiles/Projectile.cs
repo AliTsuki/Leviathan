@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 // Controls all projectiles
-public class Projectile
+public abstract class Projectile
 {
     // GameObjects and Components
     public GameObject ProjectilePrefab;

@@ -118,7 +118,7 @@ public static class Abilities
                 }
             }
             // Subtract energy cost of EMP
-            _ship.Energy -= _EMPEnergyCost;
+            _ship.SubtractEnergy(_EMPEnergyCost);
             // Activate EMP gameobject
             _EMPObject.SetActive(true);
             // Set ability active
