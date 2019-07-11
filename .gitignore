@@ -5,10 +5,6 @@
 /[Bb]uilds/
 /Assets/AssetStoreTools*
 
-/SampleScenes
-/StandardAssets
-/Standard Assets
-/TextMesh Pro
 
 # Visual Studio 2015 cache directory
 /.vs/
@@ -27,12 +23,6 @@ ExportedObj/
 *.booproj
 *.svd
 *.pdb
-
-
-# Unity3D generated meta files
-*.pidb.meta
-*.meta
-*.asset
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt

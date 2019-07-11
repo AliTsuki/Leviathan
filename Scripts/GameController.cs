@@ -22,10 +22,9 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.14b";
-    // GameObjects and Components
-    public static Ship Player;
-    private static GameObject Cameras;
+    public static string Version = "0.0.14c";
+
+    // Random number generator
     public static System.Random r = new System.Random();
 
     // Entity Lists and Dicts
@@ -35,21 +34,59 @@ public static class GameController
     public static List<uint> ShipsToRemove = new List<uint>();
     public static List<uint> ProjectilesToRemove = new List<uint>();
 
+    // Cameras
+    private static GameObject Cameras;
+
     // Player fields
+    public static Ship Player;
     public static PlayerShip.PlayerShipType PlayerShipType;
 
     // Enemy spawn fields
     private static uint EnemyCount = 0;
-    private static uint MaxEnemyCount = 20;
-    private static int MinEnemySpawnDistance = 40;
-    private static int MaxEnemySpawnDistance = 200;
-    private static int EnemyDespawnDistance = 300;
+    private const uint MaxEnemyCount = 20;
+    private const int MinEnemySpawnDistance = 40;
+    private const int MaxEnemySpawnDistance = 200;
+    private const int EnemyDespawnDistance = 300;
+
+    // Entity IDs
+    private static uint ShipID = 0;
+    private static uint ProjectileID = 0;
+
+    // Score
+    public static uint Score;
+    public static float TimeStarted;
+
+    // Identify Friend or Foe
+    public enum IFF
+    {
+        Friend,
+        Enemy
+    }
+
+    // Game State fields
+    public enum GameState
+    {
+        MainMenu,
+        NewGameMenu,
+        SettingsMenu,
+        Playing,
+        Paused,
+        GameOver
+    }
+    public static GameState CurrentGameState = GameState.MainMenu;
+    public static bool GameplayInitialized = false;
 
     // Constant references to Prefab filenames
     // Cameras
     public const string CamerasPrefabName = "Cameras";
     public const string FollowCameraName = "Follow Camera";
-    // UI
+    // Button defaults
+    public const string MainMenuButtonDefaultName = "Continue Game Button (Main Menu)";
+    public const string NewGameMenuButtonDefaultName = "Start Game Button (New Game Menu)";
+    public const string SettingsMenuButtonDefaultName = "Back Button (Settings)";
+    public const string PauseMenuButtonDefaultName = "Resume Button (Pause Menu)";
+    public const string GameOverMenuButtonDefaultName = "Restart Button (Game Over Menu)";
+    // UI elements
     public const string MainMenuName = "Main Menu";
     public const string MainMenuContainerName = "Main Menu Container";
     public const string VersionTextName = "Version Text";
@@ -87,7 +124,6 @@ public static class GameController
     public const string GameOverRestartButtonName = "Restart Button";
     public const string PauseMenuName = "Pause Menu";
     public const string NPCUIPrefabName = "NPC UI";
-
     // Background tiles
     public const string TilemapName = "Tilemap/Tilemap";
     public const string BackgroundPrefabName = "Environment/Background";
@@ -114,40 +150,11 @@ public static class GameController
     public const string ExplosionPrefabName = "VisualFX/Explosion";
     public const string ElectricityEffectPrefabName = "VisualFX/Electricity Effect";
 
-    // Entity IDs
-    private static uint ShipID = 0;
-    private static uint ProjectileID = 0;
-
-    // Score
-    public static uint Score;
-    public static float TimeStarted;
-
-    // Identify Friend or Foe
-    public enum IFF
-    {
-        Friend,
-        Enemy
-    }
-
-    // Game State fields
-    public enum GameState
-    {
-        MainMenu,
-        NewGameMenu,
-        SettingsMenu,
-        Playing,
-        Paused,
-        GameOver
-    }
-    public static GameState CurrentGameState;
-    public static bool GameplayInitialized = false;
-
 
     // Initialize is called before the first frame update
     public static void Initialize()
     {
         Logger.Initialize();
-        CurrentGameState = GameState.MainMenu;
         UIController.Initialize();
         InitializeCamera();
     }
@@ -156,16 +163,13 @@ public static class GameController
     public static void Update()
     {
         PlayerInput.Update();
-        // If gamestate is playing
+        // If gamestate is playing or paused or game over
         if(CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused || CurrentGameState == GameState.GameOver)
         {
             // If gameplay has yet to be initialized
             if(GameplayInitialized == false)
             {
-                // TODO: this is a shitty workaround so player doens't fire a shot the moment they spawn
-                PlayerInput.MainGunInput = false;
                 InitializeGameplay();
-                TimeStarted = Time.time;
                 GameplayInitialized = true;
             }
             FollowCamera();
@@ -176,6 +180,7 @@ public static class GameController
             CleanupProjectileList();
             Background.Update();
         }
+        // If gamestate is main menu or new game menu or settings menu
         else if(CurrentGameState == GameState.MainMenu || CurrentGameState == GameState.NewGameMenu || CurrentGameState == GameState.SettingsMenu)
         {
             ResetCamera();
@@ -269,6 +274,10 @@ public static class GameController
         ShipID = 0;
         ProjectileID = 0;
         Score = 0;
+        // Get time started
+        TimeStarted = Time.time;
+        // TODO: this is a shitty workaround so player doesn't fire a shot the moment they spawn
+        PlayerInput.MainGunInput = false;
         // Initialize player, follow camera, and backgrounds
         SpawnPlayer(PlayerShipType);
         FollowCamera();

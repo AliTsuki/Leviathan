@@ -4,26 +4,44 @@ using System.Collections.Generic;
 using TMPro;
 
 using UnityEngine;
-
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 // Controls the game UI
 public static class UIController
 {
     // GameObjects
+    // Event system and buttons
+    public static EventSystem eventSystem;
+    public static bool enteredNewState = false;
+    private static GameObject MainMenuButtonDefault;
+    private static GameObject NewGameMenuButtonDefault;
+    private static GameObject SettingsMenuButtonDefault;
+    private static GameObject PauseMenuButtonDefault;
+    private static GameObject GameOverMenuButtonDefault;
+    // Main menu
     private static GameObject MainMenu;
     private static GameObject MainMenuContainer;
     private static TextMeshProUGUI VersionText;
+    // New game menu
     private static GameObject NewGameContainer;
+    // Settings menu
     private static GameObject SettingsMenuContainer;
     private static TextMeshProUGUI SettingsErrorText;
     private static TextMeshProUGUI MainGunCurrentInputText;
     private static TextMeshProUGUI Ability1CurrentInputText;
     private static TextMeshProUGUI Ability2CurrentInputText;
     private static TextMeshProUGUI Ability3CurrentInputText;
+    // Pause menu
+    private static GameObject PauseMenuScreen;
+    // Game over menu
+    private static GameObject GameOverMenuScreen;
+    private static GameObject GameOverText;
+    // UI
     private static GameObject UI;
     private static GameObject UICanvas;
     private static RectTransform rectTransform;
+    // Player UI
     private static GameObject PlayerUI;
     private static Image PlayerHealthForeground;
     private static TextMeshProUGUI PlayerHealthText;
@@ -40,15 +58,16 @@ public static class UIController
     private static Image PlayerAbility3Background;
     private static Image PlayerAbility3Cooldown;
     private static TextMeshProUGUI PlayerAbility3CDText;
+    // NPC UI
     private static GameObject NPCUIPrefab;
     private static GameObject HealthbarUI;
+    // Minimap
     private static GameObject MinimapCoords;
+    // Info label
     private static TextMeshProUGUI InfoLabel;
+    // FX
     private static GameObject ShieldDamageEffect;
     private static GameObject HealthDamageEffect;
-    private static GameObject PauseMenuScreen;
-    private static GameObject GameOverMenuScreen;
-    private static GameObject GameOverText;
 
     // Dictionary of Healthbar UIs
     private static Dictionary<uint, GameObject> HealthbarUIs = new Dictionary<uint, GameObject>();
@@ -59,7 +78,7 @@ public static class UIController
     private static int FPS;
     private static float ShieldDamageEffectStartTime = 0f;
     private static float HealthDamageEffectStartTime = 0f;
-    private static float ShowDamageEffectDuration = 0.25f;
+    private const float ShowDamageEffectDuration = 0.25f;
     private static int Seconds = 0;
     private static int Minutes = 0;
     private static int Hours = 0;
@@ -69,6 +88,12 @@ public static class UIController
     // Initialize
     public static void Initialize()
     {
+        eventSystem = EventSystem.current;
+        MainMenuButtonDefault = GameObject.Find(GameController.MainMenuButtonDefaultName);
+        NewGameMenuButtonDefault = GameObject.Find(GameController.NewGameMenuButtonDefaultName);
+        SettingsMenuButtonDefault = GameObject.Find(GameController.SettingsMenuButtonDefaultName);
+        PauseMenuButtonDefault = GameObject.Find(GameController.PauseMenuButtonDefaultName);
+        GameOverMenuButtonDefault = GameObject.Find(GameController.GameOverMenuButtonDefaultName);
         HealthbarUIs.Clear();
         MainMenu = GameObject.Find(GameController.MainMenuName);
         MainMenuContainer = GameObject.Find(GameController.MainMenuContainerName);
@@ -210,6 +235,12 @@ public static class UIController
                 {
                     ShowMainMenu();
                 }
+                // Default selected button
+                if(enteredNewState == false)
+                {
+                    enteredNewState = true;
+                    GameManager.instance.StartSelectDefaultButtonCoroutine(MainMenuButtonDefault);
+                }
                 // Hide UI if not currently hidden
                 if(UI.activeSelf == true)
                 {
@@ -239,9 +270,21 @@ public static class UIController
                 {
                     Cursor.visible = true;
                 }
+                // Show new game menu if not currently shown
                 if(NewGameContainer.activeSelf == false)
                 {
                     ShowNewGameMenu();
+                }
+                // Default selected button
+                if(enteredNewState == false)
+                {
+                    enteredNewState = true;
+                    GameManager.instance.StartSelectDefaultButtonCoroutine(NewGameMenuButtonDefault);
+                }
+                // Hide main menu container if not currently hidden
+                if(MainMenuContainer.activeSelf == true)
+                {
+                    HideMainMenuContainer();
                 }
                 break;
             }
@@ -256,10 +299,27 @@ public static class UIController
                 {
                     ShowSettingsMenu();
                 }
+                // Default selected button
+                if(enteredNewState == false)
+                {
+                    enteredNewState = true;
+                    GameManager.instance.StartSelectDefaultButtonCoroutine(SettingsMenuButtonDefault);
+                }
+                // Hide main menu container if not currently hidden
+                if(MainMenuContainer.activeSelf == true)
+                {
+                    HideMainMenuContainer();
+                }
                 break;
             }
             case GameController.GameState.Playing:
             {
+                // Default selected button
+                if(enteredNewState == false)
+                {
+                    enteredNewState = true;
+                    eventSystem.SetSelectedGameObject(null);
+                }
                 // Hide main menu if not currently hidden
                 if(MainMenu.activeSelf == true)
                 {
@@ -296,6 +356,12 @@ public static class UIController
                     // Momentarily disable pause button input so pause menu doesn't disappear immediately after showing
                     PlayerInput.PauseButtonInput = false;
                 }
+                // Default selected button
+                if(enteredNewState == false)
+                {
+                    enteredNewState = true;
+                    GameManager.instance.StartSelectDefaultButtonCoroutine(PauseMenuButtonDefault);
+                }
                 // Hide pause menu if not currently hidden
                 if(GameOverMenuScreen.activeSelf == true)
                 {
@@ -325,6 +391,12 @@ public static class UIController
                 if(Cursor.visible == false)
                 {
                     Cursor.visible = true;
+                }
+                // Default selected button
+                if(enteredNewState == false)
+                {
+                    enteredNewState = true;
+                    GameManager.instance.StartSelectDefaultButtonCoroutine(GameOverMenuButtonDefault);
                 }
                 break;
             }
@@ -583,10 +655,15 @@ public static class UIController
         MainMenu.SetActive(false);
     }
 
+    // Hide main menu container
+    public static void HideMainMenuContainer()
+    {
+        MainMenuContainer.SetActive(false);
+    }
+
     // Show new game menu screen
     public static void ShowNewGameMenu()
     {
-        MainMenuContainer.SetActive(false);
         NewGameContainer.SetActive(true);
     }
 
@@ -602,7 +679,6 @@ public static class UIController
     public static void ShowSettingsMenu()
     {
         SettingsErrorText.text = "";
-        MainMenuContainer.SetActive(false);
         SettingsMenuContainer.SetActive(true);
     }
 

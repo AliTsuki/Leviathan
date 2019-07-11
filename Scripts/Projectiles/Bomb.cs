@@ -2,6 +2,7 @@
 
 using UnityEngine;
 
+// Controls bombs, inherits from Projectile
 public class Bomb : Projectile
 {
     // Constructor criteria
@@ -30,6 +31,7 @@ public class Bomb : Projectile
         this.FiredTime = Time.time;
         this.Initialize();
     }
+
 
     // Fixed Update is called a fixed number of times per second, Physics updates should be done in FixedUpdate
     public override void FixedUpdate()

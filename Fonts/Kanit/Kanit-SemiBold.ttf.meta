@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: d3792f56033337640b0b3a2fd38f1110
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Kanit SemiBold
+  fontNames:
+  - Kanit SemiBold
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 0da4ef6e76bfc4b48a820eb03f304bfe, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
