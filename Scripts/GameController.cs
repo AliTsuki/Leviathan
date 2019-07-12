@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version { get; private set; } = "0.0.14f";
+    public static string Version { get; private set; } = "0.0.14g";
 
     // Random number generator
     public static System.Random RandomNumGen { get; private set; } = new System.Random();

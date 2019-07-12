@@ -257,7 +257,7 @@ public static class UIController
                 if(HasInitializedNewState == false)
                 {
                     HasInitializedNewState = true;
-                    GameManager.Instance.StartSelectDefaultButtonCoroutine(MainMenuButtonDefault);
+                    CurrentEventSystem.SetSelectedGameObject(MainMenuButtonDefault);
                 }
                 // Hide UI if not currently hidden
                 if(UI.activeSelf == true)
@@ -297,7 +297,7 @@ public static class UIController
                 if(HasInitializedNewState == false)
                 {
                     HasInitializedNewState = true;
-                    GameManager.Instance.StartSelectDefaultButtonCoroutine(NewGameMenuButtonDefault);
+                    CurrentEventSystem.SetSelectedGameObject(NewGameMenuButtonDefault);
                 }
                 // Hide main menu container if not currently hidden
                 if(MainMenuContainer.activeSelf == true)
@@ -321,7 +321,7 @@ public static class UIController
                 if(HasInitializedNewState == false)
                 {
                     HasInitializedNewState = true;
-                    GameManager.Instance.StartSelectDefaultButtonCoroutine(SettingsMenuButtonDefault);
+                    CurrentEventSystem.SetSelectedGameObject(SettingsMenuButtonDefault);
                 }
                 // Hide main menu container if not currently hidden
                 if(MainMenuContainer.activeSelf == true)
@@ -378,7 +378,7 @@ public static class UIController
                 if(HasInitializedNewState == false)
                 {
                     HasInitializedNewState = true;
-                    GameManager.Instance.StartSelectDefaultButtonCoroutine(PauseMenuButtonDefault);
+                    CurrentEventSystem.SetSelectedGameObject(PauseMenuButtonDefault);
                 }
                 // Hide pause menu if not currently hidden
                 if(GameOverMenuScreen.activeSelf == true)
@@ -414,7 +414,7 @@ public static class UIController
                 if(HasInitializedNewState == false)
                 {
                     HasInitializedNewState = true;
-                    GameManager.Instance.StartSelectDefaultButtonCoroutine(GameOverMenuButtonDefault);
+                    CurrentEventSystem.SetSelectedGameObject(GameOverMenuButtonDefault);
                 }
                 break;
             }
