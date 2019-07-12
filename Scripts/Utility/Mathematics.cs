@@ -9,6 +9,7 @@ public static class Mathematics
     }
 }
 
+// Contains 2 floats
 public class Float2
 {
     public float x { get; set; }
@@ -21,6 +22,12 @@ public class Float2
     }
 
     public Float2(float _x, float _y)
+    {
+        this.x = _x;
+        this.y = _y;
+    }
+
+    public void Set(float _x, float _y)
     {
         this.x = _x;
         this.y = _y;

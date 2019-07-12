@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version { get; private set; } = "0.0.14d";
+    public static string Version { get; private set; } = "0.0.14f";
 
     // Random number generator
     public static System.Random RandomNumGen { get; private set; } = new System.Random();
@@ -203,7 +203,7 @@ public static class GameController
     // Change game state
     public static void ChangeGameState(GameState _newGameState)
     {
-        UIController.SetEnteredNewState(false);
+        UIController.SetHasInitializedNewState(false);
         CurrentGameState = _newGameState;
     }
 

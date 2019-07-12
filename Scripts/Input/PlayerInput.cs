@@ -7,13 +7,13 @@ public static class PlayerInput
 {
     // Inputs
     public static Float2 AimInput { get; private set; } = new Float2();
-    public static float ImpulseEngineInput { get; private set; }
-    public static float WarpEngineInput { get; private set; }
-    public static bool MainGunInput { get; private set; }
-    public static bool Ability1Input { get; private set; }
-    public static bool Ability2Input { get; private set; }
-    public static bool Ability3Input { get; private set; }
-    public static bool PauseButtonInput { get; private set; }
+    public static float ImpulseEngineInput { get; private set; } = 0f;
+    public static float WarpEngineInput { get; private set; } = 0f;
+    public static bool MainGunInput { get; private set; } = false;
+    public static bool Ability1Input { get; private set; } = false;
+    public static bool Ability2Input { get; private set; } = false;
+    public static bool Ability3Input { get; private set; } = false;
+    public static bool PauseButtonInput { get; private set; } = false;
 
     // Input bindings
     public static Dictionary<string, InputBinding> InputBindings { get; private set; } = new Dictionary<string, InputBinding>
@@ -160,19 +160,7 @@ public static class PlayerInput
     // Reads the inputs and stores them
     private static void ProcessInputs()
     {
-        //if()
-        //{
-        //    AimInput.Set(Input.GetAxis("Left Stick Horizontal"), Input.GetAxis("Left Stick Vertical"));
-        //    ImpulseEngineInput = Input.GetButton("Button 7") == true ? 1f : 0f;
-        //    WarpEngineInput = Input.GetButton("Button 6") == true ? 1f : 0f;
-        //    MainGunInput = Input.GetButton("Button 1");
-        //    Ability1Input = Input.GetButton("Button 0");
-        //    Ability2Input = Input.GetButton("Button 3");
-        //    Ability3Input = Input.GetButton("Button 2");
-        //    PauseButtonInput = Input.GetButtonDown("Button 9");
-        //}
-        AimInput.x = Input.GetAxis(InputBindings["Aim Input Horizontal"].InputButton);
-        AimInput.y = Input.GetAxis(InputBindings["Aim Input Vertical"].InputButton);
+        AimInput.Set(Input.GetAxis(InputBindings["Aim Input Horizontal"].InputButton), Input.GetAxis(InputBindings["Aim Input Vertical"].InputButton));
         ImpulseEngineInput = Input.GetAxis(InputBindings["Impulse Engine Input"].InputButton);
         WarpEngineInput = Input.GetAxis(InputBindings["Warp Engine Input"].InputButton);
         MainGunInput = Input.GetButton(InputBindings["Main Gun Input"].InputButton);

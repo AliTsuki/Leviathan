@@ -13,7 +13,7 @@ public static class UIController
     // GameObjects
     // Event system and buttons
     public static EventSystem CurrentEventSystem { get; private set; }
-    private static bool EnteredNewState = false;
+    private static bool HasInitializedNewState = false;
     private static GameObject MainMenuButtonDefault;
     private static GameObject NewGameMenuButtonDefault;
     private static GameObject SettingsMenuButtonDefault;
@@ -236,9 +236,9 @@ public static class UIController
     }
 
     // Set entered new state
-    public static void SetEnteredNewState(bool _enteredNewState)
+    public static void SetHasInitializedNewState(bool _hasInitializedNewState)
     {
-        EnteredNewState = _enteredNewState;
+        HasInitializedNewState = _hasInitializedNewState;
     }
 
     // Setup UI to type
@@ -254,9 +254,9 @@ public static class UIController
                     ShowMainMenu();
                 }
                 // Default selected button
-                if(EnteredNewState == false)
+                if(HasInitializedNewState == false)
                 {
-                    EnteredNewState = true;
+                    HasInitializedNewState = true;
                     GameManager.Instance.StartSelectDefaultButtonCoroutine(MainMenuButtonDefault);
                 }
                 // Hide UI if not currently hidden
@@ -294,9 +294,9 @@ public static class UIController
                     ShowNewGameMenu();
                 }
                 // Default selected button
-                if(EnteredNewState == false)
+                if(HasInitializedNewState == false)
                 {
-                    EnteredNewState = true;
+                    HasInitializedNewState = true;
                     GameManager.Instance.StartSelectDefaultButtonCoroutine(NewGameMenuButtonDefault);
                 }
                 // Hide main menu container if not currently hidden
@@ -318,9 +318,9 @@ public static class UIController
                     ShowSettingsMenu();
                 }
                 // Default selected button
-                if(EnteredNewState == false)
+                if(HasInitializedNewState == false)
                 {
-                    EnteredNewState = true;
+                    HasInitializedNewState = true;
                     GameManager.Instance.StartSelectDefaultButtonCoroutine(SettingsMenuButtonDefault);
                 }
                 // Hide main menu container if not currently hidden
@@ -333,9 +333,9 @@ public static class UIController
             case GameController.GameState.Playing:
             {
                 // Default selected button
-                if(EnteredNewState == false)
+                if(HasInitializedNewState == false)
                 {
-                    EnteredNewState = true;
+                    HasInitializedNewState = true;
                     CurrentEventSystem.SetSelectedGameObject(null);
                 }
                 // Hide main menu if not currently hidden
@@ -375,9 +375,9 @@ public static class UIController
                     PlayerInput.ZeroInputs();
                 }
                 // Default selected button
-                if(EnteredNewState == false)
+                if(HasInitializedNewState == false)
                 {
-                    EnteredNewState = true;
+                    HasInitializedNewState = true;
                     GameManager.Instance.StartSelectDefaultButtonCoroutine(PauseMenuButtonDefault);
                 }
                 // Hide pause menu if not currently hidden
@@ -411,9 +411,9 @@ public static class UIController
                     Cursor.visible = true;
                 }
                 // Default selected button
-                if(EnteredNewState == false)
+                if(HasInitializedNewState == false)
                 {
-                    EnteredNewState = true;
+                    HasInitializedNewState = true;
                     GameManager.Instance.StartSelectDefaultButtonCoroutine(GameOverMenuButtonDefault);
                 }
                 break;
