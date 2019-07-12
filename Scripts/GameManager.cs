@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,29 +7,29 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     // Singleton
-    public static GameManager instance;
+    public static GameManager Instance { get; private set; }
 
     // Start is called before the first frame update
-    public void Start()
+    private void Start()
     {
-        instance = this;
+        Instance = this;
         GameController.Initialize();
     }
 
     // Update is called once per frame
-    public void Update()
+    private void Update()
     {
         GameController.Update();
     }
 
     // Fixed Update is called a fixed number of times per second, Physics updates should be done in FixedUpdate
-    public void FixedUpdate()
+    private void FixedUpdate()
     {
         GameController.FixedUpdate();
     }
 
     // On application quit
-    public void OnApplicationQuit()
+    private void OnApplicationQuit()
     {
         GameController.OnApplicationQuit();
     }
@@ -43,10 +43,10 @@ public class GameManager : MonoBehaviour
     // Select default button after frame update
     private static IEnumerator SelectDefaultButton(GameObject _button)
     {
-        UIController.eventSystem.currentSelectedGameObject.GetComponent<Button>().OnDeselect(null);
-        UIController.eventSystem.SetSelectedGameObject(null);
+        UIController.CurrentEventSystem.currentSelectedGameObject.GetComponent<Button>().OnDeselect(null);
+        UIController.CurrentEventSystem.SetSelectedGameObject(null);
         yield return new WaitForEndOfFrame();
         _button.GetComponent<Button>().Select();
-        UIController.eventSystem.SetSelectedGameObject(_button);
+        UIController.CurrentEventSystem.SetSelectedGameObject(_button);
     }
 }

@@ -3,52 +3,56 @@
 using UnityEngine;
 
 // Contains all ship abilities
-public static class Abilities
+public abstract partial class Ship
 {
     // Check Shield Overcharge
-    public static void CheckShieldOvercharge(Ship _ship, byte _abilityID, GameObject _shieldOverchargeObject, float _shieldRegenSpeedMultiplier, float _shieldCooldownMultiplier)
+    public void CheckShieldOvercharge(byte _abilityID, GameObject _shieldOverchargeObject, float _shieldRegenSpeedMultiplier, 
+        float _shieldCooldownMultiplier)
     {
         // If ability input activated and ability is not currently on cooldown and ability is not currently active
-        if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _ship.AbilityActive[_abilityID] == false)
+        if(this.AbilityInput[_abilityID] == true && this.AbilityOnCooldown[_abilityID] == false && this.AbilityActive[_abilityID] == false)
         {
             // Activate shield overcharge gameobject
             _shieldOverchargeObject.SetActive(true);
             // Multiply shield regen speed and cooldown time by multipliers
-            _ship.ShieldRegenSpeed *= _shieldRegenSpeedMultiplier;
-            _ship.ShieldCooldownTime *= _shieldCooldownMultiplier;
+            this.Stats.ShieldRegenSpeed *= _shieldRegenSpeedMultiplier;
+            this.Stats.ShieldCooldownTime *= _shieldCooldownMultiplier;
             // Set ability active
-            _ship.AbilityActive[_abilityID] = true;
+            this.AbilityActive[_abilityID] = true;
             // Record ability activated time
-            _ship.LastAbilityActivatedTime[_abilityID] = Time.time;
+            this.LastAbilityActivatedTime[_abilityID] = Time.time;
         }
         // If difference between current time and ability last activated time is greater than ability duration
-        else if(_ship.AbilityActive[_abilityID] == true && Time.time - _ship.LastAbilityActivatedTime[_abilityID] > _ship.AbilityDuration[_abilityID])
+        else if(this.AbilityActive[_abilityID] == true && Time.time - this.LastAbilityActivatedTime[_abilityID] > this.Stats.AbilityDuration[_abilityID])
         {
             // Deactivate shield overcharge gameobject
             _shieldOverchargeObject.SetActive(false);
             // Set shield regen speed and cooldown back to defaults
-            _ship.ShieldRegenSpeed = _ship.DefaultShieldRegenSpeed;
-            _ship.ShieldCooldownTime = _ship.DefaultShieldCooldownTime;
+            this.Stats.ShieldRegenSpeed = this.DefaultShieldRegenSpeed;
+            this.Stats.ShieldCooldownTime = this.DefaultShieldCooldownTime;
             // Set ability to inactive
-            _ship.AbilityActive[_abilityID] = false;
+            this.AbilityActive[_abilityID] = false;
             // Set ability to on cooldown
-            _ship.AbilityOnCooldown[_abilityID] = true;
+            this.AbilityOnCooldown[_abilityID] = true;
             // Record cooldown started time
-            _ship.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
+            this.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
         }
         // If difference between current time and ability started cooldown time is greater than ability cooldown time
-        else if(_ship.AbilityOnCooldown[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _ship.AbilityCooldownTime[_abilityID])
+        else if(this.AbilityOnCooldown[_abilityID] == true && Time.time - this.LastAbilityCooldownStartedTime[_abilityID] > this.Stats.AbilityCooldownTime[_abilityID])
         {
             // Take ability off cooldown
-            _ship.AbilityOnCooldown[_abilityID] = false;
+            this.AbilityOnCooldown[_abilityID] = false;
         }
     }
 
     // Check Drone
-    public static void CheckDrones(Ship _ship, byte _abilityID, List<DroneShip> _drones, uint _droneAmount, uint _maxDroneAmount, DroneShip.DroneShipType _droneType, float _droneMaxHealth, float _droneMaxShields, float _droneMaxSpeed, uint _droneGunShotProjectileType, float _droneGunCooldownTime, uint _droneGunShotAmount, float _droneGunShotDamage, float _droneGunShotAccuracy, float _droneGunShotSpeed, float _droneGunShotLifetime, float _droneTargetAcquisitionDistance, float _droneStrafeDistance, float _droneLeashDistance)
+    public void CheckDrones(byte _abilityID, List<DroneShip> _drones, uint _droneAmount, uint _maxDroneAmount, DroneShip.DroneShipType _droneType, 
+        float _droneMaxHealth, float _droneMaxShields, float _droneMaxSpeed, uint _droneGunShotProjectileType, float _droneGunCooldownTime, uint _droneGunShotAmount, 
+        float _droneGunShotDamage, float _droneGunShotAccuracy, float _droneGunShotSpeed, float _droneGunShotLifetime, float _droneTargetAcquisitionDistance, 
+        float _droneStrafeDistance, float _droneLeashDistance)
     {
         // If ability input activated and ability is not currently on cooldown and ability is not currently active and drones are less than max amount
-        if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _ship.AbilityActive[_abilityID] == false)
+        if(this.AbilityInput[_abilityID] == true && this.AbilityOnCooldown[_abilityID] == false && this.AbilityActive[_abilityID] == false)
         {
             // Loop through drone summon amount
             for(int i = 0; i < _droneAmount; i++)
@@ -57,9 +61,12 @@ public static class Abilities
                 if(_drones.Count < _maxDroneAmount)
                 {
                     // Get a new drone spawn position
-                    Vector3 DroneSpawnPosition = new Vector3(_ship.ShipObject.transform.position.x + GameController.r.Next(-5, 6), 0, _ship.ShipObject.transform.position.z + GameController.r.Next(-5, 6));
+                    Vector3 DroneSpawnPosition = new Vector3(this.ShipObject.transform.position.x + GameController.RandomNumGen.Next(-5, 6), 0, 
+                        this.ShipObject.transform.position.z + GameController.RandomNumGen.Next(-5, 6));
                     // Create a new drone at position
-                    DroneShip drone = GameController.SpawnDrone(_ship, _drones, _droneType, DroneSpawnPosition, _droneMaxHealth, _droneMaxShields, _droneMaxSpeed, _droneGunShotProjectileType, _droneGunCooldownTime, _droneGunShotAmount, _droneGunShotDamage, _droneGunShotAccuracy, _droneGunShotSpeed, _droneGunShotLifetime, _droneTargetAcquisitionDistance, _droneStrafeDistance, _droneLeashDistance);
+                    DroneShip drone = GameController.SpawnDrone(this, _drones, _droneType, DroneSpawnPosition, _droneMaxHealth, _droneMaxShields, 
+                        _droneMaxSpeed, _droneGunShotProjectileType, _droneGunCooldownTime, _droneGunShotAmount, _droneGunShotDamage, _droneGunShotAccuracy, 
+                        _droneGunShotSpeed, _droneGunShotLifetime, _droneTargetAcquisitionDistance, _droneStrafeDistance, _droneLeashDistance);
                     // Add drone to list
                     _drones.Add(drone);
                 }
@@ -69,47 +76,50 @@ public static class Abilities
                     // Detonate oldest drone
                     _drones[_abilityID].Detonate();
                     // Get a new drone spawn position
-                    Vector3 DroneSpawnPosition = new Vector3(_ship.ShipObject.transform.position.x + GameController.r.Next(-5, 6), 0, _ship.ShipObject.transform.position.z + GameController.r.Next(-5, 6));
+                    Vector3 DroneSpawnPosition = new Vector3(this.ShipObject.transform.position.x + GameController.RandomNumGen.Next(-5, 6), 0, 
+                        this.ShipObject.transform.position.z + GameController.RandomNumGen.Next(-5, 6));
                     // Create a new drone at position
-                    DroneShip drone = GameController.SpawnDrone(_ship, _drones, _droneType, DroneSpawnPosition, _droneMaxHealth, _droneMaxShields, _droneMaxSpeed, _droneGunShotProjectileType, _droneGunCooldownTime, _droneGunShotAmount, _droneGunShotDamage, _droneGunShotAccuracy, _droneGunShotSpeed, _droneGunShotLifetime, _droneTargetAcquisitionDistance, _droneStrafeDistance, _droneLeashDistance);
+                    DroneShip drone = GameController.SpawnDrone(this, _drones, _droneType, DroneSpawnPosition, _droneMaxHealth, _droneMaxShields, 
+                        _droneMaxSpeed, _droneGunShotProjectileType, _droneGunCooldownTime, _droneGunShotAmount, _droneGunShotDamage, _droneGunShotAccuracy, 
+                        _droneGunShotSpeed, _droneGunShotLifetime, _droneTargetAcquisitionDistance, _droneStrafeDistance, _droneLeashDistance);
                     // Add drone to list
                     _drones.Add(drone);
                 }
             }
             // Set ability to active
-            _ship.AbilityActive[_abilityID] = true;
+            this.AbilityActive[_abilityID] = true;
             // Record ability activated time
-            _ship.LastAbilityActivatedTime[_abilityID] = Time.time;
+            this.LastAbilityActivatedTime[_abilityID] = Time.time;
         }
         // If difference between current time and ability last activated time is greater than ability duration
-        else if(_ship.AbilityActive[_abilityID] == true && Time.time - _ship.LastAbilityActivatedTime[_abilityID] > _ship.AbilityDuration[_abilityID])
+        else if(this.AbilityActive[_abilityID] == true && Time.time - this.LastAbilityActivatedTime[_abilityID] > this.Stats.AbilityDuration[_abilityID])
         {
             // Set ability to inactive
-            _ship.AbilityActive[_abilityID] = false;
+            this.AbilityActive[_abilityID] = false;
             // Set ability on cooldown
-            _ship.AbilityOnCooldown[_abilityID] = true;
+            this.AbilityOnCooldown[_abilityID] = true;
             // Record cooldown started time
-            _ship.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
+            this.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
         }
         // If difference between current time and ability started cooldown time is greater than ability cooldown time
-        else if(_ship.AbilityOnCooldown[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _ship.AbilityCooldownTime[_abilityID])
+        else if(this.AbilityOnCooldown[_abilityID] == true && Time.time - this.LastAbilityCooldownStartedTime[_abilityID] > this.Stats.AbilityCooldownTime[_abilityID])
         {
             // Take ability off cooldown
-            _ship.AbilityOnCooldown[_abilityID] = false;
+            this.AbilityOnCooldown[_abilityID] = false;
         }
     }
 
     // Check EMP
-    public static void CheckEMP(Ship _ship, byte _abilityID, GameObject _EMPObject, float _EMPRadius, float _EMPDuration, float _EMPEnergyCost)
+    public void CheckEMP(byte _abilityID, GameObject _EMPObject, float _EMPRadius, float _EMPDuration, float _EMPEnergyCost)
     {
         // If ability input activated and ability is not currently on cooldown and ability is not currently active
-        if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _ship.AbilityActive[_abilityID] == false)
+        if(this.AbilityInput[_abilityID] == true && this.AbilityOnCooldown[_abilityID] == false && this.AbilityActive[_abilityID] == false)
         {
             // Loop through all ships
             foreach(KeyValuePair<uint, Ship> ship in GameController.Ships)
             {
                 // If ship is enemy and distance to ship is less than or equal to EMP radius
-                if(ship.Value.IFF != _ship.IFF && Vector3.Distance(_ship.ShipObject.transform.position, ship.Value.ShipObject.transform.position) <= _EMPRadius)
+                if(ship.Value.IFF != this.IFF && Vector3.Distance(this.ShipObject.transform.position, ship.Value.ShipObject.transform.position) <= _EMPRadius)
                 {
                     // Set ship to is EMPed
                     ship.Value.IsEMPed = true;
@@ -118,120 +128,122 @@ public static class Abilities
                 }
             }
             // Subtract energy cost of EMP
-            _ship.SubtractEnergy(_EMPEnergyCost);
+            this.SubtractEnergy(_EMPEnergyCost);
             // Activate EMP gameobject
             _EMPObject.SetActive(true);
             // Set ability active
-            _ship.AbilityActive[2] = true;
+            this.AbilityActive[2] = true;
             // Record ability activated time
-            _ship.LastAbilityActivatedTime[_abilityID] = Time.time;
+            this.LastAbilityActivatedTime[_abilityID] = Time.time;
         }
         // If difference between current time and ability last activated time is greater than ability duration
-        else if(_ship.AbilityActive[_abilityID] == true && Time.time - _ship.LastAbilityActivatedTime[_abilityID] > _ship.AbilityDuration[_abilityID])
+        else if(this.AbilityActive[_abilityID] == true && Time.time - this.LastAbilityActivatedTime[_abilityID] > this.Stats.AbilityDuration[_abilityID])
         {
             // Set EMP object inactive
             _EMPObject.SetActive(false);
             // Set ability inactive
-            _ship.AbilityActive[_abilityID] = false;
+            this.AbilityActive[_abilityID] = false;
             // Set ability on cooldown
-            _ship.AbilityOnCooldown[_abilityID] = true;
+            this.AbilityOnCooldown[_abilityID] = true;
             // Record cooldown started time
-            _ship.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
+            this.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
         }
         // If difference between current time and ability started cooldown time is greater than ability cooldown time
-        else if(_ship.AbilityOnCooldown[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _ship.AbilityCooldownTime[_abilityID])
+        else if(this.AbilityOnCooldown[_abilityID] == true && Time.time - this.LastAbilityCooldownStartedTime[_abilityID] > this.Stats.AbilityCooldownTime[_abilityID])
         {
             // Take ability off cooldown
-            _ship.AbilityOnCooldown[_abilityID] = false;
+            this.AbilityOnCooldown[_abilityID] = false;
         }
     }
 
     // Check barrier
-    public static void CheckBarrier(Ship _ship, byte _abilityID, GameObject _barrierObject)
+    public void CheckBarrier(byte _abilityID, GameObject _barrierObject)
     {
         // If ability input activated and ability is not currently on cooldown and ability is not currently active
-        if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _ship.AbilityActive[_abilityID] == false)
+        if(this.AbilityInput[_abilityID] == true && this.AbilityOnCooldown[_abilityID] == false && this.AbilityActive[_abilityID] == false)
         {
             // Activate barrier object, set barrier active to true, and record time barrier was activated
             _barrierObject.SetActive(true);
-            _ship.AbilityActive[_abilityID] = true;
-            _ship.LastAbilityActivatedTime[_abilityID] = Time.time;
+            this.AbilityActive[_abilityID] = true;
+            this.LastAbilityActivatedTime[_abilityID] = Time.time;
         }
         // If difference between current time and shield last activated time is greater than barrier duration
-        else if(_ship.AbilityActive[_abilityID] == true && Time.time - _ship.LastAbilityActivatedTime[_abilityID] > _ship.AbilityDuration[_abilityID])
+        else if(this.AbilityActive[_abilityID] == true && Time.time - this.LastAbilityActivatedTime[_abilityID] > this.Stats.AbilityDuration[_abilityID])
         {
             // Disable barrier object, set barrier to not active, set barrier to on cooldown, and record time cooldown started
             _barrierObject.SetActive(false);
-            _ship.AbilityActive[_abilityID] = false;
-            _ship.AbilityOnCooldown[_abilityID] = true;
-            _ship.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
+            this.AbilityActive[_abilityID] = false;
+            this.AbilityOnCooldown[_abilityID] = true;
+            this.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
         }
         // If difference between current time and barrier started cooldown time is greater than barrier cooldown time
-        else if(_ship.AbilityOnCooldown[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _ship.AbilityCooldownTime[_abilityID])
+        else if(this.AbilityOnCooldown[_abilityID] == true && Time.time - this.LastAbilityCooldownStartedTime[_abilityID] > this.Stats.AbilityCooldownTime[_abilityID])
         {
             // Take barrier off cooldown
-            _ship.AbilityOnCooldown[_abilityID] = false;
+            this.AbilityOnCooldown[_abilityID] = false;
         }
     }
 
     // Check barrage
-    public static void CheckBarrage(Ship _ship, byte _abilityID, float _barrageGunCooldownTimeMultiplier, uint _barrageShotAmountIncrease, float _barrageDamageMultiplier, float _barrageAccuracyMultiplier, float _barrageEnergyCostMultiplier)
+    public void CheckBarrage(byte _abilityID, float _barrageGunCooldownTimeMultiplier, uint _barrageShotAmountIncrease, float _barrageDamageMultiplier,
+        float _barrageAccuracyMultiplier, float _barrageEnergyCostMultiplier)
     {
         // If barrage input is active, barrage is not on cooldown, and barrage is not currently active
-        if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _ship.AbilityActive[_abilityID] == false)
+        if(this.AbilityInput[_abilityID] == true && this.AbilityOnCooldown[_abilityID] == false && this.AbilityActive[_abilityID] == false)
         {
             // Set barrage to active
-            _ship.AbilityActive[_abilityID] = true;
+            this.AbilityActive[_abilityID] = true;
             // Record last barrage activated time
-            _ship.LastAbilityActivatedTime[_abilityID] = Time.time;
+            this.LastAbilityActivatedTime[_abilityID] = Time.time;
             // Apply barrage multipliers
-            _ship.GunCooldownTime *= _barrageGunCooldownTimeMultiplier;
-            _ship.GunShotAmount += _barrageShotAmountIncrease;
-            _ship.GunShotDamage *= _barrageDamageMultiplier;
-            _ship.GunShotAccuracy *= _barrageAccuracyMultiplier;
-            _ship.GunEnergyCost *= _barrageEnergyCostMultiplier;
+            this.Stats.GunCooldownTime *= _barrageGunCooldownTimeMultiplier;
+            this.Stats.GunShotAmount += _barrageShotAmountIncrease;
+            this.Stats.GunShotDamage *= _barrageDamageMultiplier;
+            this.Stats.GunShotAccuracy *= _barrageAccuracyMultiplier;
+            this.Stats.GunEnergyCost *= _barrageEnergyCostMultiplier;
         }
         // If barrage is currently active and last barrage activated time is greater than barrage duration
-        else if(_ship.AbilityActive[_abilityID] == true && Time.time - _ship.LastAbilityActivatedTime[_abilityID] > _ship.AbilityDuration[_abilityID])
+        else if(this.AbilityActive[_abilityID] == true && Time.time - this.LastAbilityActivatedTime[_abilityID] > this.Stats.AbilityDuration[_abilityID])
         {
             // Set barrage to inactive
-            _ship.AbilityActive[_abilityID] = false;
+            this.AbilityActive[_abilityID] = false;
             // Set barrage on cooldown
-            _ship.AbilityOnCooldown[_abilityID] = true;
+            this.AbilityOnCooldown[_abilityID] = true;
             // Record barrage cooldown started time
-            _ship.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
+            this.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
             // Remove barrage multipliers
-            _ship.GunCooldownTime = _ship.DefaultGunCooldownTime;
-            _ship.GunShotAmount = _ship.DefaultGunShotAmount;
-            _ship.GunShotDamage = _ship.DefaultGunShotDamage;
-            _ship.GunShotAccuracy = _ship.DefaultGunShotAccuracy;
-            _ship.GunEnergyCost = _ship.DefaultGunEnergyCost;
+            this.Stats.GunCooldownTime = this.DefaultGunCooldownTime;
+            this.Stats.GunShotAmount = this.DefaultGunShotAmount;
+            this.Stats.GunShotDamage = this.DefaultGunShotDamage;
+            this.Stats.GunShotAccuracy = this.DefaultGunShotAccuracy;
+            this.Stats.GunEnergyCost = this.DefaultGunEnergyCost;
         }
         // If barrage is on cooldown and last barrage cooldown started time is greater than barrage cooldown time
-        else if(_ship.AbilityOnCooldown[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _ship.AbilityCooldownTime[_abilityID])
+        else if(this.AbilityOnCooldown[_abilityID] == true && Time.time - this.LastAbilityCooldownStartedTime[_abilityID] > this.Stats.AbilityCooldownTime[_abilityID])
         {
             // Take barrage off cooldown
-            _ship.AbilityOnCooldown[_abilityID] = false;
+            this.AbilityOnCooldown[_abilityID] = false;
         }
     }
 
     // Check bomb
-    public static Bomb CheckBomb(Ship _ship, byte _abilityID, Bomb _bomb, float _bombDamage, float _bombRadius, float _bombPrimerTime, float _bombSpeed, float _bombLifetime)
+    public Bomb CheckBomb(byte _abilityID, Bomb _bomb, float _bombDamage, float _bombRadius, float _bombPrimerTime, float _bombSpeed, float _bombLifetime)
     {
         Bomb bomb = _bomb;
         // If bomb input is active, bomb is not on cooldown, and there is no bomb in flight
-        if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _bomb == null)
+        if(this.AbilityInput[_abilityID] == true && this.AbilityOnCooldown[_abilityID] == false && _bomb == null)
         {
             // TODO: Now that a ship can have more than one main gun, need to think of something better than just having bomb use the 0th gun barrel location/rotation. IDEA: make a game object child of ship to use as bomb firing location
             // Spawn a bomb
-            bomb = GameController.SpawnBomb(_ship, _ship.IFF, _bombDamage, _bombRadius, _ship.GunBarrelObjects[0].transform.position, _ship.GunBarrelObjects[0].transform.rotation, _ship.ShipRigidbody.velocity, _bombSpeed, _bombLifetime);
+            bomb = GameController.SpawnBomb(this, this.IFF, _bombDamage, _bombRadius, this.GunBarrelObjects[0].transform.position, 
+                this.GunBarrelObjects[0].transform.rotation, this.ShipRigidbody.velocity, _bombSpeed, _bombLifetime);
             // Set bomb on cooldown
-            _ship.AbilityOnCooldown[_abilityID] = true;
+            this.AbilityOnCooldown[_abilityID] = true;
             // Record bomb activated time
-            _ship.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
+            this.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
         }
         // If bomb is in flight, bomb input is pressed, and time since bomb was activated is more than the bomb primer time
-        else if(_bomb != null && _ship.AbilityInput[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _bombPrimerTime)
+        else if(_bomb != null && this.AbilityInput[_abilityID] == true && Time.time - this.LastAbilityCooldownStartedTime[_abilityID] > _bombPrimerTime)
         {
             // Detonate bomb
             _bomb.Detonate();
@@ -242,19 +254,19 @@ public static class Abilities
             bomb = null;
         }
         // If bomb is on cooldown and time since bomb was last activated is greater than bomb cooldown time
-        else if(_ship.AbilityOnCooldown[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _ship.AbilityCooldownTime[_abilityID])
+        else if(this.AbilityOnCooldown[_abilityID] == true && Time.time - this.LastAbilityCooldownStartedTime[_abilityID] > this.Stats.AbilityCooldownTime[_abilityID])
         {
             // Take bomb off cooldown
-            _ship.AbilityOnCooldown[_abilityID] = false;
+            this.AbilityOnCooldown[_abilityID] = false;
         }
         return bomb;
     }
 
     // Self destruct ship
-    public static void Detonate(Ship _ship, GameObject _bombExplosionPrefab, Vector3 _scale, float _bombDamage, float _bombRadius)
+    public void Detonate(GameObject _bombExplosionPrefab, Vector3 _scale, float _bombDamage, float _bombRadius)
     {
         // Spawn explosion object
-        GameObject BombExplosionObject = GameObject.Instantiate(_bombExplosionPrefab, _ship.ShipObject.transform.position, Quaternion.identity);
+        GameObject BombExplosionObject = GameObject.Instantiate(_bombExplosionPrefab, this.ShipObject.transform.position, Quaternion.identity);
         BombExplosionObject.transform.localScale = _scale;
         // Set explosion object to self destroy after 1 second
         GameObject.Destroy(BombExplosionObject, 1);
@@ -262,10 +274,10 @@ public static class Abilities
         foreach(KeyValuePair<uint, Ship> ship in GameController.Ships)
         {
             // If ship is other faction and currently alive
-            if(ship.Value.IFF != _ship.IFF && ship.Value.Alive == true)
+            if(ship.Value.IFF != this.IFF && ship.Value.Alive == true)
             {
                 // Get distance from ship
-                float distance = Vector3.Distance(_ship.ShipObject.transform.position, ship.Value.ShipObject.transform.position);
+                float distance = Vector3.Distance(this.ShipObject.transform.position, ship.Value.ShipObject.transform.position);
                 // If distance is less than radius
                 if(distance <= _bombRadius)
                 {
@@ -275,38 +287,38 @@ public static class Abilities
             }
         }
         // Ship dies in attack
-        _ship.Kill();
+        this.Kill();
     }
 
     // Check Flank Teleport
-    public static void CheckFlankTeleport(Ship _ship, byte _abilityID, GameObject _flankTeleportPrefab, float _flankTeleportRange)
+    public void CheckFlankTeleport(byte _abilityID, GameObject _flankTeleportPrefab, float _flankTeleportRange)
     {
         // If ability input activated and ability is not currently on cooldown and ability is not currently active
-        if(_ship.AbilityInput[_abilityID] == true && _ship.AbilityOnCooldown[_abilityID] == false && _ship.AbilityActive[_abilityID] == false && _ship.CurrentTarget != null)
+        if(this.AbilityInput[_abilityID] == true && this.AbilityOnCooldown[_abilityID] == false && this.AbilityActive[_abilityID] == false && this.CurrentTarget != null)
         {
             _flankTeleportPrefab.SetActive(true);
-            _ship.ShipObject.transform.position = _ship.CurrentTarget.ShipObject.transform.position + (_ship.CurrentTarget.ShipObject.transform.forward * -_flankTeleportRange);
+            this.ShipObject.transform.position = this.CurrentTarget.ShipObject.transform.position + (this.CurrentTarget.ShipObject.transform.forward * -_flankTeleportRange);
             // Set ability active
-            _ship.AbilityActive[_abilityID] = true;
+            this.AbilityActive[_abilityID] = true;
             // Record ability activated time
-            _ship.LastAbilityActivatedTime[_abilityID] = Time.time;
+            this.LastAbilityActivatedTime[_abilityID] = Time.time;
         }
         // If difference between current time and ability last activated time is greater than ability duration
-        else if(_ship.AbilityActive[_abilityID] == true && Time.time - _ship.LastAbilityActivatedTime[_abilityID] > _ship.AbilityDuration[_abilityID])
+        else if(this.AbilityActive[_abilityID] == true && Time.time - this.LastAbilityActivatedTime[_abilityID] > this.Stats.AbilityDuration[_abilityID])
         {
             _flankTeleportPrefab.SetActive(false);
             // Set ability to inactive
-            _ship.AbilityActive[_abilityID] = false;
+            this.AbilityActive[_abilityID] = false;
             // Set ability to on cooldown
-            _ship.AbilityOnCooldown[_abilityID] = true;
+            this.AbilityOnCooldown[_abilityID] = true;
             // Record cooldown started time
-            _ship.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
+            this.LastAbilityCooldownStartedTime[_abilityID] = Time.time;
         }
         // If difference between current time and ability started cooldown time is greater than ability cooldown time
-        else if(_ship.AbilityOnCooldown[_abilityID] == true && Time.time - _ship.LastAbilityCooldownStartedTime[_abilityID] > _ship.AbilityCooldownTime[_abilityID])
+        else if(this.AbilityOnCooldown[_abilityID] == true && Time.time - this.LastAbilityCooldownStartedTime[_abilityID] > this.Stats.AbilityCooldownTime[_abilityID])
         {
             // Take ability off cooldown
-            _ship.AbilityOnCooldown[_abilityID] = false;
+            this.AbilityOnCooldown[_abilityID] = false;
         }
     }
 }

@@ -3,27 +3,24 @@
 public class PSBomber : PlayerShip
 {
     // Player-only GameObjects
-    private GameObject BarrierObject;
+    private readonly GameObject BarrierObject;
     private Bomb bomb;
-
-    // On cooldown bools
-    public bool BombInFlight = false;
 
     // Ship stats
     // ----Ability 1: Barrier
-    public float BarrierEnergyDrainCost; // Energy cost deducted when ship takes damage while barrier is active
+    private float BarrierEnergyDrainCost; // Energy cost deducted when ship takes damage while barrier is active
     // ----Ability 2: Barrage
-    public float BarrageGunCooldownTimeMultiplier; // Main gun cooldown is multiplied by this value during barrage, 0.5f means gun shoots twice as fast
-    public uint BarrageShotAmountIncrease; // Number of shots to add per gun barrel fired while barrage is active
-    public float BarrageDamageMultiplier; // Shot damage is multiplied by this value
-    public float BarrageAccuracyMultiplier; // Shot accuracy is multiplied by this value
-    public float BarrageEnergyCostMultiplier; // Shot energy cost is multiplied by this value
+    private float BarrageGunCooldownTimeMultiplier; // Main gun cooldown is multiplied by this value during barrage, 0.5f means gun shoots twice as fast
+    private uint BarrageShotAmountIncrease; // Number of shots to add per gun barrel fired while barrage is active
+    private float BarrageDamageMultiplier; // Shot damage is multiplied by this value
+    private float BarrageAccuracyMultiplier; // Shot accuracy is multiplied by this value
+    private float BarrageEnergyCostMultiplier; // Shot energy cost is multiplied by this value
     // ----Ability 3: Bombs
-    public float BombDamage; // Maximum damage bomb explosion will do to targets in its direct center, damage is calculated as linear falloff percentage of target distance to center of bomb explosion
-    public float BombRadius; // Radius in which bomb will deal damage to ships
-    public float BombSpeed; // Maximum velocity of fired bombs
-    public float BombLifetime; // Number of seconds bomb will fly before it self destructs
-    public float BombPrimerTime; // Number of seconds the bomb must fly before it can be detonated
+    private float BombDamage; // Maximum damage bomb explosion will do to targets in its direct center, damage is calculated as linear falloff percentage of target distance to center of bomb explosion
+    private float BombRadius; // Radius in which bomb will deal damage to ships
+    private float BombSpeed; // Maximum velocity of fired bombs
+    private float BombLifetime; // Number of seconds bomb will fly before it self destructs
+    private float BombPrimerTime; // Number of seconds the bomb must fly before it can be detonated
 
     // Player ship constructor
     public PSBomber(uint _id)
@@ -36,43 +33,49 @@ public class PSBomber : PlayerShip
         this.IFF = GameController.IFF.Friend;
         this.IsPlayer = true;
         // Ship stats
-        // --Health/Armor/Shields
-        this.Health = 200f;
-        this.MaxHealth = 200f;
-        this.Armor = 75f;
-        this.Shields = 100f;
-        this.MaxShields = 100f;
-        this.ShieldRegenSpeed = 1f;
-        this.ShieldCooldownTime = 3f;
-        // --Current/Max energy
-        this.Energy = 100f;
-        this.MaxEnergy = 100f;
-        this.EnergyRegenSpeed = 1.5f;
-        // --Energy costs
-        this.WarpEnergyCost = 3f;
-        this.GunEnergyCost = 17f;
-        // --Acceleration
-        this.EngineCount = 1;
-        this.ImpulseAcceleration = 100f;
-        this.WarpAccelerationMultiplier = 3f;
-        this.StrafeAcceleration = 0f;
-        // --Max Speed
-        this.MaxImpulseSpeed = 50f;
-        this.MaxWarpSpeed = 150f;
-        this.MaxStrafeSpeed = 0f;
-        this.MaxRotationSpeed = 0.1f;
-        // --Weapon stats
-        // ----Main gun
-        this.GunBarrelCount = 1;
-        this.GunShotProjectileType = 5;
-        this.GunCooldownTime = 0.25f;
-        this.GunShotAmount = 1;
-        this.GunShotCurvature = 0.05f;
-        this.GunShotSightCone = 0.8f;
-        this.GunShotDamage = 20f;
-        this.GunShotAccuracy = 99f;
-        this.GunShotSpeed = 100f;
-        this.GunShotLifetime = 2f;
+        this.Stats = new ShipStats
+        {
+            // --Health/Armor/Shields
+            Health = 200f,
+            MaxHealth = 200f,
+            Armor = 75f,
+            Shields = 100f,
+            MaxShields = 100f,
+            ShieldRegenSpeed = 1f,
+            ShieldCooldownTime = 3f,
+            // --Current/Max energy
+            Energy = 100f,
+            MaxEnergy = 100f,
+            EnergyRegenSpeed = 1.5f,
+            // --Energy costs
+            WarpEnergyCost = 3f,
+            GunEnergyCost = 17f,
+            // --Acceleration
+            EngineCount = 1,
+            ImpulseAcceleration = 100f,
+            WarpAccelerationMultiplier = 3f,
+            StrafeAcceleration = 0f,
+            // --Max Speed
+            MaxImpulseSpeed = 50f,
+            MaxWarpSpeed = 150f,
+            MaxStrafeSpeed = 0f,
+            MaxRotationSpeed = 0.1f,
+            // --Weapon stats
+            // ----Main gun
+            GunBarrelCount = 1,
+            GunShotProjectileType = 5,
+            GunCooldownTime = 0.25f,
+            GunShotAmount = 1,
+            GunShotCurvature = 0.05f,
+            GunShotSightCone = 0.8f,
+            GunShotDamage = 20f,
+            GunShotAccuracy = 99f,
+            GunShotSpeed = 100f,
+            GunShotLifetime = 2f,
+            // ---- Ability Cooldowns
+            AbilityDuration = new float[3]{ 4f, 4f, 0f },
+            AbilityCooldownTime = new float[3] { 12f, 14f, 12f },
+        };
         // -- Abilities
         // ----Ability 1: Barrier
         this.BarrierEnergyDrainCost = 20f;
@@ -88,56 +91,45 @@ public class PSBomber : PlayerShip
         this.BombSpeed = 40f;
         this.BombLifetime = 3f;
         this.BombPrimerTime = 0.25f;
-        // ---- Ability Cooldowns
-        this.AbilityDuration[0] = 2.5f;
-        this.AbilityCooldownTime[0] = 12f;
-        this.AbilityDuration[1] = 4f;
-        this.AbilityCooldownTime[1] = 14f;
-        this.AbilityDuration[2] = 0f;
-        this.AbilityCooldownTime[2] = 12f;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.PlayerPrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
         // Ship type specific objects
         this.BarrierObject = this.ShipObject.transform.Find(GameController.BarrierObjectName).gameObject;
         this.BarrierObject.SetActive(false);
-        // Audio levels
-        this.ImpulseEngineAudioStep = 0.05f;
-        this.ImpulseEngineAudioMinVol = 0.25f;
-        this.ImpulseEngineAudioMaxVol = 1f;
         // Set up Default Cooldowns
-        this.DefaultGunCooldownTime = this.GunCooldownTime;
-        this.DefaultGunShotAmount = this.GunShotAmount;
-        this.DefaultGunShotDamage = this.GunShotDamage;
-        this.DefaultGunShotAccuracy = this.GunShotAccuracy;
-        this.DefaultGunEnergyCost = this.GunEnergyCost;
+        this.DefaultGunCooldownTime = this.Stats.GunCooldownTime;
+        this.DefaultGunShotAmount = this.Stats.GunShotAmount;
+        this.DefaultGunShotDamage = this.Stats.GunShotDamage;
+        this.DefaultGunShotAccuracy = this.Stats.GunShotAccuracy;
+        this.DefaultGunEnergyCost = this.Stats.GunEnergyCost;
         this.Initialize();
     }
 
 
     // Check ability 1
-    public override void CheckAbility1()
+    protected override void CheckAbility1()
     {
-        Abilities.CheckBarrier(this, 0, this.BarrierObject);
+        this.CheckBarrier(0, this.BarrierObject);
     }
 
     // Check ability 2
-    public override void CheckAbility2()
+    protected override void CheckAbility2()
     {
-        Abilities.CheckBarrage(this, 1, this.BarrageGunCooldownTimeMultiplier, this.BarrageShotAmountIncrease, this.BarrageDamageMultiplier, this.BarrageAccuracyMultiplier, this.BarrageEnergyCostMultiplier);
+        this.CheckBarrage(1, this.BarrageGunCooldownTimeMultiplier, this.BarrageShotAmountIncrease, this.BarrageDamageMultiplier, this.BarrageAccuracyMultiplier, this.BarrageEnergyCostMultiplier);
     }
 
     // Check ability 3
-    public override void CheckAbility3()
+    protected override void CheckAbility3()
     {
-        this.bomb = Abilities.CheckBomb(this, 2, this.bomb, this.BombDamage, this.BombRadius, this.BombPrimerTime, this.BombSpeed, this.BombLifetime);
+        this.bomb = this.CheckBomb(2, this.bomb, this.BombDamage, this.BombRadius, this.BombPrimerTime, this.BombSpeed, this.BombLifetime);
     }
 
     // Called when receiving collision from projectile
     public override void ReceivedCollisionFromProjectile(float _damage, Vector3 _projectileStrikeLocation)
     {
         // If shields are above 0 or barrier is active
-        if(this.Shields > 0f || this.AbilityActive[0] == true)
+        if(this.Stats.Shields > 0f || this.AbilityActive[0] == true)
         {
             // Spawn a shield strike particle effect
             this.ProjectileShieldStrike = GameObject.Instantiate(this.ProjectileShieldStrikePrefab, _projectileStrikeLocation, Quaternion.identity);
@@ -159,20 +151,20 @@ public class PSBomber : PlayerShip
     // Called when ship receives a damaging attack
     public override void TakeDamage(float _damage)
     {
-        if(this.Health > 0f)
+        if(this.Stats.Health > 0f)
         {
             // If barrier is not active
             if(this.AbilityActive[0] == false)
             {
                 // Apply damage to shields
-                this.Shields -= _damage;
+                this.Stats.Shields -= _damage;
                 // If shields are knocked below 0
-                if(this.Shields < 0f)
+                if(this.Stats.Shields < 0f)
                 {
                     // Add negative shield amount to health
-                    this.Health += this.Shields;
+                    this.Stats.Health += this.Stats.Shields;
                     // Reset shield to 0
-                    this.Shields = 0f;
+                    this.Stats.Shields = 0f;
                     // If this is player
                     if(this.IsPlayer == true)
                     {

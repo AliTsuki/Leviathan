@@ -10,11 +10,11 @@ public abstract class PlayerShip : Ship
         Engineer,
         Scout
     }
-    public PlayerShipType Type;
+    protected PlayerShipType Type;
 
 
     // Processes inputs
-    public override void ProcessInputs()
+    protected override void ProcessInputs()
     {
         // Get inputs from PlayerInput
         this.AimInput = PlayerInput.AimInput;
@@ -28,12 +28,12 @@ public abstract class PlayerShip : Ship
         // Pause game if pause is pressed
         if(this.PauseInput == true)
         {
-            GameController.CurrentGameState = GameController.GameState.Paused;
+            GameController.ChangeGameState(GameController.GameState.Paused);
         }
     }
 
     // Gets intended rotation
-    public override void GetIntendedRotation()
+    protected override void GetIntendedRotation()
     {
         // If joystick is pointed in some direction
         if(this.AimInput.x != 0 || this.AimInput.y != 0)
@@ -46,7 +46,7 @@ public abstract class PlayerShip : Ship
     }
 
     // Called when ship is destroyed by damage, grants XP
-    public override void Kill()
+    protected override void Kill()
     {
         // Set to not alive
         this.Alive = false;
@@ -67,6 +67,6 @@ public abstract class PlayerShip : Ship
             GameObject.Destroy(this.ShipObject.transform.GetChild(i).gameObject);
         }
         // Show game over screen
-        GameController.CurrentGameState = GameController.GameState.GameOver;
+        GameController.ChangeGameState(GameController.GameState.GameOver);
     }
 }

@@ -22,24 +22,24 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version = "0.0.14c";
+    public static string Version { get; private set; } = "0.0.14d";
 
     // Random number generator
-    public static System.Random r = new System.Random();
+    public static System.Random RandomNumGen { get; private set; } = new System.Random();
 
     // Entity Lists and Dicts
-    public static Dictionary<uint, Ship> Ships = new Dictionary<uint, Ship>();
-    public static Dictionary<uint, Ship> ShipsToAdd = new Dictionary<uint, Ship>();
-    public static Dictionary<uint, Projectile> Projectiles = new Dictionary<uint, Projectile>();
-    public static List<uint> ShipsToRemove = new List<uint>();
-    public static List<uint> ProjectilesToRemove = new List<uint>();
+    public static Dictionary<uint, Ship> Ships { get; private set; } = new Dictionary<uint, Ship>();
+    private static Dictionary<uint, Ship> ShipsToAdd = new Dictionary<uint, Ship>();
+    private static Dictionary<uint, Projectile> Projectiles = new Dictionary<uint, Projectile>();
+    private static List<uint> ShipsToRemove = new List<uint>();
+    private static List<uint> ProjectilesToRemove = new List<uint>();
 
     // Cameras
     private static GameObject Cameras;
 
     // Player fields
-    public static Ship Player;
-    public static PlayerShip.PlayerShipType PlayerShipType;
+    public static Ship Player { get; private set; }
+    private static PlayerShip.PlayerShipType PlayerShipType;
 
     // Enemy spawn fields
     private static uint EnemyCount = 0;
@@ -53,8 +53,8 @@ public static class GameController
     private static uint ProjectileID = 0;
 
     // Score
-    public static uint Score;
-    public static float TimeStarted;
+    public static uint Score { get; private set; } = 0;
+    public static float TimeStarted { get; private set; } = 0f;
 
     // Identify Friend or Foe
     public enum IFF
@@ -73,8 +73,8 @@ public static class GameController
         Paused,
         GameOver
     }
-    public static GameState CurrentGameState = GameState.MainMenu;
-    public static bool GameplayInitialized = false;
+    public static GameState CurrentGameState { get; private set; } = GameState.MainMenu;
+    private static bool GameplayInitialized = false;
 
     // Constant references to Prefab filenames
     // Cameras
@@ -200,6 +200,19 @@ public static class GameController
         }
     }
 
+    // Change game state
+    public static void ChangeGameState(GameState _newGameState)
+    {
+        UIController.SetEnteredNewState(false);
+        CurrentGameState = _newGameState;
+    }
+
+    // Change player ship type
+    public static void ChangePlayerShipType(PlayerShip.PlayerShipType _type)
+    {
+        PlayerShipType = _type;
+    }
+
     // On application quit
     public static void OnApplicationQuit()
     {
@@ -277,7 +290,7 @@ public static class GameController
         // Get time started
         TimeStarted = Time.time;
         // TODO: this is a shitty workaround so player doesn't fire a shot the moment they spawn
-        PlayerInput.MainGunInput = false;
+        PlayerInput.ZeroInputs();
         // Initialize player, follow camera, and backgrounds
         SpawnPlayer(PlayerShipType);
         FollowCamera();
@@ -360,6 +373,12 @@ public static class GameController
         ProjectileID++;
     }
 
+    // Add to score
+    public static void AddToScore(uint _exp)
+    {
+        Score += _exp;
+    }
+
     // Process ship updates
     private static void ProcessShipUpdate()
     {
@@ -401,6 +420,12 @@ public static class GameController
         }
     }
 
+    // Add ship to removal list
+    public static void AddShipToRemovalList(uint _id)
+    {
+        ShipsToRemove.Add(_id);
+    }
+
     // Cleans up ship list
     private static void CleanupShipList()
     {
@@ -422,6 +447,12 @@ public static class GameController
             // Clear ship removal list
             ShipsToRemove.Clear();
         }
+    }
+
+    // Add projectile to removal list
+    public static void AddProjectileToRemovalList(uint _id)
+    {
+        ProjectilesToRemove.Add(_id);
     }
 
     // Clean up projectile list
@@ -459,14 +490,14 @@ public static class GameController
     private static Vector3 GetNextEnemySpawnPosition()
     {
         // Get a random number between min enemy spawn distance and max for X and Z values
-        int nextXSpawn = r.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance + 1);
-        int nextZSpawn = r.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance + 1);
+        int nextXSpawn = RandomNumGen.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance + 1);
+        int nextZSpawn = RandomNumGen.Next(MinEnemySpawnDistance, MaxEnemySpawnDistance + 1);
         // 50% chance that X or Z value is negative instead of positive
-        if(r.Next(0, 2) == 1)
+        if(RandomNumGen.Next(0, 2) == 1)
         {
             nextXSpawn *= -1;
         }
-        if(r.Next(0, 2) == 1)
+        if(RandomNumGen.Next(0, 2) == 1)
         {
             nextZSpawn *= -1;
         }

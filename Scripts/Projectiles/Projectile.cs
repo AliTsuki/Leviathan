@@ -4,27 +4,27 @@
 public abstract class Projectile
 {
     // GameObjects and Components
-    public GameObject ProjectilePrefab;
-    public GameObject ProjectileObject;
-    public Rigidbody ProjectileRigidbody;
-    public Ship Target;
+    public GameObject ProjectilePrefab { get; protected set; }
+    public GameObject ProjectileObject { get; protected set; }
+    public Rigidbody ProjectileRigidbody { get; protected set; }
+    public Ship Target { get; protected set; }
 
     // Constructor criteria
-    public uint ProjectileType;
-    public float Curvature;
-    public float SightCone;
-    public float Damage;
-    public Vector3 Position;
-    public Quaternion Rotation;
-    public Vector3 Velocity;
-    public float Lifetime;
-    public float Speed;
-    public bool PiercingShot = false;
+    public uint ProjectileType { get; protected set; } = 0;
+    public float Curvature { get; protected set; } = 0f;
+    public float SightCone { get; protected set; } = 0f;
+    public float Damage { get; protected set; } = 0f;
+    public Vector3 Position { get; protected set; } = new Vector3();
+    public Quaternion Rotation { get; protected set; } = new Quaternion();
+    public Vector3 Velocity { get; protected set; } = new Vector3();
+    public float Lifetime { get; protected set; } = 0f;
+    public float Speed { get; protected set; } = 0f;
+    public bool PiercingShot { get; protected set; } = false;
 
     // Identification fields
-    public uint ID;
-    public GameController.IFF IFF;
-    public bool Alive = false;
+    public uint ID { get; protected set; }
+    public GameController.IFF IFF { get; protected set; }
+    public bool Alive { get; protected set; } = false;
 
 
     // Initialize
@@ -50,7 +50,7 @@ public abstract class Projectile
                 if(this.Target == null || this.Target.Alive == false)
                 {
                     // Acquire new target
-                    this.Target = AIController.AcquireForwardTarget(this.ProjectileObject.transform, this.IFF, 30, this.SightCone);
+                    this.Target = Targeting.AcquireForwardTarget(this.ProjectileObject.transform, this.IFF, 30, this.SightCone);
                 }
                 // If there is a target and it is alive
                 else if(this.Target != null && this.Target.Alive == true)
@@ -68,15 +68,15 @@ public abstract class Projectile
             // Set to dead
             this.Alive = false;
             // Add to projectile removal list
-            GameController.ProjectilesToRemove.Add(this.ID);
+            GameController.AddProjectileToRemovalList(this.ID);
         }
     }
 
     // Rotate toward target
-    public void RotateToTarget()
+    private void RotateToTarget()
     {
         // Get rotation to face target
-        Quaternion IntendedRotation = AIController.GetRotationToTarget(this.ProjectileObject.transform, this.Target.ShipObject.transform.position);
+        Quaternion IntendedRotation = Targeting.GetRotationToTarget(this.ProjectileObject.transform, this.Target.ShipObject.transform.position);
         // Get current rotation
         Quaternion CurrentRotation = this.ProjectileObject.transform.rotation;
         // Get next rotation by using intended rotation and max rotation speed

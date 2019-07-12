@@ -12,8 +12,8 @@ public static class UIController
 {
     // GameObjects
     // Event system and buttons
-    public static EventSystem eventSystem;
-    public static bool enteredNewState = false;
+    public static EventSystem CurrentEventSystem { get; private set; }
+    private static bool EnteredNewState = false;
     private static GameObject MainMenuButtonDefault;
     private static GameObject NewGameMenuButtonDefault;
     private static GameObject SettingsMenuButtonDefault;
@@ -88,7 +88,7 @@ public static class UIController
     // Initialize
     public static void Initialize()
     {
-        eventSystem = EventSystem.current;
+        CurrentEventSystem = EventSystem.current;
         MainMenuButtonDefault = GameObject.Find(GameController.MainMenuButtonDefaultName);
         NewGameMenuButtonDefault = GameObject.Find(GameController.NewGameMenuButtonDefaultName);
         SettingsMenuButtonDefault = GameObject.Find(GameController.SettingsMenuButtonDefaultName);
@@ -178,6 +178,18 @@ public static class UIController
         }
     }
 
+    // Restart
+    public static void Restart()
+    {
+        // Loop through healthbar uis
+        foreach(KeyValuePair<uint, GameObject> healthbarui in HealthbarUIs)
+        {
+            // Destroy game object for healthbar
+            GameObject.Destroy(healthbarui.Value);
+        }
+        HealthbarUIs.Clear();
+    }
+
     // Called during update when game state is main menu
     private static void MainMenuUIUpdate()
     {
@@ -223,8 +235,14 @@ public static class UIController
         UpdatePlayerUI();
     }
 
+    // Set entered new state
+    public static void SetEnteredNewState(bool _enteredNewState)
+    {
+        EnteredNewState = _enteredNewState;
+    }
+
     // Setup UI to type
-    public static void SetupUIType(GameController.GameState _uiType)
+    private static void SetupUIType(GameController.GameState _uiType)
     {
         switch(_uiType)
         {
@@ -236,10 +254,10 @@ public static class UIController
                     ShowMainMenu();
                 }
                 // Default selected button
-                if(enteredNewState == false)
+                if(EnteredNewState == false)
                 {
-                    enteredNewState = true;
-                    GameManager.instance.StartSelectDefaultButtonCoroutine(MainMenuButtonDefault);
+                    EnteredNewState = true;
+                    GameManager.Instance.StartSelectDefaultButtonCoroutine(MainMenuButtonDefault);
                 }
                 // Hide UI if not currently hidden
                 if(UI.activeSelf == true)
@@ -276,10 +294,10 @@ public static class UIController
                     ShowNewGameMenu();
                 }
                 // Default selected button
-                if(enteredNewState == false)
+                if(EnteredNewState == false)
                 {
-                    enteredNewState = true;
-                    GameManager.instance.StartSelectDefaultButtonCoroutine(NewGameMenuButtonDefault);
+                    EnteredNewState = true;
+                    GameManager.Instance.StartSelectDefaultButtonCoroutine(NewGameMenuButtonDefault);
                 }
                 // Hide main menu container if not currently hidden
                 if(MainMenuContainer.activeSelf == true)
@@ -300,10 +318,10 @@ public static class UIController
                     ShowSettingsMenu();
                 }
                 // Default selected button
-                if(enteredNewState == false)
+                if(EnteredNewState == false)
                 {
-                    enteredNewState = true;
-                    GameManager.instance.StartSelectDefaultButtonCoroutine(SettingsMenuButtonDefault);
+                    EnteredNewState = true;
+                    GameManager.Instance.StartSelectDefaultButtonCoroutine(SettingsMenuButtonDefault);
                 }
                 // Hide main menu container if not currently hidden
                 if(MainMenuContainer.activeSelf == true)
@@ -315,10 +333,10 @@ public static class UIController
             case GameController.GameState.Playing:
             {
                 // Default selected button
-                if(enteredNewState == false)
+                if(EnteredNewState == false)
                 {
-                    enteredNewState = true;
-                    eventSystem.SetSelectedGameObject(null);
+                    EnteredNewState = true;
+                    CurrentEventSystem.SetSelectedGameObject(null);
                 }
                 // Hide main menu if not currently hidden
                 if(MainMenu.activeSelf == true)
@@ -354,13 +372,13 @@ public static class UIController
                 {
                     ShowPauseMenu();
                     // Momentarily disable pause button input so pause menu doesn't disappear immediately after showing
-                    PlayerInput.PauseButtonInput = false;
+                    PlayerInput.ZeroInputs();
                 }
                 // Default selected button
-                if(enteredNewState == false)
+                if(EnteredNewState == false)
                 {
-                    enteredNewState = true;
-                    GameManager.instance.StartSelectDefaultButtonCoroutine(PauseMenuButtonDefault);
+                    EnteredNewState = true;
+                    GameManager.Instance.StartSelectDefaultButtonCoroutine(PauseMenuButtonDefault);
                 }
                 // Hide pause menu if not currently hidden
                 if(GameOverMenuScreen.activeSelf == true)
@@ -371,7 +389,7 @@ public static class UIController
                 if(PlayerInput.PauseButtonInput == true)
                 {
                     // Get out of pause menu and back into playing state
-                    GameController.CurrentGameState = GameController.GameState.Playing;
+                    GameController.ChangeGameState(GameController.GameState.Playing);
                 }
                 // Show cursor
                 if(Cursor.visible == false)
@@ -393,10 +411,10 @@ public static class UIController
                     Cursor.visible = true;
                 }
                 // Default selected button
-                if(enteredNewState == false)
+                if(EnteredNewState == false)
                 {
-                    enteredNewState = true;
-                    GameManager.instance.StartSelectDefaultButtonCoroutine(GameOverMenuButtonDefault);
+                    EnteredNewState = true;
+                    GameManager.Instance.StartSelectDefaultButtonCoroutine(GameOverMenuButtonDefault);
                 }
                 break;
             }
@@ -481,10 +499,10 @@ public static class UIController
                     Image ShieldbarFillImage = HealthbarUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
                     Image HealthbarFillImageBackground = HealthbarUI.transform.GetChild(0).GetChild(2).GetComponent<Image>();
                     Image HealthbarFillImage = HealthbarUI.transform.GetChild(0).GetChild(2).GetChild(0).GetComponent<Image>();
-                    ShieldbarFillImageBackground.fillAmount = 1 - (ship.Value.Shields / ship.Value.MaxShields);
-                    ShieldbarFillImage.fillAmount = ship.Value.Shields / ship.Value.MaxShields;
-                    HealthbarFillImageBackground.fillAmount = 1 - (ship.Value.Health / ship.Value.MaxHealth);
-                    HealthbarFillImage.fillAmount = ship.Value.Health / ship.Value.MaxHealth;
+                    ShieldbarFillImageBackground.fillAmount = 1 - (ship.Value.Stats.Shields / ship.Value.Stats.MaxShields);
+                    ShieldbarFillImage.fillAmount = ship.Value.Stats.Shields / ship.Value.Stats.MaxShields;
+                    HealthbarFillImageBackground.fillAmount = 1 - (ship.Value.Stats.Health / ship.Value.Stats.MaxHealth);
+                    HealthbarFillImage.fillAmount = ship.Value.Stats.Health / ship.Value.Stats.MaxHealth;
                     // If health is below full
                     if(HealthbarFillImage.fillAmount < 1 || ShieldbarFillImage.fillAmount < 1)
                     {
@@ -512,14 +530,14 @@ public static class UIController
         // Get reference to player
         Ship Player = GameController.Player;
         // Fill shield bar accordingly
-        PlayerShieldForeground.fillAmount = Player.Shields / Player.MaxShields;
-        PlayerShieldText.text = $@"{Player.Shields.ToString("0")} / {Player.MaxShields.ToString("0")}";
+        PlayerShieldForeground.fillAmount = Player.Stats.Shields / Player.Stats.MaxShields;
+        PlayerShieldText.text = $@"{Player.Stats.Shields.ToString("0")} / {Player.Stats.MaxShields.ToString("0")}";
         // Fill health and shield bars
-        PlayerHealthForeground.fillAmount = Player.Health / Player.MaxHealth;
-        PlayerHealthText.text = $@"{Player.Health.ToString("0")} / {Player.MaxHealth.ToString("0")}";
+        PlayerHealthForeground.fillAmount = Player.Stats.Health / Player.Stats.MaxHealth;
+        PlayerHealthText.text = $@"{Player.Stats.Health.ToString("0")} / {Player.Stats.MaxHealth.ToString("0")}";
         // Fill energy bar accordingly
-        PlayerEnergyForeground.fillAmount = Player.Energy / Player.MaxEnergy;
-        PlayerEnergyText.text = $@"{Player.Energy.ToString("0")} / {Player.MaxEnergy.ToString("0")}";
+        PlayerEnergyForeground.fillAmount = Player.Stats.Energy / Player.Stats.MaxEnergy;
+        PlayerEnergyText.text = $@"{Player.Stats.Energy.ToString("0")} / {Player.Stats.MaxEnergy.ToString("0")}";
         // If Ability 1 is on cooldown or currently active
         if(Player.AbilityOnCooldown[0] == true || Player.AbilityActive[0] == true)
         {
@@ -531,8 +549,8 @@ public static class UIController
             }
             else
             {
-                PlayerAbility1Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbilityCooldownStartedTime[0]) / Player.AbilityCooldownTime[0]);
-                float Ability1CooldownLeftTime = Player.AbilityCooldownTime[0] - (Time.time - Player.LastAbilityCooldownStartedTime[0]);
+                PlayerAbility1Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbilityCooldownStartedTime[0]) / Player.Stats.AbilityCooldownTime[0]);
+                float Ability1CooldownLeftTime = Player.Stats.AbilityCooldownTime[0] - (Time.time - Player.LastAbilityCooldownStartedTime[0]);
                 PlayerAbility1CDText.text = Ability1CooldownLeftTime > 10f ? Ability1CooldownLeftTime.ToString("0") : Ability1CooldownLeftTime.ToString("0.0");
             }
         }
@@ -555,8 +573,8 @@ public static class UIController
             }
             else
             {
-                PlayerAbility2Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbilityCooldownStartedTime[1]) / Player.AbilityCooldownTime[1]);
-                float Ability2CooldownLeftTime = Player.AbilityCooldownTime[1] - (Time.time - Player.LastAbilityCooldownStartedTime[1]);
+                PlayerAbility2Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbilityCooldownStartedTime[1]) / Player.Stats.AbilityCooldownTime[1]);
+                float Ability2CooldownLeftTime = Player.Stats.AbilityCooldownTime[1] - (Time.time - Player.LastAbilityCooldownStartedTime[1]);
                 PlayerAbility2CDText.text = Ability2CooldownLeftTime > 10f ? Ability2CooldownLeftTime.ToString("0") : Ability2CooldownLeftTime.ToString("0.0");
             }
         }
@@ -579,8 +597,8 @@ public static class UIController
             }
             else
             {
-                PlayerAbility3Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbilityCooldownStartedTime[2]) / Player.AbilityCooldownTime[2]);
-                float Ability3CooldownLeftTime = Player.AbilityCooldownTime[2] - (Time.time - Player.LastAbilityCooldownStartedTime[2]);
+                PlayerAbility3Cooldown.fillAmount = 1 - ((Time.time - Player.LastAbilityCooldownStartedTime[2]) / Player.Stats.AbilityCooldownTime[2]);
+                float Ability3CooldownLeftTime = Player.Stats.AbilityCooldownTime[2] - (Time.time - Player.LastAbilityCooldownStartedTime[2]);
                 PlayerAbility3CDText.text = Ability3CooldownLeftTime > 10f ? Ability3CooldownLeftTime.ToString("0") : Ability3CooldownLeftTime.ToString("0.0");
             }
         }
@@ -628,7 +646,7 @@ public static class UIController
     }
 
     // Game over screen
-    public static void ShowGameOver()
+    private static void ShowGameOver()
     {
         GameOverMenuScreen.SetActive(true);
         GameOverText = GameObject.Find(GameController.GameOverTextName);
@@ -636,13 +654,13 @@ public static class UIController
     }
 
     // Hide game over screen
-    public static void HideGameOver()
+    private static void HideGameOver()
     {
         GameOverMenuScreen.SetActive(false);
     }
 
     // Show main menu screen
-    public static void ShowMainMenu()
+    private static void ShowMainMenu()
     {
         MainMenu.SetActive(true);
         MainMenuContainer.SetActive(true);
@@ -650,19 +668,19 @@ public static class UIController
     }
 
     // Hide main menu screen
-    public static void HideMainMenu()
+    private static void HideMainMenu()
     {
         MainMenu.SetActive(false);
     }
 
     // Hide main menu container
-    public static void HideMainMenuContainer()
+    private static void HideMainMenuContainer()
     {
         MainMenuContainer.SetActive(false);
     }
 
     // Show new game menu screen
-    public static void ShowNewGameMenu()
+    private static void ShowNewGameMenu()
     {
         NewGameContainer.SetActive(true);
     }
@@ -670,13 +688,13 @@ public static class UIController
     // Exit new game menu screen
     public static void ExitNewGameMenu()
     {
-        GameController.CurrentGameState = GameController.GameState.MainMenu;
+        GameController.ChangeGameState(GameController.GameState.MainMenu);
         MainMenuContainer.SetActive(true);
         NewGameContainer.SetActive(false);
     }
 
     // Show settings menu
-    public static void ShowSettingsMenu()
+    private static void ShowSettingsMenu()
     {
         SettingsErrorText.text = "";
         SettingsMenuContainer.SetActive(true);
@@ -685,25 +703,25 @@ public static class UIController
     // Exit settings menu screen
     public static void ExitSettingsMenu()
     {
-        GameController.CurrentGameState = GameController.GameState.MainMenu;
+        GameController.ChangeGameState(GameController.GameState.MainMenu);
         MainMenuContainer.SetActive(true);
         SettingsMenuContainer.SetActive(false);
     }
 
     // Show UI
-    public static void ShowUI()
+    private static void ShowUI()
     {
         UI.SetActive(true);
     }
 
     // Hide UI
-    public static void HideUI()
+    private static void HideUI()
     {
         UI.SetActive(false);
     }
 
     // Show pause menu
-    public static void ShowPauseMenu()
+    private static void ShowPauseMenu()
     {
         PauseMenuScreen.SetActive(true);
         // Pause physics simulation time
@@ -711,22 +729,10 @@ public static class UIController
     }
 
     // Hide pause menu
-    public static void HidePauseMenu()
+    private static void HidePauseMenu()
     {
         PauseMenuScreen.SetActive(false);
         // Set physics simulation time to default
         Time.timeScale = 1;
-    }
-
-    // Restart
-    public static void Restart()
-    {
-        // Loop through healthbar uis
-        foreach(KeyValuePair<uint, GameObject> healthbarui in HealthbarUIs)
-        {
-            // Destroy game object for healthbar
-            GameObject.Destroy(healthbarui.Value);
-        }
-        HealthbarUIs.Clear();
     }
 }

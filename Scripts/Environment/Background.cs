@@ -7,7 +7,7 @@ using UnityEngine;
 public static class Background
 {
     // Lists and Dicts
-    public static Dictionary<Vector2Int, BackgroundTile> Tilemap = new Dictionary<Vector2Int, BackgroundTile>();
+    public static Dictionary<Vector2Int, BackgroundTile> Tilemap { get; private set; } = new Dictionary<Vector2Int, BackgroundTile>();
     private static Dictionary<string, GameObject> BackgroundPrefabs = new Dictionary<string, GameObject>();
     private static Dictionary<Vector2Int, GameObject> Backgrounds = new Dictionary<Vector2Int, GameObject>();
     private static List<Vector2Int> BackgroundsToRemove = new List<Vector2Int>();
@@ -21,7 +21,7 @@ public static class Background
     private static Vector3 PlayerPosition;
 
     // Tilemap
-    public static Texture2D TilemapTexture;
+    public static Texture2D TilemapTexture { get; private set; }
     private static bool BackgroundDependenciesLoaded = false;
 
     // Constants
@@ -82,6 +82,17 @@ public static class Background
         RemoveDistantBackgrounds();
         // Add new backgrounds
         AddNewBackgrounds();
+    }
+
+    // Restart
+    public static void Restart()
+    {
+        // Loop through all backgrounds
+        foreach(KeyValuePair<Vector2Int, GameObject> background in Backgrounds)
+        {
+            // Destroy backgrounds
+            GameObject.Destroy(background.Value);
+        }
     }
 
     // Convert tilemap pixel coords to tile coords
@@ -226,17 +237,6 @@ public static class Background
                     Backgrounds[NextBackgroundKey].name = $@"Background: {NextBackgroundKey.x}, {NextBackgroundKey.y}";
                 }
             }
-        }
-    }
-
-    // Restart
-    public static void Restart()
-    {
-        // Loop through all backgrounds
-        foreach(KeyValuePair<Vector2Int, GameObject> background in Backgrounds)
-        {
-            // Destroy backgrounds
-            GameObject.Destroy(background.Value);
         }
     }
 }

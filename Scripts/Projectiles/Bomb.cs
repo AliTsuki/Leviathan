@@ -51,7 +51,7 @@ public class Bomb : Projectile
                 // Set to dead
                 this.Alive = false;
                 // Add to projectile removal list
-                GameController.ProjectilesToRemove.Add(this.ID);
+                GameController.AddProjectileToRemovalList(this.ID);
             }
         }
         // If bomb has hit lifetime
@@ -90,6 +90,6 @@ public class Bomb : Projectile
         // Destroy game object
         GameObject.Destroy(this.ProjectileObject);
         // Add to projectile removal list
-        GameController.ProjectilesToRemove.Add(this.ID);
+        GameController.AddProjectileToRemovalList(this.ID);
     }
 }

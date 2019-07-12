@@ -10760,7 +10760,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: "<size=18><color=#008000ff><b>Health: 200</b></color>\n<color=#00ffffff><b>Shields:
     100</b></color>\n<b>Main Gun</b>: Homing Attacks</size>\n\n<size=25><b>Abilities\r</b></size>\n\n<b><u>Barrier:</u></b>\n<indent=10%>Absorbs
-    all incoming damage at the expense of energy.\n(Duration: 2.5s, Cooldown: 12s)</indent>\n\n<b><u>Barrage:</u></b>\n<indent=10%>Increases
+    all incoming damage at the expense of energy.\n(Duration: 4s, Cooldown: 12s)</indent>\n\n<b><u>Barrage:</u></b>\n<indent=10%>Increases
     fire rate and shot amount, decreases accuracy and damage.\n(Duration: 4s, Cooldown:
     14s)</indent>\n\n<b><u>Bomb:</u></b>\n<indent=10%>Fires a large bomb, on second
     use it detonates the bomb for massive AoE damage.\n(Cooldown: 12s)</indent>"
@@ -10833,10 +10833,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 722268667273745355}
-    characterCount: 368
+    characterCount: 366
     spriteCount: 0
     spaceCount: 59
-    wordCount: 57
+    wordCount: 56
     linkCount: 0
     lineCount: 19
     pageCount: 1

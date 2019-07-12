@@ -3,207 +3,357 @@
 using UnityEngine;
 
 // Methods for AI
-public static class AIController
+public abstract partial class Ship
 {
     // Process AI for NPC ships
-    public static void ProcessAI(Ship _ship)
+    public void ProcessAI()
     {
         // Non-Drone AI
-        if(_ship.AItype != Ship.AIType.Drone)
+        if(this.AItype != Ship.AIType.Drone)
         {
             // If there is no current target or current target is dead
-            if(_ship.CurrentTarget == null || _ship.CurrentTarget.Alive == false)
+            if(this.CurrentTarget == null || this.CurrentTarget.Alive == false)
             {
                 // Acquire any target within distance
-                _ship.CurrentTarget = AcquireTarget(_ship.ShipObject.transform.position, _ship.IFF, _ship.MaxTargetAcquisitionRange);
+                this.CurrentTarget = Targeting.AcquireTarget(this.ShipObject.transform.position, this.IFF, this.MaxTargetAcquisitionRange);
                 // If no target was acquired
-                if(_ship.CurrentTarget == null)
+                if(this.CurrentTarget == null)
                 {
                     // Set ship to wander
-                    _ship.ShouldWander = true;
+                    this.ShouldWander = true;
                 }
             }
             // If there is a current target and it is alive
-            else if(_ship.CurrentTarget != null && _ship.CurrentTarget.Alive == true)
+            else if(this.CurrentTarget != null && this.CurrentTarget.Alive == true)
             {
                 // If target ship is greater than twice maximum target acquisition distance away then untarget and break out of AI loop
-                if(Vector3.Distance(_ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position) > _ship.MaxTargetAcquisitionRange * 2f)
+                if(Vector3.Distance(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position) > this.MaxTargetAcquisitionRange * 2f)
                 {
-                    _ship.CurrentTarget = null;
+                    this.CurrentTarget = null;
                     return;
                 }
                 // Stop wandering as currently have target
-                _ship.ShouldWander = false;
+                this.ShouldWander = false;
                 // If ship should accelerate
-                if(_ship.ShouldAccelerate == true)
+                if(this.ShouldAccelerate == true)
                 {
                     // Use AI to figure out if ship should accelerate
-                    if(ShouldAccelerate(_ship.ShouldStrafe, _ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position, _ship.MaxOrbitRange) == true)
+                    if(this.ShouldShipAccelerate(this.ShouldStrafe, this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
                     {
-                        _ship.ImpulseEngineInput = 1f;
+                        this.ImpulseEngineInput = 1f;
                     }
                     else
                     {
-                        _ship.ImpulseEngineInput = 0f;
+                        this.ImpulseEngineInput = 0f;
                     }
                 }
                 // If ship should strafe
-                if(_ship.ShouldStrafe == true)
+                if(this.ShouldStrafe == true)
                 {
                     // Use AI to figure out if ship should strafe target, resets strafe direction each time strafing is cancelled
-                    if(ShouldStrafe(_ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position, _ship.MaxOrbitRange) == true)
+                    if(this.ShouldShipStrafe(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
                     {
-                        _ship.StrafeInput = true;
-                        _ship.ResetStrafeDirection = false;
+                        this.StrafeInput = true;
+                        this.ResetStrafeDirection = false;
                     }
                     else
                     {
-                        _ship.StrafeInput = false;
-                        _ship.ResetStrafeDirection = true;
+                        this.StrafeInput = false;
+                        this.ResetStrafeDirection = true;
                     }
                 }
                 // If ship should fire guns
-                if(_ship.ShouldFireGuns == true)
+                if(this.ShouldFireGuns == true)
                 {
                     // Use AI to figure out if ship should fire weapons
-                    if(ShouldFireGun(_ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position, _ship.MaxWeaponsRange) == true)
+                    if(this.ShouldShipFireGun(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxWeaponsRange) == true)
                     {
-                        _ship.MainGunInput = true;
+                        this.MainGunInput = true;
                     }
                     else
                     {
-                        _ship.MainGunInput = false;
+                        this.MainGunInput = false;
                     }
                 }
                 // If ship should use ability
-                if(_ship.ShouldUseAbilities == true)
+                if(this.ShouldUseAbilities == true)
                 {
                     // Use AI to figure out if ship should use ability
-                    if(ShouldUseAbility(_ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position, _ship.MaxAbilityRange))
+                    if(this.ShouldShipUseAbility(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxAbilityRange))
                     {
-                        _ship.AbilityInput[0] = true;
+                        this.AbilityInput[0] = true;
                     }
                     else
                     {
-                        _ship.AbilityInput[0] = false;
+                        this.AbilityInput[0] = false;
                     }
                 }
             }
         }
         // Drone AI
-        else if(_ship.AItype == Ship.AIType.Drone)
+        else if(this.AItype == Ship.AIType.Drone)
         {
             // If ship is drone and it is past its leash distance from parent
-            if(_ship.AItype == Ship.AIType.Drone && Vector3.Distance(_ship.ShipObject.transform.position, _ship.Parent.ShipObject.transform.position) > _ship.MaxLeashDistance || _ship.Parent.WarpEngineInput > 0f)
+            if((this.AItype == Ship.AIType.Drone && Vector3.Distance(this.ShipObject.transform.position, this.Parent.ShipObject.transform.position) > this.MaxLeashDistance) || this.Parent.WarpEngineInput > 0f)
             {
-                _ship.ShouldFollowParent = true;
+                this.ShouldFollowParent = true;
             }
             // If there is no current target or current target is dead
-            if((_ship.CurrentTarget == null || _ship.CurrentTarget.Alive == false) && _ship.ShouldFollowParent == false)
+            if((this.CurrentTarget == null || this.CurrentTarget.Alive == false) && this.ShouldFollowParent == false)
             {
                 // Acquire any target within distance
-                _ship.CurrentTarget = AcquireTarget(_ship.ShipObject.transform.position, _ship.IFF, _ship.MaxTargetAcquisitionRange);
+                this.CurrentTarget = Targeting.AcquireTarget(this.ShipObject.transform.position, this.IFF, this.MaxTargetAcquisitionRange);
                 // If no target was acquired
-                if(_ship.CurrentTarget == null)
+                if(this.CurrentTarget == null)
                 {
-                    _ship.ShouldFollowParent = true;
+                    this.ShouldFollowParent = true;
                 }
             }
             // If there is a current target and it is alive
-            else if(_ship.CurrentTarget != null && _ship.CurrentTarget.Alive == true && _ship.ShouldFollowParent == false)
+            else if(this.CurrentTarget != null && this.CurrentTarget.Alive == true && this.ShouldFollowParent == false)
             {
                 // If target ship is greater than twice maximum target acquisition distance away then untarget and break out of AI loop
-                if(Vector3.Distance(_ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position) > _ship.MaxTargetAcquisitionRange * 2f)
+                if(Vector3.Distance(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position) > this.MaxTargetAcquisitionRange * 2f)
                 {
-                    _ship.CurrentTarget = null;
+                    this.CurrentTarget = null;
                     return;
                 }
                 // If ship should accelerate
-                if(_ship.ShouldAccelerate == true)
+                if(this.ShouldAccelerate == true)
                 {
                     // Use AI to figure out if ship should accelerate
-                    if(ShouldAccelerate(_ship.ShouldStrafe, _ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position, _ship.MaxOrbitRange) == true)
+                    if(this.ShouldShipAccelerate(this.ShouldStrafe, this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
                     {
-                        _ship.ImpulseEngineInput = 1f;
+                        this.ImpulseEngineInput = 1f;
                     }
                     else
                     {
-                        _ship.ImpulseEngineInput = 0f;
+                        this.ImpulseEngineInput = 0f;
                     }
                 }
                 // If ship should strafe
-                if(_ship.ShouldStrafe == true)
+                if(this.ShouldStrafe == true)
                 {
                     // Use AI to figure out if ship should strafe target, resets strafe direction each time strafing is cancelled
-                    if(ShouldStrafe(_ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position, _ship.MaxOrbitRange) == true)
+                    if(this.ShouldShipStrafe(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
                     {
-                        _ship.StrafeInput = true;
-                        _ship.ResetStrafeDirection = false;
+                        this.StrafeInput = true;
+                        this.ResetStrafeDirection = false;
                     }
                     else
                     {
-                        _ship.StrafeInput = false;
-                        _ship.ResetStrafeDirection = true;
+                        this.StrafeInput = false;
+                        this.ResetStrafeDirection = true;
                     }
                 }
                 // If ship should fire guns
-                if(_ship.ShouldFireGuns == true)
+                if(this.ShouldFireGuns == true)
                 {
                     // Use AI to figure out if ship should fire weapons
-                    if(ShouldFireGun(_ship.ShipObject.transform.position, _ship.CurrentTarget.ShipObject.transform.position, _ship.MaxWeaponsRange) == true)
+                    if(this.ShouldShipFireGun(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxWeaponsRange) == true)
                     {
-                        _ship.MainGunInput = true;
+                        this.MainGunInput = true;
                     }
                     else
                     {
-                        _ship.MainGunInput = false;
+                        this.MainGunInput = false;
                     }
                 }
             }
         }
     }
 
-    // Get intended rotation
-    public static void GetIntendedRotation(Ship _ship)
+    // Called when a ship has no target and nothing else to do
+    protected void Wander()
     {
-        if(_ship.AItype == Ship.AIType.Broadside)
+        // If should wander is true
+        if(this.ShouldWander == true)
+        {
+            // Stop shooting
+            this.MainGunInput = false;
+            // If not moving(wandering) and not currently waiting around
+            if(this.IsWanderMove == false && this.IsWaiting == false)
+            {
+                // Start waiting for random amount of time between 0-10 seconds
+                this.IsWaiting = true;
+                this.StartedWaitingTime = Time.time;
+                this.TimeToWait = GameController.RandomNumGen.Next(0, 11);
+                // Turn off engines
+                this.ImpulseEngineInput = 0f;
+            }
+            // If done waiting, stop waiting
+            if(Time.time - this.StartedWaitingTime > this.TimeToWait)
+            {
+                this.IsWaiting = false;
+            }
+            // If done waiting and not yet moving
+            if(this.IsWaiting == false && this.IsWanderMove == false)
+            {
+                // Start moving for random amount of time between 0-10 seconds and rotate some random direction
+                this.IsWanderMove = true;
+                this.StartedWanderMoveTime = Time.time;
+                this.TimeToWanderMove = GameController.RandomNumGen.Next(0, 11);
+                this.IntendedRotation = Quaternion.Euler(0, GameController.RandomNumGen.Next(0, 360), 0);
+            }
+            // If moving, set impulse to true which causes ship to accelerate forward
+            if(this.IsWanderMove == true)
+            {
+                this.ImpulseEngineInput = 1f;
+            }
+            // If done moving, stop moving
+            if(Time.time - this.StartedWanderMoveTime > this.TimeToWanderMove)
+            {
+                this.IsWanderMove = false;
+            }
+        }
+    }
+
+    // Called when drones need to follow their parent ship
+    protected void FollowParent()
+    {
+        // If should follow parent is true
+        if(this.ShouldFollowParent == true)
+        {
+            // Stop shooting
+            this.MainGunInput = false;
+            // If distance to parent ship is greater than max leash distance multiplied by 1.5
+            if(Vector3.Distance(this.ShipObject.transform.position, this.Parent.ShipObject.transform.position) > this.MaxLeashDistance * 1.5f)
+            {
+                // Teleport directly to parent
+                this.ShipObject.transform.position = this.Parent.ShipObject.transform.position;
+                // Rotate same rotation as parent
+                this.IntendedRotation = this.Parent.ShipObject.transform.rotation;
+            }
+            // If distance to parent ship is greater than orbit parent range
+            else if(Vector3.Distance(this.ShipObject.transform.position, this.Parent.ShipObject.transform.position) > this.OrbitParentRange)
+            {
+                // Reset targetting
+                this.CurrentTarget = null;
+                // Rotate to face parent
+                this.IntendedRotation = Targeting.GetRotationToTarget(this.ShipObject.transform, this.Parent.ShipObject.transform.position);
+                // Accelerate forward
+                this.ImpulseEngineInput = 1f;
+            }
+            // If distance to parent is less than or equal to orbit parent range
+            else if(Vector3.Distance(this.ShipObject.transform.position, this.Parent.ShipObject.transform.position) <= this.OrbitParentRange)
+            {
+                // Turn off engine
+                this.ImpulseEngineInput = 0f;
+                // Set velocity to parent velocity
+                this.ShipRigidbody.velocity = this.Parent.ShipRigidbody.velocity;
+                // Set rotation to parent rotation
+                this.IntendedRotation = this.Parent.ShipObject.transform.rotation;
+                // Stop following parent
+                this.ShouldFollowParent = false;
+            }
+        }
+    }
+
+    // Get intended rotation
+    public void GetIntendedRotationAI()
+    {
+        if(this.AItype == Ship.AIType.Broadside)
         {
             // If there is a current target and it is alive and not currently strafing
-            if(_ship.CurrentTarget != null && _ship.CurrentTarget.Alive == true && _ship.StrafeInput == false)
+            if(this.CurrentTarget != null && this.CurrentTarget.Alive == true && this.StrafeInput == false)
             {
                 // Get rotation to face target
-                _ship.IntendedRotation = GetRotationToTarget(_ship.ShipObject.transform, _ship.CurrentTarget.ShipObject.transform.position);
+                this.IntendedRotation = Targeting.GetRotationToTarget(this.ShipObject.transform, this.CurrentTarget.ShipObject.transform.position);
             }
             // If there is a current target and it is alive and we are currenlty strafing
-            else if(_ship.CurrentTarget != null && _ship.CurrentTarget.Alive == true && _ship.StrafeInput == true)
+            else if(this.CurrentTarget != null && this.CurrentTarget.Alive == true && this.StrafeInput == true)
             {
                 // Get rotation to face target
-                _ship.IntendedRotation = GetRotationToTarget(_ship.ShipObject.transform, _ship.CurrentTarget.ShipObject.transform.position);
+                this.IntendedRotation = Targeting.GetRotationToTarget(this.ShipObject.transform, this.CurrentTarget.ShipObject.transform.position);
                 // If strafe right
-                if(_ship.StrafeRight == true)
+                if(this.StrafeRight == true)
                 {
                     // Add 90 degrees to y rotation axis
-                    _ship.IntendedRotation = Quaternion.Euler(_ship.IntendedRotation.eulerAngles.x, _ship.IntendedRotation.eulerAngles.y + 90, _ship.IntendedRotation.eulerAngles.z);
+                    this.IntendedRotation = Quaternion.Euler(this.IntendedRotation.eulerAngles.x, this.IntendedRotation.eulerAngles.y + 90, this.IntendedRotation.eulerAngles.z);
                 }
                 // If strafe left
                 else
                 {
                     // Subtract 90 degrees from y rotation axis
-                    _ship.IntendedRotation = Quaternion.Euler(_ship.IntendedRotation.eulerAngles.x, _ship.IntendedRotation.eulerAngles.y - 90, _ship.IntendedRotation.eulerAngles.z);
+                    this.IntendedRotation = Quaternion.Euler(this.IntendedRotation.eulerAngles.x, this.IntendedRotation.eulerAngles.y - 90, this.IntendedRotation.eulerAngles.z);
                 }
             }
         }
         else
         {
             // If there is a current target that is alive
-            if(_ship.CurrentTarget != null && _ship.CurrentTarget.Alive == true)
+            if(this.CurrentTarget != null && this.CurrentTarget.Alive == true)
             {
                 // Get rotation to face target
-                _ship.IntendedRotation = GetRotationToTarget(_ship.ShipObject.transform, _ship.CurrentTarget.ShipObject.transform.position);
+                this.IntendedRotation = Targeting.GetRotationToTarget(this.ShipObject.transform, this.CurrentTarget.ShipObject.transform.position);
             }
         }
     }
 
+    // Checks if the ship should accelerate based on its distance to its target
+    public bool ShouldShipAccelerate(bool _shouldStrafe, Vector3 _userPosition, Vector3 _targetPosition, float _maxOrbitRange)
+    {
+        if(_shouldStrafe == true)
+        {
+            if(Vector3.Distance(_userPosition, _targetPosition) > _maxOrbitRange)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if(_shouldStrafe == false)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    // Checks if the ship should strafe based on its distance to its target
+    public bool ShouldShipStrafe(Vector3 _userPosition, Vector3 _targetPosition, float _maxOrbitRange)
+    {
+        if(Vector3.Distance(_userPosition, _targetPosition) <= _maxOrbitRange)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    // Checks if the ship should fire main weapons based on its distance to its target
+    public bool ShouldShipFireGun(Vector3 _userPosition, Vector3 _targetPosition, float _maxWeaponsRange)
+    {
+        if(Vector3.Distance(_userPosition, _targetPosition) < _maxWeaponsRange)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    // Checks if the ship should use an ability
+    public bool ShouldShipUseAbility(Vector3 _userPosition, Vector3 _targetPosition, float _abilityUsageRange)
+    {
+        if(Vector3.Distance(_userPosition, _targetPosition) < _abilityUsageRange)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+// Targeting methods for AI
+public static class Targeting
+{
     // Acquires a target with opposite IFF
     public static Ship AcquireTarget(Vector3 _userPosition, GameController.IFF _iff, float _maxTargetingDistance)
     {
@@ -268,65 +418,5 @@ public static class AIController
     public static Quaternion GetRotationToTarget(Transform _userTransform, Vector3 _targetPosition)
     {
         return Quaternion.LookRotation(_targetPosition - _userTransform.position);
-    }
-
-    // Checks if the ship should accelerate based on its distance to its target
-    public static bool ShouldAccelerate(bool _shouldStrafe, Vector3 _userPosition, Vector3 _targetPosition, float _maxOrbitRange)
-    {
-        if(_shouldStrafe == true)
-        {
-            if(Vector3.Distance(_userPosition, _targetPosition) > _maxOrbitRange)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if(_shouldStrafe == false)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    // Checks if the ship should strafe based on its distance to its target
-    public static bool ShouldStrafe(Vector3 _userPosition, Vector3 _targetPosition, float _maxOrbitRange)
-    {
-        if(Vector3.Distance(_userPosition, _targetPosition) <= _maxOrbitRange)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    // Checks if the ship should fire main weapons based on its distance to its target
-    public static bool ShouldFireGun(Vector3 _userPosition, Vector3 _targetPosition, float _maxWeaponsRange)
-    {
-        if(Vector3.Distance(_userPosition, _targetPosition) < _maxWeaponsRange)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    // Checks if the ship should use an ability
-    public static bool ShouldUseAbility(Vector3 _userPosition, Vector3 _targetPosition, float _abilityUsageRange)
-    {
-        if(Vector3.Distance(_userPosition, _targetPosition) < _abilityUsageRange)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
 }

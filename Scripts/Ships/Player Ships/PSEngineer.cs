@@ -4,37 +4,37 @@ using UnityEngine;
 
 public class PSEngineer : PlayerShip
 {
-    private GameObject ShieldOverchargeObject;
-    private GameObject EMPObject;
+    private readonly GameObject ShieldOverchargeObject;
+    private readonly GameObject EMPObject;
 
     // Lists
-    public List<DroneShip> Drones = new List<DroneShip>();
+    private readonly List<DroneShip> Drones = new List<DroneShip>();
 
     // Ship stats
     // ----Ability 1: Shield Overcharge
-    public float ShieldRegenSpeedMultiplier; // 
-    public float ShieldCooldownMultiplier; // 
+    private float ShieldRegenSpeedMultiplier; // 
+    private float ShieldCooldownMultiplier; // 
     // ----Ability 2: Drones
-    public DroneShip.DroneShipType DroneType; //
-    public uint DroneAmount; //
-    public uint MaxDroneAmount; //
-    public float DroneMaxHealth; //
-    public float DroneMaxShields; //
-    public float DroneMaxSpeed; //
-    public float DroneGunCooldownTime; //
-    public uint DroneGunShotAmount; //
-    public uint DroneGunShotProjectileType; // 
-    public float DroneGunShotDamage; //
-    public float DroneGunShotAccuracy; //
-    public float DroneGunShotSpeed; //
-    public float DroneGunShotLifetime; //
-    public float DroneTargetAcquisitionDistance; //
-    public float DroneStrafeDistance; //
-    public float DroneLeashDistance; //
+    private DroneShip.DroneShipType DroneType; //
+    private uint DroneAmount; //
+    private uint MaxDroneAmount; //
+    private float DroneMaxHealth; //
+    private float DroneMaxShields; //
+    private float DroneMaxSpeed; //
+    private float DroneGunCooldownTime; //
+    private uint DroneGunShotAmount; //
+    private uint DroneGunShotProjectileType; // 
+    private float DroneGunShotDamage; //
+    private float DroneGunShotAccuracy; //
+    private float DroneGunShotSpeed; //
+    private float DroneGunShotLifetime; //
+    private float DroneTargetAcquisitionDistance; //
+    private float DroneStrafeDistance; //
+    private float DroneLeashDistance; //
     // ----Ability 3: EMP
-    public float EMPRadius; //
-    public float EMPDuration; //
-    public float EMPEnergyCost; //
+    private float EMPRadius; //
+    private float EMPDuration; //
+    private float EMPEnergyCost; //
 
     // Player ship constructor
     public PSEngineer(uint _id)
@@ -47,43 +47,49 @@ public class PSEngineer : PlayerShip
         this.IFF = GameController.IFF.Friend;
         this.IsPlayer = true;
         // Ship stats
-        // --Health/Armor/Shields
-        this.Health = 150f;
-        this.MaxHealth = 150f;
-        this.Armor = 75f;
-        this.Shields = 150f;
-        this.MaxShields = 150f;
-        this.ShieldRegenSpeed = 1f;
-        this.ShieldCooldownTime = 2.5f;
-        // --Current/Max energy
-        this.Energy = 100f;
-        this.MaxEnergy = 100f;
-        this.EnergyRegenSpeed = 1.5f;
-        // --Energy costs
-        this.WarpEnergyCost = 3f;
-        this.GunEnergyCost = 30f;
-        // --Acceleration
-        this.EngineCount = 2;
-        this.ImpulseAcceleration = 100f;
-        this.WarpAccelerationMultiplier = 3f;
-        this.StrafeAcceleration = 0f;
-        // --Max Speed
-        this.MaxImpulseSpeed = 50f;
-        this.MaxWarpSpeed = 150f;
-        this.MaxStrafeSpeed = 0f;
-        this.MaxRotationSpeed = 0.1f;
-        // --Weapon stats
-        // ----Main gun
-        this.GunBarrelCount = 1;
-        this.GunShotProjectileType = 3;
-        this.GunCooldownTime = 0.38f;
-        this.GunShotAmount = 5;
-        this.GunShotCurvature = 0f;
-        this.GunShotSightCone = 0f;
-        this.GunShotDamage = 10f;
-        this.GunShotAccuracy = 85f;
-        this.GunShotSpeed = 150f;
-        this.GunShotLifetime = 2f;
+        this.Stats = new ShipStats
+        {
+            // --Health/Armor/Shields
+            Health = 150f,
+            MaxHealth = 150f,
+            Armor = 75f,
+            Shields = 150f,
+            MaxShields = 150f,
+            ShieldRegenSpeed = 1f,
+            ShieldCooldownTime = 2.5f,
+            // --Current/Max energy
+            Energy = 100f,
+            MaxEnergy = 100f,
+            EnergyRegenSpeed = 1.5f,
+            // --Energy costs
+            WarpEnergyCost = 3f,
+            GunEnergyCost = 30f,
+            // --Acceleration
+            EngineCount = 2,
+            ImpulseAcceleration = 100f,
+            WarpAccelerationMultiplier = 3f,
+            StrafeAcceleration = 0f,
+            // --Max Speed
+            MaxImpulseSpeed = 50f,
+            MaxWarpSpeed = 150f,
+            MaxStrafeSpeed = 0f,
+            MaxRotationSpeed = 0.1f,
+            // --Weapon stats
+            // ----Main gun
+            GunBarrelCount = 1,
+            GunShotProjectileType = 3,
+            GunCooldownTime = 0.38f,
+            GunShotAmount = 5,
+            GunShotCurvature = 0f,
+            GunShotSightCone = 0f,
+            GunShotDamage = 10f,
+            GunShotAccuracy = 85f,
+            GunShotSpeed = 150f,
+            GunShotLifetime = 2f,
+            // ---- Ability Cooldowns
+            AbilityDuration = new float[3] { 4f, 0f, 1f },
+            AbilityCooldownTime = new float[3] { 12f, 20f, 14f },
+        };
         // -- Abilities
         // ----Ability 1: Shield Overcharge
         this.ShieldRegenSpeedMultiplier = 2f;
@@ -109,13 +115,6 @@ public class PSEngineer : PlayerShip
         this.EMPRadius = 60f;
         this.EMPDuration = 4f;
         this.EMPEnergyCost = 60f;
-        // ---- Ability Cooldowns
-        this.AbilityDuration[0] = 4f;
-        this.AbilityCooldownTime[0] = 12f;
-        this.AbilityDuration[1] = 0f;
-        this.AbilityCooldownTime[1] = 20f;
-        this.AbilityDuration[2] = 1f;
-        this.AbilityCooldownTime[2] = 14f;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.PlayerPrefabName + $@" {this.Type}");
         this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.identity);
@@ -124,32 +123,28 @@ public class PSEngineer : PlayerShip
         this.ShieldOverchargeObject.SetActive(false);
         this.EMPObject = this.ShipObject.transform.Find(GameController.EMPObjectName).gameObject;
         this.EMPObject.SetActive(false);
-        // Audio levels
-        this.ImpulseEngineAudioStep = 0.05f;
-        this.ImpulseEngineAudioMinVol = 0.25f;
-        this.ImpulseEngineAudioMaxVol = 1f;
         // Defaults
-        this.DefaultShieldRegenSpeed = this.ShieldRegenSpeed;
-        this.DefaultShieldCooldownTime = this.ShieldCooldownTime;
+        this.DefaultShieldRegenSpeed = this.Stats.ShieldRegenSpeed;
+        this.DefaultShieldCooldownTime = this.Stats.ShieldCooldownTime;
         this.Initialize();
     }
 
 
     // Check ability 1
-    public override void CheckAbility1()
+    protected override void CheckAbility1()
     {
-        Abilities.CheckShieldOvercharge(this, 0, this.ShieldOverchargeObject, this.ShieldRegenSpeedMultiplier, this.ShieldCooldownMultiplier);
+        this.CheckShieldOvercharge(0, this.ShieldOverchargeObject, this.ShieldRegenSpeedMultiplier, this.ShieldCooldownMultiplier);
     }
 
     // Check ability 2
-    public override void CheckAbility2()
+    protected override void CheckAbility2()
     {
-        Abilities.CheckDrones(this, 1, this.Drones, this.DroneAmount, this.MaxDroneAmount, this.DroneType, this.DroneMaxHealth, this.DroneMaxShields, this.DroneMaxSpeed, this.DroneGunShotProjectileType, this.DroneGunCooldownTime, this.DroneGunShotAmount, this.DroneGunShotDamage, this.DroneGunShotAccuracy, this.DroneGunShotSpeed, this.DroneGunShotLifetime, this.DroneTargetAcquisitionDistance, this.DroneStrafeDistance, this.DroneLeashDistance);
+        this.CheckDrones(1, this.Drones, this.DroneAmount, this.MaxDroneAmount, this.DroneType, this.DroneMaxHealth, this.DroneMaxShields, this.DroneMaxSpeed, this.DroneGunShotProjectileType, this.DroneGunCooldownTime, this.DroneGunShotAmount, this.DroneGunShotDamage, this.DroneGunShotAccuracy, this.DroneGunShotSpeed, this.DroneGunShotLifetime, this.DroneTargetAcquisitionDistance, this.DroneStrafeDistance, this.DroneLeashDistance);
     }
 
     // Check ability 3
-    public override void CheckAbility3()
+    protected override void CheckAbility3()
     {
-        Abilities.CheckEMP(this, 2, this.EMPObject, this.EMPRadius, this.EMPDuration, this.EMPEnergyCost);
+        this.CheckEMP(2, this.EMPObject, this.EMPRadius, this.EMPDuration, this.EMPEnergyCost);
     }
 }

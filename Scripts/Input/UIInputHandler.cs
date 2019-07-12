@@ -12,26 +12,23 @@ public class UIInputHandler : MonoBehaviour
         }
         else if(_input == "NewGame")
         {
-            UIController.enteredNewState = false;
-            GameController.CurrentGameState = GameController.GameState.NewGameMenu;
+            GameController.ChangeGameState(GameController.GameState.NewGameMenu);
         }
         else if(_input == "SelectBomber")
         {
-            GameController.PlayerShipType = PlayerShip.PlayerShipType.Bomber;
+            GameController.ChangePlayerShipType(PlayerShip.PlayerShipType.Bomber);
         }
         else if(_input == "SelectEngineer")
         {
-            GameController.PlayerShipType = PlayerShip.PlayerShipType.Engineer;
+            GameController.ChangePlayerShipType(PlayerShip.PlayerShipType.Engineer);
         }
         else if(_input == "StartGame")
         {
-            UIController.enteredNewState = false;
             GameController.Restart();
-            GameController.CurrentGameState = GameController.GameState.Playing;
+            GameController.ChangeGameState(GameController.GameState.Playing);
         }
         else if(_input == "NewGameBackButton")
         {
-            UIController.enteredNewState = false;
             UIController.ExitNewGameMenu();
         }
         else if(_input == "LoadGame")
@@ -40,12 +37,10 @@ public class UIInputHandler : MonoBehaviour
         }
         else if(_input == "Settings")
         {
-            UIController.enteredNewState = false;
-            GameController.CurrentGameState = GameController.GameState.SettingsMenu;
+            GameController.ChangeGameState(GameController.GameState.SettingsMenu);
         }
         else if(_input == "SettingsBackButton")
         {
-            UIController.enteredNewState = false;
             UIController.ExitSettingsMenu();
         }
         else if(_input == "Quit")
@@ -54,19 +49,16 @@ public class UIInputHandler : MonoBehaviour
         }
         else if(_input == "Restart")
         {
-            UIController.enteredNewState = false;
             GameController.Restart();
         }
         else if(_input == "Resume")
         {
-            UIController.enteredNewState = false;
-            GameController.CurrentGameState = GameController.GameState.Playing;
+            GameController.ChangeGameState(GameController.GameState.Playing);
         }
         else if(_input == "QuitToMainMenu")
         {
-            UIController.enteredNewState = false;
             GameController.Restart();
-            GameController.CurrentGameState = GameController.GameState.MainMenu;
+            GameController.ChangeGameState(GameController.GameState.MainMenu);
         }
     }
 }

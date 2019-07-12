@@ -6,17 +6,17 @@ using UnityEngine;
 public static class PlayerInput
 {
     // Inputs
-    public static Vector2 AimInput = new Vector2();
-    public static float ImpulseEngineInput;
-    public static float WarpEngineInput;
-    public static bool MainGunInput;
-    public static bool Ability1Input;
-    public static bool Ability2Input;
-    public static bool Ability3Input;
-    public static bool PauseButtonInput;
+    public static Float2 AimInput { get; private set; } = new Float2();
+    public static float ImpulseEngineInput { get; private set; }
+    public static float WarpEngineInput { get; private set; }
+    public static bool MainGunInput { get; private set; }
+    public static bool Ability1Input { get; private set; }
+    public static bool Ability2Input { get; private set; }
+    public static bool Ability3Input { get; private set; }
+    public static bool PauseButtonInput { get; private set; }
 
     // Input bindings
-    public static Dictionary<string, InputBinding> InputBindings = new Dictionary<string, InputBinding>
+    public static Dictionary<string, InputBinding> InputBindings { get; private set; } = new Dictionary<string, InputBinding>
     {
         {"Submit", new InputBinding("Submit", InputBinding.InputTypeEnum.Button, "Button 0")},
         {"Cancel", new InputBinding("Cancel", InputBinding.InputTypeEnum.Button, "Button 1")},
@@ -35,7 +35,7 @@ public static class PlayerInput
     public static bool RebindingInputs = false;
     public static string InputToRebind = "";
     public static float RebindingStartedTime = 0f;
-    public static float MaxRebindingInputDuration = 5f;
+    private const float MaxRebindingInputDuration = 5f;
 
     // Update is called once per frame
     public static void Update()
@@ -171,7 +171,8 @@ public static class PlayerInput
         //    Ability3Input = Input.GetButton("Button 2");
         //    PauseButtonInput = Input.GetButtonDown("Button 9");
         //}
-        AimInput.Set(Input.GetAxis(InputBindings["Aim Input Horizontal"].InputButton), Input.GetAxis(InputBindings["Aim Input Vertical"].InputButton));
+        AimInput.x = Input.GetAxis(InputBindings["Aim Input Horizontal"].InputButton);
+        AimInput.y = Input.GetAxis(InputBindings["Aim Input Vertical"].InputButton);
         ImpulseEngineInput = Input.GetAxis(InputBindings["Impulse Engine Input"].InputButton);
         WarpEngineInput = Input.GetAxis(InputBindings["Warp Engine Input"].InputButton);
         MainGunInput = Input.GetButton(InputBindings["Main Gun Input"].InputButton);
@@ -179,6 +180,18 @@ public static class PlayerInput
         Ability2Input = Input.GetButton(InputBindings["Ability 2 Input"].InputButton);
         Ability3Input = Input.GetButton(InputBindings["Ability 3 Input"].InputButton);
         PauseButtonInput = Input.GetButtonDown(InputBindings["Pause Input"].InputButton);
+    }
+
+    // Zero out inputs
+    public static void ZeroInputs()
+    {
+        ImpulseEngineInput = 0f;
+        WarpEngineInput = 0f;
+        MainGunInput = false;
+        Ability1Input = false;
+        Ability2Input = false;
+        Ability3Input = false;
+        PauseButtonInput = false;
     }
 }
 
@@ -192,9 +205,9 @@ public class InputBinding
         Trigger,
         Axis
     }
-    public string InputName;
-    public InputTypeEnum InputType;
-    public string InputButton;
+    public string InputName { get; private set; }
+    public InputTypeEnum InputType { get; private set; }
+    public string InputButton { get; private set; }
 
     // Constructor
     public InputBinding(string _inputName, InputTypeEnum _inputType, string _inputButton)

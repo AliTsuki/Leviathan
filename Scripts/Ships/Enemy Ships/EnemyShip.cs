@@ -9,5 +9,5 @@ public abstract class EnemyShip : Ship
         Broadside,
         Flanker
     }
-    public EnemyShipType Type;
+    protected EnemyShipType Type;
 }

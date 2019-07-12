@@ -23,27 +23,30 @@ public class ESRamming : EnemyShip
         this.IFF = GameController.IFF.Enemy;
         this.IsPlayer = false;
         // Ship stats
-        // --Health/Armor/Shields
-        this.Health = 10f;
-        this.MaxHealth = 10f;
-        this.Armor = 50f;
-        this.Shields = 5f;
-        this.MaxShields = 5f;
-        this.ShieldRegenSpeed = 1f;
-        this.ShieldCooldownTime = 3f;
-        // --Current/Max energy
-        this.Energy = 100f;
-        this.MaxEnergy = 100f;
-        this.EnergyRegenSpeed = 1.5f;
-        // --Acceleration
-        this.EngineCount = 1;
-        this.ImpulseAcceleration = 150f;
-        // --Max Speed
-        this.MaxImpulseSpeed = 150f;
-        this.MaxRotationSpeed = 0.15f;
-        // --Weapon stats
-        // ----Main gun
-        this.GunBarrelCount = 0;
+        this.Stats = new ShipStats
+        {
+            // --Health/Armor/Shields
+            Health = 10f,
+            MaxHealth = 10f,
+            Armor = 50f,
+            Shields = 5f,
+            MaxShields = 5f,
+            ShieldRegenSpeed = 1f,
+            ShieldCooldownTime = 3f,
+            // --Current/Max energy
+            Energy = 100f,
+            MaxEnergy = 100f,
+            EnergyRegenSpeed = 1.5f,
+            // --Acceleration
+            EngineCount = 1,
+            ImpulseAcceleration = 150f,
+            // --Max Speed
+            MaxImpulseSpeed = 150f,
+            MaxRotationSpeed = 0.15f,
+            // --Weapon stats
+            // ----Main gun
+            GunBarrelCount = 0,
+        };
         // ----Bomb
         this.BombDamage = 25f;
         this.BombRadius = 25f;
@@ -51,10 +54,10 @@ public class ESRamming : EnemyShip
         this.AIAimAssist = false;
         this.MaxTargetAcquisitionRange = 80f;
         // Experience
-        this.XP = (uint)(this.MaxHealth + this.MaxShields);
+        this.XP = (uint)(this.Stats.MaxHealth + this.Stats.MaxShields);
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.EnemyShipPrefabName + $@" {this.Type}");
-        this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.Euler(0, GameController.r.Next(0, 360), 0));
+        this.ShipObject = GameObject.Instantiate(this.ShipObjectPrefab, this.StartingPosition, Quaternion.Euler(0, GameController.RandomNumGen.Next(0, 360), 0));
         this.BombExplosionPrefab = Resources.Load<GameObject>(GameController.BombExplostionPrefabName);
         this.Initialize();
     }
@@ -68,14 +71,14 @@ public class ESRamming : EnemyShip
         if(_iff != this.IFF)
         {
             // If armor percentage is above 100, cap it at 100
-            Mathf.Clamp(this.Armor, 0, 100);
+            Mathf.Clamp(this.Stats.Armor, 0, 100);
             // Take impact damage less armor percentage
-            this.TakeDamage(_collisionVelocity.magnitude * ((100 - this.Armor) / 100));
+            this.TakeDamage(_collisionVelocity.magnitude * ((100 - this.Stats.Armor) / 100));
             // If this ship is not EMPed
             if(this.IsEMPed == false)
             {
                 // Detonate warhead
-                Abilities.Detonate(this, this.BombExplosionPrefab, this.BombScale, this.BombDamage, this.BombRadius);
+                this.Detonate(this.BombExplosionPrefab, this.BombScale, this.BombDamage, this.BombRadius);
             }
         }
     }

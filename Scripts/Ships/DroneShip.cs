@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+
 using UnityEngine;
 
 public class DroneShip : Ship
 {
     // Drone ship-only GameObjects
     private readonly GameObject BombExplosionPrefab;
-    private GameObject BombExplosionObject;
+    private readonly GameObject BombExplosionObject;
 
     // Ship stats
     private readonly float BombDamage;
@@ -20,7 +21,7 @@ public class DroneShip : Ship
     {
         Standard,
     }
-    public DroneShipType Type;
+    public DroneShipType Type { get; private set; }
 
     public DroneShip(uint _id, Ship _parent, List<DroneShip> _parentDroneList, DroneShipType _type, Vector3 _startingPosition, float _maxHealth, float _maxShields, float _maxSpeed, uint _gunShotProjectileType, float _gunCooldownTime, uint _gunShotAmount, float _gunShotDamage, float _gunShotAccuracy, float _gunShotSpeed, float _gunShotLifetime, float _maxTargetAcquisitionDistance, float _maxStrafeDistance, float _maxLeashDistance)
     {
@@ -33,43 +34,46 @@ public class DroneShip : Ship
         this.IFF = GameController.IFF.Friend;
         this.IsPlayer = false;
         // Ship stats
-        // --Health/Armor/Shields
-        this.Health = _maxHealth;
-        this.MaxHealth = _maxHealth;
-        this.Armor = 99f;
-        this.Shields = _maxShields;
-        this.MaxShields = _maxShields;
-        this.ShieldRegenSpeed = 1f;
-        this.ShieldCooldownTime = 3f;
-        // --Current/Max energy
-        this.Energy = 100f;
-        this.MaxEnergy = 100f;
-        this.EnergyRegenSpeed = 1.5f;
-        // --Energy costs
-        this.WarpEnergyCost = 3f;
-        this.GunEnergyCost = 17f;
-        // --Acceleration
-        this.EngineCount = 1;
-        this.ImpulseAcceleration = 100f;
-        this.WarpAccelerationMultiplier = 0f;
-        this.StrafeAcceleration = 50f;
-        // --Max Speed
-        this.MaxImpulseSpeed = _maxSpeed;
-        this.MaxWarpSpeed = 0f;
-        this.MaxStrafeSpeed = 20f;
-        this.MaxRotationSpeed = 0.1f;
-        // --Weapon stats
-        // ----Main gun
-        this.GunBarrelCount = 1;
-        this.GunShotProjectileType = _gunShotProjectileType;
-        this.GunCooldownTime = _gunCooldownTime;
-        this.GunShotAmount = _gunShotAmount;
-        this.GunShotCurvature = 0f;
-        this.GunShotSightCone = 0f;
-        this.GunShotDamage = _gunShotDamage;
-        this.GunShotAccuracy = _gunShotAccuracy;
-        this.GunShotSpeed = _gunShotSpeed;
-        this.GunShotLifetime = _gunShotLifetime;
+        this.Stats = new ShipStats
+        {
+            // --Health/Armor/Shields
+            Health = _maxHealth,
+            MaxHealth = _maxHealth,
+            Armor = 99f,
+            Shields = _maxShields,
+            MaxShields = _maxShields,
+            ShieldRegenSpeed = 1f,
+            ShieldCooldownTime = 3f,
+            // --Current/Max energy
+            Energy = 100f,
+            MaxEnergy = 100f,
+            EnergyRegenSpeed = 1.5f,
+            // --Energy costs
+            WarpEnergyCost = 3f,
+            GunEnergyCost = 17f,
+            // --Acceleration
+            EngineCount = 1,
+            ImpulseAcceleration = 100f,
+            WarpAccelerationMultiplier = 0f,
+            StrafeAcceleration = 50f,
+            // --Max Speed
+            MaxImpulseSpeed = _maxSpeed,
+            MaxWarpSpeed = 0f,
+            MaxStrafeSpeed = 20f,
+            MaxRotationSpeed = 0.1f,
+            // --Weapon stats
+            // ----Main gun
+            GunBarrelCount = 1,
+            GunShotProjectileType = _gunShotProjectileType,
+            GunCooldownTime = _gunCooldownTime,
+            GunShotAmount = _gunShotAmount,
+            GunShotCurvature = 0f,
+            GunShotSightCone = 0f,
+            GunShotDamage = _gunShotDamage,
+            GunShotAccuracy = _gunShotAccuracy,
+            GunShotSpeed = _gunShotSpeed,
+            GunShotLifetime = _gunShotLifetime,
+        };
         // Self Destruct
         this.BombRadius = 25f;
         this.BombDamage = 25f;
@@ -91,11 +95,11 @@ public class DroneShip : Ship
     // Self destruct ship
     public void Detonate()
     {
-        Abilities.Detonate(this, this.BombExplosionPrefab, this.BombScale, this.BombDamage, this.BombRadius);
+        this.Detonate(this.BombExplosionPrefab, this.BombScale, this.BombDamage, this.BombRadius);
     }
 
     // Called when ship is destroyed by damage, grants XP
-    public override void Kill()
+    protected override void Kill()
     {
         // Set to not alive
         this.Alive = false;
@@ -108,7 +112,7 @@ public class DroneShip : Ship
         // Destroy ship object
         GameObject.Destroy(this.ShipObject);
         // Add ship to removal list
-        GameController.ShipsToRemove.Add(this.ID);
+        GameController.AddShipToRemovalList(this.ID);
         // Remove drone from parents drone list
         this.ParentDroneList.Remove(this);
     }

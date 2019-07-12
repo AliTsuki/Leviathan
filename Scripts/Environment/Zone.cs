@@ -7,32 +7,32 @@ using UnityEngine;
 public class Zone
 {
     // Enemies in zone
-    public static EnemyAndSpawnRate[] DefaultZoneEnemies = new EnemyAndSpawnRate[]
+    private static readonly EnemyAndSpawnRate[] DefaultZoneEnemies = new EnemyAndSpawnRate[]
     {
         // NONE
     };
-    public static EnemyAndSpawnRate[] GreenZoneEnemies = new EnemyAndSpawnRate[]
+    private static readonly EnemyAndSpawnRate[] GreenZoneEnemies = new EnemyAndSpawnRate[]
     {
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 85),
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 2),
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 13)
     };
-    public static EnemyAndSpawnRate[] RedZoneEnemies = new EnemyAndSpawnRate[]
+    private static readonly EnemyAndSpawnRate[] RedZoneEnemies = new EnemyAndSpawnRate[]
     {
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 10),
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Flanker, 90)
     };
-    public static EnemyAndSpawnRate[] OrangeZoneEnemies = new EnemyAndSpawnRate[]
+    private static readonly EnemyAndSpawnRate[] OrangeZoneEnemies = new EnemyAndSpawnRate[]
     {
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 10),
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Flanker, 90)
     };
-    public static EnemyAndSpawnRate[] PurpleZoneEnemies = new EnemyAndSpawnRate[]
+    private static readonly EnemyAndSpawnRate[] PurpleZoneEnemies = new EnemyAndSpawnRate[]
     {
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 25),
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 75)
     };
-    public static EnemyAndSpawnRate[] BlueZoneEnemies = new EnemyAndSpawnRate[]
+    private static readonly EnemyAndSpawnRate[] BlueZoneEnemies = new EnemyAndSpawnRate[]
     {
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 40),
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 5),
@@ -50,18 +50,18 @@ public class Zone
         PurpleZone,
         BlueZone
     }
-    public ZoneType Type;
+    public ZoneType Type { get; private set; }
 
     // Zones
-    public static Zone DefaultZone = new Zone(ZoneType.DefaultZone, DefaultZoneEnemies);
-    public static Zone GreenZone = new Zone(ZoneType.GreenZone, GreenZoneEnemies);
-    public static Zone RedZone = new Zone(ZoneType.RedZone, RedZoneEnemies);
-    public static Zone OrangeZone = new Zone(ZoneType.OrangeZone, OrangeZoneEnemies);
-    public static Zone PurpleZone = new Zone(ZoneType.PurpleZone, PurpleZoneEnemies);
-    public static Zone BlueZone = new Zone(ZoneType.BlueZone, BlueZoneEnemies);
+    private static Zone DefaultZone = new Zone(ZoneType.DefaultZone, DefaultZoneEnemies);
+    private static Zone GreenZone = new Zone(ZoneType.GreenZone, GreenZoneEnemies);
+    private static Zone RedZone = new Zone(ZoneType.RedZone, RedZoneEnemies);
+    private static Zone OrangeZone = new Zone(ZoneType.OrangeZone, OrangeZoneEnemies);
+    private static Zone PurpleZone = new Zone(ZoneType.PurpleZone, PurpleZoneEnemies);
+    private static Zone BlueZone = new Zone(ZoneType.BlueZone, BlueZoneEnemies);
 
     // Dictionary of zones
-    public static Dictionary<ZoneType, Zone> Zones = new Dictionary<ZoneType, Zone>
+    private static readonly Dictionary<ZoneType, Zone> Zones = new Dictionary<ZoneType, Zone>
     {
         {DefaultZone.Type, DefaultZone},
         {GreenZone.Type, GreenZone},
@@ -100,8 +100,8 @@ public class Zone
     };
 
     // Constructor fields
-    public EnemyAndSpawnRate[] ZoneEnemyTypeArray;
-    public int TotalWeight;
+    private EnemyAndSpawnRate[] ZoneEnemyTypeArray;
+    private int TotalWeight;
 
     // Zone constructor
     public Zone(ZoneType _zoneType, EnemyAndSpawnRate[] _enemyArray)
@@ -183,7 +183,7 @@ public class Zone
         // Default enemyID
         EnemyShip.EnemyShipType EnemyType = EnemyShip.EnemyShipType.Standard;
         // Get a random number between 0 and total weight for enemies in zone
-        int randomNumber = GameController.r.Next(0, Zones[_zoneType].TotalWeight);
+        int randomNumber = GameController.RandomNumGen.Next(0, Zones[_zoneType].TotalWeight);
         // Get enemy array
         EnemyAndSpawnRate[] EnemyArray = Zones[_zoneType].ZoneEnemyTypeArray;
         // Loop through enemy array
@@ -237,8 +237,8 @@ public class Zone
 
 public struct EnemyAndSpawnRate
 {
-    public EnemyShip.EnemyShipType EnemyType;
-    public int SpawnRate;
+    public EnemyShip.EnemyShipType EnemyType { get; private set; }
+    public int SpawnRate { get; private set; }
 
     public EnemyAndSpawnRate(EnemyShip.EnemyShipType _enemyType, int _spawnRate)
     {
