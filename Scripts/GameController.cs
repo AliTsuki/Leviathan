@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version { get; private set; } = "0.0.14g";
+    public static string Version { get; private set; } = "0.0.15a";
 
     // Random number generator
     public static System.Random RandomNumGen { get; private set; } = new System.Random();
@@ -289,8 +289,6 @@ public static class GameController
         Score = 0;
         // Get time started
         TimeStarted = Time.time;
-        // TODO: this is a shitty workaround so player doesn't fire a shot the moment they spawn
-        PlayerInput.ZeroInputs();
         // Initialize player, follow camera, and backgrounds
         SpawnPlayer(PlayerShipType);
         FollowCamera();

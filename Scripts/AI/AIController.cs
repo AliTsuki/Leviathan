@@ -35,20 +35,20 @@ public abstract partial class Ship
                 // Stop wandering as currently have target
                 this.ShouldWander = false;
                 // If ship should accelerate
-                if(this.ShouldAccelerate == true)
+                if(this.CanAccelerate == true)
                 {
                     // Use AI to figure out if ship should accelerate
-                    if(this.ShouldShipAccelerate(this.ShouldStrafe, this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
+                    if(this.ShouldShipAccelerate(this.CanStrafe, this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
                     {
-                        this.ImpulseEngineInput = 1f;
+                        this.ImpulseInput = true;
                     }
                     else
                     {
-                        this.ImpulseEngineInput = 0f;
+                        this.ImpulseInput = false;
                     }
                 }
                 // If ship should strafe
-                if(this.ShouldStrafe == true)
+                if(this.CanStrafe == true)
                 {
                     // Use AI to figure out if ship should strafe target, resets strafe direction each time strafing is cancelled
                     if(this.ShouldShipStrafe(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
@@ -63,7 +63,7 @@ public abstract partial class Ship
                     }
                 }
                 // If ship should fire guns
-                if(this.ShouldFireGuns == true)
+                if(this.CanFireGuns == true)
                 {
                     // Use AI to figure out if ship should fire weapons
                     if(this.ShouldShipFireGun(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxWeaponsRange) == true)
@@ -76,7 +76,7 @@ public abstract partial class Ship
                     }
                 }
                 // If ship should use ability
-                if(this.ShouldUseAbilities == true)
+                if(this.CanUseAbilities == true)
                 {
                     // Use AI to figure out if ship should use ability
                     if(this.ShouldShipUseAbility(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxAbilityRange))
@@ -96,21 +96,21 @@ public abstract partial class Ship
             // If ship is drone and it is past its leash distance from parent
             if((this.AItype == Ship.AIType.Drone && Vector3.Distance(this.ShipObject.transform.position, this.Parent.ShipObject.transform.position) > this.MaxLeashDistance) || this.Parent.WarpEngineInput > 0f)
             {
-                this.ShouldFollowParent = true;
+                this.CanFollowParent = true;
             }
             // If there is no current target or current target is dead
-            if((this.CurrentTarget == null || this.CurrentTarget.Alive == false) && this.ShouldFollowParent == false)
+            if((this.CurrentTarget == null || this.CurrentTarget.Alive == false) && this.CanFollowParent == false)
             {
                 // Acquire any target within distance
                 this.CurrentTarget = Targeting.AcquireTarget(this.ShipObject.transform.position, this.IFF, this.MaxTargetAcquisitionRange);
                 // If no target was acquired
                 if(this.CurrentTarget == null)
                 {
-                    this.ShouldFollowParent = true;
+                    this.CanFollowParent = true;
                 }
             }
             // If there is a current target and it is alive
-            else if(this.CurrentTarget != null && this.CurrentTarget.Alive == true && this.ShouldFollowParent == false)
+            else if(this.CurrentTarget != null && this.CurrentTarget.Alive == true && this.CanFollowParent == false)
             {
                 // If target ship is greater than twice maximum target acquisition distance away then untarget and break out of AI loop
                 if(Vector3.Distance(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position) > this.MaxTargetAcquisitionRange * 2f)
@@ -119,20 +119,20 @@ public abstract partial class Ship
                     return;
                 }
                 // If ship should accelerate
-                if(this.ShouldAccelerate == true)
+                if(this.CanAccelerate == true)
                 {
                     // Use AI to figure out if ship should accelerate
-                    if(this.ShouldShipAccelerate(this.ShouldStrafe, this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
+                    if(this.ShouldShipAccelerate(this.CanStrafe, this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
                     {
-                        this.ImpulseEngineInput = 1f;
+                        this.ImpulseInput = true;
                     }
                     else
                     {
-                        this.ImpulseEngineInput = 0f;
+                        this.ImpulseInput = false;
                     }
                 }
                 // If ship should strafe
-                if(this.ShouldStrafe == true)
+                if(this.CanStrafe == true)
                 {
                     // Use AI to figure out if ship should strafe target, resets strafe direction each time strafing is cancelled
                     if(this.ShouldShipStrafe(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxOrbitRange) == true)
@@ -147,7 +147,7 @@ public abstract partial class Ship
                     }
                 }
                 // If ship should fire guns
-                if(this.ShouldFireGuns == true)
+                if(this.CanFireGuns == true)
                 {
                     // Use AI to figure out if ship should fire weapons
                     if(this.ShouldShipFireGun(this.ShipObject.transform.position, this.CurrentTarget.ShipObject.transform.position, this.MaxWeaponsRange) == true)
@@ -179,7 +179,7 @@ public abstract partial class Ship
                 this.StartedWaitingTime = Time.time;
                 this.TimeToWait = GameController.RandomNumGen.Next(0, 11);
                 // Turn off engines
-                this.ImpulseEngineInput = 0f;
+                this.ImpulseInput = false;
             }
             // If done waiting, stop waiting
             if(Time.time - this.StartedWaitingTime > this.TimeToWait)
@@ -198,7 +198,7 @@ public abstract partial class Ship
             // If moving, set impulse to true which causes ship to accelerate forward
             if(this.IsWanderMove == true)
             {
-                this.ImpulseEngineInput = 1f;
+                this.ImpulseInput = true;
             }
             // If done moving, stop moving
             if(Time.time - this.StartedWanderMoveTime > this.TimeToWanderMove)
@@ -212,7 +212,7 @@ public abstract partial class Ship
     protected void FollowParent()
     {
         // If should follow parent is true
-        if(this.ShouldFollowParent == true)
+        if(this.CanFollowParent == true)
         {
             // Stop shooting
             this.MainGunInput = false;
@@ -232,19 +232,19 @@ public abstract partial class Ship
                 // Rotate to face parent
                 this.IntendedRotation = Targeting.GetRotationToTarget(this.ShipObject.transform, this.Parent.ShipObject.transform.position);
                 // Accelerate forward
-                this.ImpulseEngineInput = 1f;
+                this.ImpulseInput = true;
             }
             // If distance to parent is less than or equal to orbit parent range
             else if(Vector3.Distance(this.ShipObject.transform.position, this.Parent.ShipObject.transform.position) <= this.OrbitParentRange)
             {
                 // Turn off engine
-                this.ImpulseEngineInput = 0f;
+                this.ImpulseInput = false;
                 // Set velocity to parent velocity
                 this.ShipRigidbody.velocity = this.Parent.ShipRigidbody.velocity;
                 // Set rotation to parent rotation
                 this.IntendedRotation = this.Parent.ShipObject.transform.rotation;
                 // Stop following parent
-                this.ShouldFollowParent = false;
+                this.CanFollowParent = false;
             }
         }
     }

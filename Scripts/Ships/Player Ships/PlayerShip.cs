@@ -17,14 +17,14 @@ public abstract class PlayerShip : Ship
     protected override void ProcessInputs()
     {
         // Get inputs from PlayerInput
-        this.AimInput = PlayerInput.AimInput;
-        this.ImpulseEngineInput = PlayerInput.ImpulseEngineInput;
-        this.WarpEngineInput = PlayerInput.WarpEngineInput;
-        this.MainGunInput = PlayerInput.MainGunInput;
-        this.AbilityInput[0] = PlayerInput.Ability1Input;
-        this.AbilityInput[1] = PlayerInput.Ability2Input;
-        this.AbilityInput[2] = PlayerInput.Ability3Input;
-        this.PauseInput = PlayerInput.PauseButtonInput;
+        this.MoveInput.Set(PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXAxis], PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYAxis]);
+        this.AimInput.Set(PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.AimInputXAxis], PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.AimInputYAxis]);
+        this.WarpEngineInput = PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Warp];
+        this.MainGunInput = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MainGun] == 1f) ? true : false;
+        this.AbilityInput[0] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability1] == 1f) ? true : false;
+        this.AbilityInput[1] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability2] == 1f) ? true : false;
+        this.AbilityInput[2] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability3] == 1f) ? true : false;
+        this.PauseInput = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Pause] == 1f) ? true : false;
         // Pause game if pause is pressed
         if(this.PauseInput == true)
         {
@@ -42,6 +42,89 @@ public abstract class PlayerShip : Ship
             this.IntendedAngle = (Mathf.Atan2(this.AimInput.y, this.AimInput.x) * Mathf.Rad2Deg) + 90;
             // Set intended rotation to intended angle on y axis
             this.IntendedRotation = Quaternion.Euler(new Vector3(0, this.IntendedAngle, 0));
+        }
+    }
+
+    // TODO: fix accelerate to use new Movement style system
+    // Accelerates the ship
+    protected override void AccelerateShip()
+    {
+        // If impulse engine is activated by player input or AI and warp engine is not activated
+        if(this.ImpulseInput == true && this.WarpEngineInput <= 0f)
+        {
+            // Accelerate forward
+            this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.Stats.ImpulseAcceleration));
+            // If current magnitude of velocity is beyond speed limit for impulse power
+            if(this.ShipRigidbody.velocity.magnitude > this.Stats.MaxImpulseSpeed)
+            {
+                // Linearly interpolate velocity toward speed limit
+                this.ShipRigidbody.velocity = Vector3.Lerp(this.ShipRigidbody.velocity,
+                    Vector3.ClampMagnitude(this.ShipRigidbody.velocity, this.Stats.MaxImpulseSpeed), 0.05f);
+            }
+            // Loop through engines
+            for(int i = 0; i < this.Stats.EngineCount; i++)
+            {
+                // Modify particle fx
+                this.ImpulseParticleSystemMains[i].startSpeed = 2.8f;
+                // Audio fadein
+                AudioController.FadeIn(this.ImpulseAudioSources[i], ImpulseEngineAudioStep, ImpulseEngineAudioMaxVol);
+                // If this is player
+                if(this.IsPlayer == true)
+                {
+                    // Modify warp particle fx
+                    this.WarpParticleSystemMains[i].startLifetime = 0f;
+                    // Warp audio fadeout
+                    AudioController.FadeOut(this.WarpAudioSources[i], WarpEngineAudioStep, WarpEngineAudioMinVol);
+                }
+            }
+        }
+        // If warp engine is activated by player input or AI
+        else if(this.WarpEngineInput > 0f)
+        {
+            // Accelerate forward with warp multiplier to speed
+            this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.Stats.ImpulseAcceleration * this.Stats.WarpAccelerationMultiplier));
+            // Clamp magnitude at maximum warp speed
+            this.ShipRigidbody.velocity = Vector3.ClampMagnitude(this.ShipRigidbody.velocity, this.Stats.MaxWarpSpeed);
+            // Subtract warp energy cost
+            this.SubtractEnergy(this.Stats.WarpEnergyCost);
+            // Loop through engines
+            for(int i = 0; i < this.Stats.EngineCount; i++)
+            {
+                // Modify particle fx
+                this.ImpulseParticleSystemMains[i].startSpeed = 5f;
+                // Audio fadeout
+                AudioController.FadeOut(this.ImpulseAudioSources[i], ImpulseEngineAudioStep, ImpulseEngineAudioMinVol);
+                // If this is player
+                if(this.IsPlayer == true)
+                {
+                    // Modify warp particle fx
+                    this.WarpParticleSystemMains[i].startSpeed = 20f;
+                    this.WarpParticleSystemMains[i].startLifetime = 1f;
+                    // Warp audio fadein
+                    AudioController.FadeIn(this.WarpAudioSources[i], WarpEngineAudioStep, WarpEngineAudioMaxVol);
+                }
+            }
+        }
+        // If no engines are active
+        else
+        {
+            // Loop through engines
+            for(int i = 0; i < this.Stats.EngineCount; i++)
+            {
+                // Turn particles back to default
+                this.ImpulseParticleSystemMains[i].startSpeed = 1f;
+                // Audio fadeout to default
+                AudioController.FadeOut(this.ImpulseAudioSources[i], ImpulseEngineAudioStep, ImpulseEngineAudioMinVol);
+                // If this is player
+                if(this.IsPlayer == true)
+                {
+                    // Warp particle fx to default
+                    this.WarpParticleSystemMains[i].startSpeed = 0f;
+                    this.WarpParticleSystemMains[i].startLifetime = 0f;
+                    // Warp audio fadeout
+                    AudioController.FadeOut(this.WarpAudioSources[i], WarpEngineAudioStep, WarpEngineAudioMinVol);
+                }
+            }
         }
     }
 

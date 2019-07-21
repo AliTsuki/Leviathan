@@ -33,13 +33,15 @@ public abstract partial class Ship
     protected GameObject ElectricityEffect;
 
     // Inputs
+    protected Float2 MoveInput = new Float2();
     protected Float2 AimInput = new Float2();
-    protected float ImpulseEngineInput = 0f;
     protected float WarpEngineInput = 0f;
-    protected bool StrafeInput = false;
     protected bool MainGunInput = false;
     protected bool[] AbilityInput = new bool[3];
     protected bool PauseInput = false;
+    // AI-only Inputs
+    protected bool ImpulseInput = false;
+    protected bool StrafeInput = false;
 
     // Rotation fields
     protected Vector3 StartingPosition = new Vector3();
@@ -167,12 +169,12 @@ public abstract partial class Ship
     public Ship Parent { get; protected set; }
     public float MaxLeashDistance { get; protected set; }
     public float OrbitParentRange { get; protected set; }
-    public bool ShouldFollowParent { get; protected set; }
-    public bool ShouldAcquireTargets { get; protected set; }
-    public bool ShouldAccelerate { get; protected set; }
-    public bool ShouldStrafe { get; protected set; }
-    public bool ShouldFireGuns { get; protected set; }
-    public bool ShouldUseAbilities { get; protected set; }
+    public bool CanFollowParent { get; protected set; }
+    public bool CanAcquireTargets { get; protected set; }
+    public bool CanAccelerate { get; protected set; }
+    public bool CanStrafe { get; protected set; }
+    public bool CanFireGuns { get; protected set; }
+    public bool CanUseAbilities { get; protected set; }
 
     // Identification fields
     public uint ID { get; protected set; }
@@ -324,7 +326,6 @@ public abstract partial class Ship
         this.AccelerateShip();
         this.StrafeShip();
         this.CheckAbilities();
-        // TODO: Maybe move wander and follow parent to AIController
         this.Wander();
         this.FollowParent();
     }
@@ -452,13 +453,13 @@ public abstract partial class Ship
     }
 
     // Accelerates the ship
-    protected void AccelerateShip()
+    protected virtual void AccelerateShip()
     {
         // If impulse engine is activated by player input or AI and warp engine is not activated
-        if(this.ImpulseEngineInput > 0f && this.WarpEngineInput <= 0f)
+        if(this.ImpulseInput == true && this.WarpEngineInput <= 0f)
         {
             // Accelerate forward
-            this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.Stats.ImpulseAcceleration * this.ImpulseEngineInput));
+            this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.Stats.ImpulseAcceleration));
             // If current magnitude of velocity is beyond speed limit for impulse power
             if(this.ShipRigidbody.velocity.magnitude > this.Stats.MaxImpulseSpeed)
             {
@@ -470,7 +471,7 @@ public abstract partial class Ship
             for(int i = 0; i < this.Stats.EngineCount; i++)
             {
                 // Modify particle fx
-                this.ImpulseParticleSystemMains[i].startSpeed = 2.8f * this.ImpulseEngineInput;
+                this.ImpulseParticleSystemMains[i].startSpeed = 2.8f;
                 // Audio fadein
                 AudioController.FadeIn(this.ImpulseAudioSources[i], ImpulseEngineAudioStep, ImpulseEngineAudioMaxVol);
                 // If this is player
@@ -903,43 +904,43 @@ public abstract partial class Ship
             // Set AI fields based on AI type
             case AIType.Standard:
             {
-                this.ShouldAcquireTargets = true;
-                this.ShouldAccelerate = true;
-                this.ShouldStrafe = true;
-                this.ShouldFireGuns = true;
+                this.CanAcquireTargets = true;
+                this.CanAccelerate = true;
+                this.CanStrafe = true;
+                this.CanFireGuns = true;
                 break;
             }
             case AIType.Ramming:
             {
-                this.ShouldAcquireTargets = true;
-                this.ShouldAccelerate = true;
-                this.ShouldStrafe = false;
-                this.ShouldFireGuns = false;
+                this.CanAcquireTargets = true;
+                this.CanAccelerate = true;
+                this.CanStrafe = false;
+                this.CanFireGuns = false;
                 break;
             }
             case AIType.Broadside:
             {
-                this.ShouldAcquireTargets = true;
-                this.ShouldAccelerate = true;
-                this.ShouldStrafe = true;
-                this.ShouldFireGuns = true;
+                this.CanAcquireTargets = true;
+                this.CanAccelerate = true;
+                this.CanStrafe = true;
+                this.CanFireGuns = true;
                 break;
             }
             case AIType.Flanker:
             {
-                this.ShouldAcquireTargets = true;
-                this.ShouldAccelerate = true;
-                this.ShouldStrafe = true;
-                this.ShouldFireGuns = true;
-                this.ShouldUseAbilities = true;
+                this.CanAcquireTargets = true;
+                this.CanAccelerate = true;
+                this.CanStrafe = true;
+                this.CanFireGuns = true;
+                this.CanUseAbilities = true;
                 break;
             }
             case AIType.Drone:
             {
-                this.ShouldAcquireTargets = true;
-                this.ShouldAccelerate = true;
-                this.ShouldStrafe = true;
-                this.ShouldFireGuns = true;
+                this.CanAcquireTargets = true;
+                this.CanAccelerate = true;
+                this.CanStrafe = true;
+                this.CanFireGuns = true;
                 break;
             }
         }

@@ -278,6 +278,7 @@ public static class UIController
                 if(Cursor.visible == false)
                 {
                     Cursor.visible = true;
+                    Cursor.lockState = CursorLockMode.Confined;
                 }
                 break;
             }
@@ -287,6 +288,7 @@ public static class UIController
                 if(Cursor.visible == false)
                 {
                     Cursor.visible = true;
+                    Cursor.lockState = CursorLockMode.Confined;
                 }
                 // Show new game menu if not currently shown
                 if(NewGameContainer.activeSelf == false)
@@ -312,6 +314,7 @@ public static class UIController
                 if(Cursor.visible == false)
                 {
                     Cursor.visible = true;
+                    Cursor.lockState = CursorLockMode.Confined;
                 }
                 if(SettingsMenuContainer.activeSelf == false)
                 {
@@ -362,6 +365,8 @@ public static class UIController
                 if(Cursor.visible == true)
                 {
                     Cursor.visible = false;
+                    Cursor.lockState = CursorLockMode.Confined;
+                    // TODO: Add unique cursor for kbm mode while playing
                 }
                 break;
             }
@@ -371,8 +376,6 @@ public static class UIController
                 if(PauseMenuScreen.activeSelf == false)
                 {
                     ShowPauseMenu();
-                    // Momentarily disable pause button input so pause menu doesn't disappear immediately after showing
-                    PlayerInput.ZeroInputs();
                 }
                 // Default selected button
                 if(HasInitializedNewState == false)
@@ -386,7 +389,7 @@ public static class UIController
                     HideGameOver();
                 }
                 // If pause is pressed
-                if(PlayerInput.PauseButtonInput == true)
+                if(PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Pause] == 1f)
                 {
                     // Get out of pause menu and back into playing state
                     GameController.ChangeGameState(GameController.GameState.Playing);
@@ -395,6 +398,7 @@ public static class UIController
                 if(Cursor.visible == false)
                 {
                     Cursor.visible = true;
+                    Cursor.lockState = CursorLockMode.Confined;
                 }
                 break;
             }
@@ -409,7 +413,8 @@ public static class UIController
                 if(Cursor.visible == false)
                 {
                     Cursor.visible = true;
-                }
+                    Cursor.lockState = CursorLockMode.Confined;
+                   }
                 // Default selected button
                 if(HasInitializedNewState == false)
                 {
@@ -430,10 +435,10 @@ public static class UIController
     // Update rebind inputs text
     private static void UpdateRebindInputsText()
     {
-        MainGunCurrentInputText.text = PlayerInput.InputBindings["Main Gun Input"].InputButton;
-        Ability1CurrentInputText.text = PlayerInput.InputBindings["Ability 1 Input"].InputButton;
-        Ability2CurrentInputText.text = PlayerInput.InputBindings["Ability 2 Input"].InputButton;
-        Ability3CurrentInputText.text = PlayerInput.InputBindings["Ability 3 Input"].InputButton;
+        MainGunCurrentInputText.text = PlayerInput.InputBindingsController[InputBinding.GameInputsEnum.MainGun].InputButton;
+        Ability1CurrentInputText.text = PlayerInput.InputBindingsController[InputBinding.GameInputsEnum.Ability1].InputButton;
+        Ability2CurrentInputText.text = PlayerInput.InputBindingsController[InputBinding.GameInputsEnum.Ability2].InputButton;
+        Ability3CurrentInputText.text = PlayerInput.InputBindingsController[InputBinding.GameInputsEnum.Ability3].InputButton;
     }
 
     // Update minimap coords

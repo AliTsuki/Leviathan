@@ -10,7 +10,7 @@ public class RebindInputHandler : MonoBehaviour
         {
             PlayerInput.RebindingInputs = true;
             PlayerInput.RebindingStartedTime = Time.time;
-            PlayerInput.InputToRebind = "Main Gun Input";
+            PlayerInput.InputToRebind = InputBinding.GameInputsEnum.MainGun;
             UIController.UpdateSettingsErrorText($@"Rebinding Main Gun");
             Logger.Log($@"Rebinding Main Gun");
         }
@@ -18,7 +18,7 @@ public class RebindInputHandler : MonoBehaviour
         {
             PlayerInput.RebindingInputs = true;
             PlayerInput.RebindingStartedTime = Time.time;
-            PlayerInput.InputToRebind = "Ability 1 Input";
+            PlayerInput.InputToRebind = InputBinding.GameInputsEnum.Ability1;
             UIController.UpdateSettingsErrorText($@"Rebinding Ability 1");
             Logger.Log($@"Rebinding Ability 1");
         }
@@ -26,7 +26,7 @@ public class RebindInputHandler : MonoBehaviour
         {
             PlayerInput.RebindingInputs = true;
             PlayerInput.RebindingStartedTime = Time.time;
-            PlayerInput.InputToRebind = "Ability 2 Input";
+            PlayerInput.InputToRebind = InputBinding.GameInputsEnum.Ability2;
             UIController.UpdateSettingsErrorText($@"Rebinding Ability 2");
             Logger.Log($@"Rebinding Ability 2");
         }
@@ -34,7 +34,7 @@ public class RebindInputHandler : MonoBehaviour
         {
             PlayerInput.RebindingInputs = true;
             PlayerInput.RebindingStartedTime = Time.time;
-            PlayerInput.InputToRebind = "Ability 3 Input";
+            PlayerInput.InputToRebind = InputBinding.GameInputsEnum.Ability3;
             UIController.UpdateSettingsErrorText($@"Rebinding Ability 3");
             Logger.Log($@"Rebinding Ability 3");
         }

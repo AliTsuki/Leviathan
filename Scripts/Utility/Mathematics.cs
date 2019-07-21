@@ -33,6 +33,16 @@ public class Float2
         this.y = _y;
     }
 
+    public void SetX(float _x)
+    {
+        this.x = _x;
+    }
+
+    public void SetY(float _y)
+    {
+        this.y = _y;
+    }
+
     public override string ToString()
     {
         return $@"({this.x}, {this.y})";
