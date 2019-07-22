@@ -38,7 +38,7 @@ public abstract partial class Ship
     protected float WarpEngineInput = 0f;
     protected bool MainGunInput = false;
     protected bool[] AbilityInput = new bool[3];
-    protected bool PauseInput = false;
+    public bool PauseInput = false;
     // AI-only Inputs
     protected bool ImpulseInput = false;
     protected bool StrafeInput = false;

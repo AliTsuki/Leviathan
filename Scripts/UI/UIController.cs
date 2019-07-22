@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+// TODO: Rewrite UI system to be more modular
 // Controls the game UI
 public static class UIController
 {
@@ -68,6 +69,9 @@ public static class UIController
     // FX
     private static GameObject ShieldDamageEffect;
     private static GameObject HealthDamageEffect;
+    // Cursor
+    private static Texture2D AimCursorTexture;
+    private static Vector2 CursorHotspot;
 
     // Dictionary of Healthbar UIs
     private static Dictionary<uint, GameObject> HealthbarUIs = new Dictionary<uint, GameObject>();
@@ -88,6 +92,9 @@ public static class UIController
     // Initialize
     public static void Initialize()
     {
+        Cursor.lockState = CursorLockMode.Confined;
+        AimCursorTexture = Resources.Load<Texture2D>(GameController.AimCursorTextureName);
+        CursorHotspot = new Vector2(AimCursorTexture.width / 2, AimCursorTexture.height / 2);
         CurrentEventSystem = EventSystem.current;
         MainMenuButtonDefault = GameObject.Find(GameController.MainMenuButtonDefaultName);
         NewGameMenuButtonDefault = GameObject.Find(GameController.NewGameMenuButtonDefaultName);
@@ -278,8 +285,8 @@ public static class UIController
                 if(Cursor.visible == false)
                 {
                     Cursor.visible = true;
-                    Cursor.lockState = CursorLockMode.Confined;
                 }
+                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                 break;
             }
             case GameController.GameState.NewGameMenu:
@@ -288,8 +295,8 @@ public static class UIController
                 if(Cursor.visible == false)
                 {
                     Cursor.visible = true;
-                    Cursor.lockState = CursorLockMode.Confined;
                 }
+                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                 // Show new game menu if not currently shown
                 if(NewGameContainer.activeSelf == false)
                 {
@@ -314,8 +321,8 @@ public static class UIController
                 if(Cursor.visible == false)
                 {
                     Cursor.visible = true;
-                    Cursor.lockState = CursorLockMode.Confined;
                 }
+                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                 if(SettingsMenuContainer.activeSelf == false)
                 {
                     ShowSettingsMenu();
@@ -361,12 +368,25 @@ public static class UIController
                 {
                     HideGameOver();
                 }
-                // Hide cursor if not currently hidden
-                if(Cursor.visible == true)
+                // If input is controller mode
+                if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
                 {
-                    Cursor.visible = false;
-                    Cursor.lockState = CursorLockMode.Confined;
-                    // TODO: Add unique cursor for kbm mode while playing
+                    // Hide cursor if not currently hidden
+                    if(Cursor.visible == true)
+                    {
+                        Cursor.visible = false;
+                    }
+                    Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                }
+                // If input is KB&M mode
+                else
+                {
+                    // Show cursor if not currently shown
+                    if(Cursor.visible == false)
+                    {
+                        Cursor.visible = true;
+                    }
+                    Cursor.SetCursor(AimCursorTexture, CursorHotspot, CursorMode.Auto);
                 }
                 break;
             }
@@ -389,7 +409,7 @@ public static class UIController
                     HideGameOver();
                 }
                 // If pause is pressed
-                if(PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Pause] == 1f)
+                if(GameController.Player.PauseInput == true)
                 {
                     // Get out of pause menu and back into playing state
                     GameController.ChangeGameState(GameController.GameState.Playing);
@@ -398,8 +418,8 @@ public static class UIController
                 if(Cursor.visible == false)
                 {
                     Cursor.visible = true;
-                    Cursor.lockState = CursorLockMode.Confined;
                 }
+                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                 break;
             }
             case GameController.GameState.GameOver:
@@ -413,8 +433,8 @@ public static class UIController
                 if(Cursor.visible == false)
                 {
                     Cursor.visible = true;
-                    Cursor.lockState = CursorLockMode.Confined;
-                   }
+                }
+                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                 // Default selected button
                 if(HasInitializedNewState == false)
                 {

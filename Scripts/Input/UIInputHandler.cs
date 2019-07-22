@@ -61,4 +61,19 @@ public class UIInputHandler : MonoBehaviour
             GameController.ChangeGameState(GameController.GameState.MainMenu);
         }
     }
+
+    // Change movement style
+    public void ChangeMovementStyle(int _styleID)
+    {
+        if(_styleID == 0)
+        {
+            PlayerInput.MovementStyle = PlayerInput.MovementStyleEnum.ScreenSpace;
+            Debug.Log($@"Movement style: Screenspace selected");
+        }
+        else if(_styleID == 1)
+        {
+            PlayerInput.MovementStyle = PlayerInput.MovementStyleEnum.Tank;
+            Debug.Log($@"Movement style: Tank style selected");
+        }
+    }
 }

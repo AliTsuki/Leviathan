@@ -20,12 +20,12 @@ public static class PlayerInput
         ScreenSpace,
         Tank
     }
-    public static MovementStyleEnum MovementStyle = MovementStyleEnum.Tank;
+    public static MovementStyleEnum MovementStyle = MovementStyleEnum.ScreenSpace;
 
     // Input dictionary
     public static Dictionary<InputBinding.GameInputsEnum, float> CurrentInputValues { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, float>();
 
-    // KB&M input bindings
+    // Default KB&M input bindings
     public static Dictionary<InputBinding.GameInputsEnum, InputBinding> InputBindingsKBM { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, InputBinding>
     {
         {InputBinding.GameInputsEnum.Submit, new InputBinding(InputBinding.GameInputsEnum.Submit, InputBinding.InputTypeEnum.Key, KeyCode.Return)},
@@ -41,7 +41,7 @@ public static class PlayerInput
         {InputBinding.GameInputsEnum.MoveInputYPos, new InputBinding(InputBinding.GameInputsEnum.MoveInputYPos, InputBinding.InputTypeEnum.Key, KeyCode.W)},
         {InputBinding.GameInputsEnum.MoveInputYNeg, new InputBinding(InputBinding.GameInputsEnum.MoveInputYNeg, InputBinding.InputTypeEnum.Key, KeyCode.S)},
     };
-    // Controller input bindings
+    // Default controller input bindings
     public static Dictionary<InputBinding.GameInputsEnum, InputBinding> InputBindingsController { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, InputBinding>
     {
         {InputBinding.GameInputsEnum.Submit, new InputBinding(InputBinding.GameInputsEnum.Submit, InputBinding.InputTypeEnum.Button, ControllerButton0Input)},
@@ -94,6 +94,7 @@ public static class PlayerInput
     private const int MouseRightClick = 1;
     private const int MouseMiddleClick = 2;
 
+    // Controller button names list
     private static readonly List<string> ControllerButtons = new List<string>
     {
         ControllerButton0Input,
@@ -108,6 +109,14 @@ public static class PlayerInput
         ControllerButton9Input,
         ControllerButton10Input,
         ControllerButton11Input
+    };
+    // Controller axis button names list
+    private static readonly List<string> ControllerAxisButtons = new List<string>
+    {
+        ControllerDPadHorizontalInput,
+        ControllerDPadVerticalInput,
+        ControllerLeftTriggerInput,
+        ControllerRightTriggerInput
     };
 
 
@@ -127,28 +136,36 @@ public static class PlayerInput
     // Rebind input
     private static void Rebind()
     {
+        // If time since rebinding was started is greater than max rebinding allowed time
         if(Time.time - RebindingStartedTime >= MaxRebindingInputDuration)
         {
+            // No longer rebinding, send message that time out was reached
             RebindingInputs = false;
             UIController.UpdateSettingsErrorText($@"Input Rebinding has timed out");
             Logger.Log($@"Input Rebinding has timed out");
         }
+        // If any button is being pressed
         else if(IsAnyButtonPressed() == true)
         {
+            // Get the pressed button and update binding to pressed button
             Logger.Log($@"Input detected: {GetPressedButton()}");
             UIController.UpdateSettingsErrorText($@"Input detected: {GetPressedButton()}");
             InputBindingsController[InputToRebind].UpdateInputButton(GetPressedButton());
             RebindingInputs = false;
             Logger.Log($@"Input binding for {InputBindingsController[InputToRebind].InputName} is currently {InputBindingsController[InputToRebind].InputButton}");
         }
+        // If escape key is pressed
         else if(Input.GetKeyDown(KeyCode.Escape) == true)
         {
+            // Cancel rebinding
             RebindingInputs = false;
             UIController.UpdateSettingsErrorText($@"Input Rebinding has been cancelled");
             Logger.Log($@"Input Rebinding has been cancelled");
         }
+        // Default state during rebinding
         else
         {
+            // Update message with rebinding instructions
             UIController.UpdateSettingsErrorText($@"Press Input you wish to rebind to {InputBindingsController[InputToRebind].InputName}. Press Esc to cancel. Cancelling in 5 seconds...");
         }
     }
@@ -156,9 +173,17 @@ public static class PlayerInput
     // Is any button pressed
     private static bool IsAnyButtonPressed()
     {
+        // Loop through all controller buttons and axis buttons, if any are pressed return true, else false
         foreach(string button in ControllerButtons)
         {
             if(Input.GetButton(button) == true)
+            {
+                return true;
+            }
+        }
+        foreach(string button in ControllerAxisButtons)
+        {
+            if(Input.GetAxis(button) != 0f)
             {
                 return true;
             }
@@ -169,6 +194,7 @@ public static class PlayerInput
     // Get pressed button
     private static string GetPressedButton()
     {
+        // Loop through all controller buttons and axis buttons, if any are pressed return the button name, else N/A
         foreach(string button in ControllerButtons)
         {
             if(Input.GetButton(button) == true)
@@ -176,63 +202,91 @@ public static class PlayerInput
                 return button;
             }
         }
-        return "";
+        foreach(string button in ControllerAxisButtons)
+        {
+            if(Input.GetAxis(button) != 0f)
+            {
+                return button;
+            }
+        }
+        return "N/A";
     }
 
     // Reads the inputs and stores them
     private static void ProcessInputs()
     {
+
         if(InputMode == InputModeEnum.Controller)
         {
             // TODO: Set up controller inputs process using KBM version below as template
         }
+        // If input mode is keyboard and mouse
         else if(InputMode == InputModeEnum.KBM)
         {
+            // Loop through all input binding types
             foreach(InputBinding.GameInputsEnum input in (InputBinding.GameInputsEnum[]) Enum.GetValues(typeof(InputBinding.GameInputsEnum)))
             {
                 // If input key has already been added, update value
                 if(CurrentInputValues.ContainsKey(input))
                 {
+                    // If input is move x axis, get value
                     if(input == InputBinding.GameInputsEnum.MoveInputXAxis)
                     {
+                        // Default value to 0, get xPos and xNeg values from input
                         float value = 0f;
-                        if(CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXPos] == 1f)
+                        float xPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXPos];
+                        float xNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXNeg];
+                        // If xPos is not 0, add it to value, if xNeg is not 0, subtract it from value
+                        if(xPosValue != 0f)
                         {
-                            value++;
+                            value += xPosValue;
                         }
-                        if(CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXNeg] == 1f)
+                        if(xNegValue != 0f)
                         {
-                            value--;
+                            value -= xNegValue;
                         }
+                        // Set value
                         CurrentInputValues[input] = value;
                     }
+                    // If input is move y axis, get value
                     else if(input == InputBinding.GameInputsEnum.MoveInputYAxis)
                     {
+                        // Default value to 0, get yPos and yNeg values from input
                         float value = 0f;
-                        if(CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYPos] == 1f)
+                        float yPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYPos];
+                        float yNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYNeg];
+                        // If yPos is not 0, add it to value, if yNeg is not 0, subtract it from value
+                        if(yPosValue != 0f)
                         {
-                            value++;
+                            value += yPosValue;
                         }
-                        if(CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYNeg] == 1f)
+                        if(yNegValue != 0f)
                         {
-                            value--;
+                            value -= yNegValue;
                         }
+                        // Set value
                         CurrentInputValues[input] = value;
                     }
+                    // If input is aim x axis, get value
                     else if(input == InputBinding.GameInputsEnum.AimInputXAxis)
                     {
+                        // Get half the screen width, use to transform mouse position to a value of -1 for left and 1 for right
                         int halfWidth = Screen.width / 2;
                         CurrentInputValues[input] = (Input.mousePosition.x - halfWidth) / halfWidth;
                     }
+                    // If input is aim y axis special case
                     else if(input == InputBinding.GameInputsEnum.AimInputYAxis)
                     {
+                        // Get half the screen height, use to transform mouse position to a value of -1 for top and 1 for bottom
                         int halfHeight = Screen.height / 2;
                         CurrentInputValues[input] = -(Input.mousePosition.y - halfHeight) / halfHeight;
                     }
+                    // If input is type key, set value to 1 for pressed and 0 for unpressed
                     else if(InputBindingsKBM[input].InputType == InputBinding.InputTypeEnum.Key)
                     {
                         CurrentInputValues[input] = (Input.GetKey(InputBindingsKBM[input].InputKey) == true) ? 1f : 0f;
                     }
+                    // If input is type mouse button, set value to 1 for pressed and 0 for unpressed
                     else if(InputBindingsKBM[input].InputType == InputBinding.InputTypeEnum.MouseButton)
                     {
                         CurrentInputValues[input] = (Input.GetMouseButton(InputBindingsKBM[input].InputMouseButton) == true) ? 1f : 0f;
@@ -241,46 +295,64 @@ public static class PlayerInput
                 // If input key hasn't been added, add it with the correct value
                 else
                 {
+                    // If input is move x axis, get value
                     if(input == InputBinding.GameInputsEnum.MoveInputXAxis)
                     {
+                        // Default value to 0, get xPos and xNeg values from input
                         float value = 0f;
-                        if(CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXPos] == 1f)
+                        float xPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXPos];
+                        float xNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXNeg];
+                        // If xPos is not 0, add it to value, if xNeg is not 0, subtract it from value
+                        if(xPosValue != 0f)
                         {
-                            value++;
+                            value += xPosValue;
                         }
-                        if(CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXNeg] == 1f)
+                        if(xNegValue != 0f)
                         {
-                            value--;
+                            value -= xNegValue;
                         }
+                        // Add key and set value
                         CurrentInputValues.Add(input, value);
                     }
+                    // If input is move y axis, get value
                     else if(input == InputBinding.GameInputsEnum.MoveInputYAxis)
                     {
+                        // Default value to 0, get yPos and yNeg values from input
                         float value = 0f;
-                        if(CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYPos] == 1f)
+                        float yPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYPos];
+                        float yNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYNeg];
+                        // If yPos is not 0, add it to value, if yNeg is not 0, subtract it from value
+                        if(yPosValue != 0f)
                         {
-                            value++;
+                            value += yPosValue;
                         }
-                        if(CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYNeg] == 1f)
+                        if(yNegValue != 0f)
                         {
-                            value--;
+                            value -= yNegValue;
                         }
+                        // Add key and set value
                         CurrentInputValues.Add(input, value);
                     }
+                    // If input is aim x axis, get value
                     else if(input == InputBinding.GameInputsEnum.AimInputXAxis)
                     {
+                        // Get half the screen width, use to transform mouse position to a value of -1 for left and 1 for right
                         int halfWidth = Screen.width / 2;
                         CurrentInputValues.Add(input, (Input.mousePosition.x - halfWidth) / halfWidth);
                     }
+                    // If input is aim y axis special case
                     else if(input == InputBinding.GameInputsEnum.AimInputYAxis)
                     {
+                        // Get half the screen height, use to transform mouse position to a value of -1 for top and 1 for bottom
                         int halfHeight = Screen.height / 2;
                         CurrentInputValues.Add(input, -(Input.mousePosition.y - halfHeight) / halfHeight);
                     }
+                    // If input is type key, set value to 1 for pressed and 0 for unpressed
                     else if(InputBindingsKBM[input].InputType == InputBinding.InputTypeEnum.Key)
                     {
                         CurrentInputValues.Add(input, (Input.GetKey(InputBindingsKBM[input].InputKey) == true) ? 1f : 0f);
                     }
+                    // If input is type mouse button, set value to 1 for pressed and 0 for unpressed
                     else if(InputBindingsKBM[input].InputType == InputBinding.InputTypeEnum.MouseButton)
                     {
                         CurrentInputValues.Add(input, (Input.GetMouseButton(InputBindingsKBM[input].InputMouseButton) == true) ? 1f : 0f);
@@ -290,6 +362,7 @@ public static class PlayerInput
         }
     }
 }
+
 
 // Container for input bindings
 public class InputBinding

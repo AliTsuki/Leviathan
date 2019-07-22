@@ -29,6 +29,7 @@ public abstract class PlayerShip : Ship
         if(this.PauseInput == true)
         {
             GameController.ChangeGameState(GameController.GameState.Paused);
+            this.PauseInput = false;
         }
     }
 
@@ -49,11 +50,19 @@ public abstract class PlayerShip : Ship
     // Accelerates the ship
     protected override void AccelerateShip()
     {
-        // If impulse engine is activated by player input or AI and warp engine is not activated
-        if(this.ImpulseInput == true && this.WarpEngineInput <= 0f)
+        // If input set to move in some direction and warp engine is not activated
+        if((this.MoveInput.x != 0f || this.MoveInput.y != 0f) && this.WarpEngineInput <= 0f)
         {
-            // Accelerate forward
-            this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.Stats.ImpulseAcceleration));
+            // If movement style is screenspace, add force based on worldspace
+            if(PlayerInput.MovementStyle == PlayerInput.MovementStyleEnum.ScreenSpace)
+            {
+                this.ShipRigidbody.AddForce(this.Stats.ImpulseAcceleration * this.MoveInput.x, 0f, this.Stats.ImpulseAcceleration * this.MoveInput.y);
+            }
+            // If movement style is tank style, add force relative to ship rotation
+            else
+            {
+                this.ShipRigidbody.AddRelativeForce(this.Stats.ImpulseAcceleration * this.MoveInput.x, 0f, this.Stats.ImpulseAcceleration * this.MoveInput.y);
+            }
             // If current magnitude of velocity is beyond speed limit for impulse power
             if(this.ShipRigidbody.velocity.magnitude > this.Stats.MaxImpulseSpeed)
             {
@@ -81,8 +90,16 @@ public abstract class PlayerShip : Ship
         // If warp engine is activated by player input or AI
         else if(this.WarpEngineInput > 0f)
         {
-            // Accelerate forward with warp multiplier to speed
-            this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.Stats.ImpulseAcceleration * this.Stats.WarpAccelerationMultiplier));
+            // If movement style is screenspace, add force based on worldspace using warp multiplier
+            if(PlayerInput.MovementStyle == PlayerInput.MovementStyleEnum.ScreenSpace)
+            {
+                this.ShipRigidbody.AddForce(this.Stats.ImpulseAcceleration * this.MoveInput.x * this.Stats.WarpAccelerationMultiplier, 0f, this.Stats.ImpulseAcceleration * this.MoveInput.y * this.Stats.WarpAccelerationMultiplier);
+            }
+            // If movement style is tank style, add force relative to ship rotation using warp multiplier
+            else
+            {
+                this.ShipRigidbody.AddRelativeForce(this.Stats.ImpulseAcceleration * this.MoveInput.x, 0f, this.Stats.ImpulseAcceleration * this.MoveInput.y);
+            }
             // Clamp magnitude at maximum warp speed
             this.ShipRigidbody.velocity = Vector3.ClampMagnitude(this.ShipRigidbody.velocity, this.Stats.MaxWarpSpeed);
             // Subtract warp energy cost

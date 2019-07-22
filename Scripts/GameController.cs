@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public static string Version { get; private set; } = "0.0.15a";
+    public const string Version = "0.0.15c";
 
     // Random number generator
     public static System.Random RandomNumGen { get; private set; } = new System.Random();
@@ -124,6 +124,8 @@ public static class GameController
     public const string GameOverRestartButtonName = "Restart Button";
     public const string PauseMenuName = "Pause Menu";
     public const string NPCUIPrefabName = "NPC UI";
+    // Cursor
+    public const string AimCursorTextureName = "Cursor/AimCursor";
     // Background tiles
     public const string TilemapName = "Tilemap/Tilemap";
     public const string BackgroundPrefabName = "Environment/Background";

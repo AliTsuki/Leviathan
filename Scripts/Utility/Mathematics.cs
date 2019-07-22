@@ -9,6 +9,7 @@ public static class Mathematics
     }
 }
 
+
 // Contains 2 floats
 public class Float2
 {
