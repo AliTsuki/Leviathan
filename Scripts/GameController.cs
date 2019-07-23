@@ -22,7 +22,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public const string Version = "0.0.15c";
+    public const string Version = "0.0.16a";
 
     // Random number generator
     public static System.Random RandomNumGen { get; private set; } = new System.Random();
@@ -158,6 +158,7 @@ public static class GameController
     {
         Logger.Initialize();
         UIController.Initialize();
+        UIControllerNew.Initialize();
         InitializeCamera();
     }
 
@@ -188,6 +189,7 @@ public static class GameController
             ResetCamera();
         }
         UIController.Update();
+        UIControllerNew.Update();
         Logger.Update();
     }
 

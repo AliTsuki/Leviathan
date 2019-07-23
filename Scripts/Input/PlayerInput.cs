@@ -215,10 +215,61 @@ public static class PlayerInput
     // Reads the inputs and stores them
     private static void ProcessInputs()
     {
-
+        // If input mode is controller
         if(InputMode == InputModeEnum.Controller)
         {
-            // TODO: Set up controller inputs process using KBM version below as template
+            // Loop through all input binding types
+            foreach(InputBinding.GameInputsEnum input in (InputBinding.GameInputsEnum[])Enum.GetValues(typeof(InputBinding.GameInputsEnum)))
+            {
+                // If input key has already been added, update value
+                if(CurrentInputValues.ContainsKey(input))
+                {
+                    // If input is type axis, report value directly
+                    if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Axis)
+                    {
+                        CurrentInputValues[input] = Input.GetAxis(InputBindingsController[input].InputButton);
+                    }
+                    // If input is type button, set value to 1 for pressed and 0 for unpressed
+                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Button)
+                    {
+                        CurrentInputValues[input] = (Input.GetButton(InputBindingsController[input].InputButton) == true) ? 1f : 0f;
+                    }
+                    // If input is type trigger, set value to 1 for pressed and 0 for unpressed
+                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Trigger)
+                    {
+                        CurrentInputValues[input] = (Input.GetAxis(InputBindingsController[input].InputButton) >= 0.5f || Input.GetAxis(InputBindingsController[input].InputButton) <= -0.5f) ? 1f : 0f;
+                    }
+                    // If input is type DPad, ....
+                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.DPad)
+                    {
+                        // TODO: set up dpad input scheme, not sure how I wanna set this up yet, also do below in add section
+                    }
+                }
+                // If input key hasn't been added, add it with the correct value
+                else
+                {
+                    // If input is type axis, report value directly
+                    if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Axis)
+                    {
+                        CurrentInputValues.Add(input, Input.GetAxis(InputBindingsController[input].InputButton));
+                    }
+                    // If input is type button, set value to 1 for pressed and 0 for unpressed
+                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Button)
+                    {
+                        CurrentInputValues.Add(input, (Input.GetButton(InputBindingsController[input].InputButton) == true) ? 1f : 0f);
+                    }
+                    // If input is type trigger, set value to 1 for pressed and 0 for unpressed
+                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Trigger)
+                    {
+                        CurrentInputValues.Add(input, (Input.GetAxis(InputBindingsController[input].InputButton) >= 0.5f || Input.GetAxis(InputBindingsController[input].InputButton) <= -0.5f) ? 1f : 0f);
+                    }
+                    // If input is type DPad, ....
+                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.DPad)
+                    {
+                        // Not sure how I wanna set this up yet
+                    }
+                }
+            }
         }
         // If input mode is keyboard and mouse
         else if(InputMode == InputModeEnum.KBM)
@@ -373,6 +424,7 @@ public class InputBinding
         Key,
         MouseButton,
         Button,
+        DPad,
         Trigger,
         Axis
     }
