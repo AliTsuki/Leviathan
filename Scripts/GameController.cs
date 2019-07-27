@@ -21,7 +21,10 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public const string Version = "0.0.16b";
+    public const string Version = "0.0.16c";
+
+    // GM reference
+    private static GameManager gm = GameManager.Instance;
 
     // Random number generator
     public static System.Random RandomNumGen { get; private set; } = new System.Random();
@@ -65,64 +68,14 @@ public static class GameController
     // Game State fields
     public enum GameState
     {
-        MainMenu,
-        NewGameMenu,
-        SettingsMenu,
+        Menus,
         Playing,
         Paused,
-        GameOver
     }
-    public static GameState CurrentGameState { get; private set; } = GameState.MainMenu;
+    public static GameState CurrentGameState { get; private set; } = GameState.Menus;
     private static bool GameplayInitialized = false;
 
     // Constant references to Prefab filenames
-    // Cameras
-    public const string CamerasPrefabName = "Cameras";
-    public const string FollowCameraName = "Follow Camera";
-    // Button defaults
-    public const string MainMenuButtonDefaultName = "Continue Game Button (Main Menu)";
-    public const string NewGameMenuButtonDefaultName = "Start Game Button (New Game Menu)";
-    public const string SettingsMenuButtonDefaultName = "Back Button (Settings)";
-    public const string PauseMenuButtonDefaultName = "Resume Button (Pause Menu)";
-    public const string GameOverMenuButtonDefaultName = "Restart Button (Game Over Menu)";
-    // UI elements
-    public const string MainMenuName = "Main Menu";
-    public const string MainMenuContainerName = "Main Menu Container";
-    public const string VersionTextName = "Version Text";
-    public const string NewGameContainerName = "New Game Menu Container";
-    public const string SettingsMenuContainerName = "Settings Menu Container";
-    public const string SettingsErrorTextName = "Settings Error Text";
-    public const string MainGunCurrentInputTextName = "Main Gun Current Input Text";
-    public const string Ability1CurrentInputTextName = "Ability 1 Current Input Text";
-    public const string Ability2CurrentInputTextName = "Ability 2 Current Input Text";
-    public const string Ability3CurrentInputTextName = "Ability 3 Current Input Text";
-    public const string UIName = "UI";
-    public const string UICanvasName = "UI Canvas";
-    public const string HealthDamageEffectName = "Health Damage Effect";
-    public const string ShieldDamageEffectName = "Shield Damage Effect";
-    public const string MinimapCoordsName = "Minimap Coords";
-    public const string InfoLabelName = "Info Label";
-    public const string PlayerUIName = "Player UI";
-    public const string PlayerHealthForegroundName = "Health Bar Foreground";
-    public const string PlayerHealthTextName = "Health Bar Text";
-    public const string PlayerShieldForegroundName = "Shield Bar Foreground";
-    public const string PlayerShieldTextName = "Shield Bar Text";
-    public const string PlayerEnergyForegroundName = "Energy Bar Foreground";
-    public const string PlayerEnergyTextName = "Energy Bar Text";
-    public const string PlayerAbility1BackgroundName = "Ability 1 Background";
-    public const string PlayerAbility1CooldownName = "Ability 1 Cooldown";
-    public const string PlayerAbility1CDTextName = "Ability 1 Cooldown Text";
-    public const string PlayerAbility2BackgroundName = "Ability 2 Background";
-    public const string PlayerAbility2CooldownName = "Ability 2 Cooldown";
-    public const string PlayerAbility2CDTextName = "Ability 2 Cooldown Text";
-    public const string PlayerAbility3BackgroundName = "Ability 3 Background";
-    public const string PlayerAbility3CooldownName = "Ability 3 Cooldown";
-    public const string PlayerAbility3CDTextName = "Ability 3 Cooldown Text";
-    public const string GameOverMenuName = "Game Over Menu";
-    public const string GameOverTextName = "Game Over Text";
-    public const string GameOverRestartButtonName = "Restart Button";
-    public const string PauseMenuName = "Pause Menu";
-    public const string NPCUIPrefabName = "NPC UI";
     // Cursor
     public const string AimCursorTextureName = "Cursor/AimCursor";
     // Background tiles
@@ -156,7 +109,6 @@ public static class GameController
     public static void Initialize()
     {
         Logger.Initialize();
-        UIController.Initialize();
         UIControllerNew.Initialize();
         InitializeCamera();
     }
@@ -165,8 +117,8 @@ public static class GameController
     public static void Update()
     {
         PlayerInput.Update();
-        // If gamestate is playing or paused or game over
-        if(CurrentGameState == GameState.Playing || CurrentGameState == GameState.Paused || CurrentGameState == GameState.GameOver)
+        // If gamestate is playing
+        if(CurrentGameState == GameState.Playing)
         {
             // If gameplay has yet to be initialized
             if(GameplayInitialized == false)
@@ -182,12 +134,6 @@ public static class GameController
             CleanupProjectileList();
             Background.Update();
         }
-        // If gamestate is main menu or new game menu or settings menu
-        else if(CurrentGameState == GameState.MainMenu || CurrentGameState == GameState.NewGameMenu || CurrentGameState == GameState.SettingsMenu)
-        {
-            ResetCamera();
-        }
-        UIController.Update();
         UIControllerNew.Update();
         Logger.Update();
     }
@@ -196,7 +142,7 @@ public static class GameController
     public static void FixedUpdate()
     {
         // If gamestate is playing
-        if(CurrentGameState == GameState.Playing || CurrentGameState == GameState.GameOver)
+        if(CurrentGameState == GameState.Playing)
         {
             ProcessShipPhysicsUpdate();
             ProcessProjectilePhysicsUpdate();
@@ -206,7 +152,7 @@ public static class GameController
     // Change game state
     public static void ChangeGameState(GameState _newGameState)
     {
-        UIController.SetHasInitializedNewState(false);
+        UIControllerNew.ChangeGameState(_newGameState);
         CurrentGameState = _newGameState;
     }
 
@@ -247,7 +193,7 @@ public static class GameController
         ProjectilesToRemove.Clear();
         // Call restart method in background and UI
         Background.Restart();
-        UIController.Restart();
+        UIControllerNew.StartNewGame();
         // Set gameplay initialized to default value of false
         GameplayInitialized = false;
         CurrentGameState = GameState.Playing;
@@ -257,7 +203,7 @@ public static class GameController
     private static void InitializeCamera()
     {
         // Get camera
-        Cameras = GameObject.Find(CamerasPrefabName);
+        Cameras = gm.Cameras;
     }
 
     // Set up follow camera

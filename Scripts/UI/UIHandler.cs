@@ -7,12 +7,15 @@ public class UIHandler : MonoBehaviour
     public static UIHandler Instance { get; private set; }
 
     // UI screen objects
+    [Header("Screens")]
     [SerializeField]
     public UIScreen[] UIScreens;
     [SerializeField]
     public UIScreen DefaultScreen;
+    [Header("PopUps")]
     [SerializeField]
     public UIPopUp[] UIPopUps;
+    [Header("Error Text")]
     [SerializeField]
     public GameObject ErrorText;
 
@@ -31,7 +34,8 @@ public class UIHandler : MonoBehaviour
     // Select player ship type
     public void SelectPlayerShipType(PlayerShip.PlayerShipType _type)
     {
-        // TODO: Player ship select
+        GameController.ChangePlayerShipType(_type);
+        UIControllerNew.ViewNewShipType(_type);
     }
 
     // Change screen

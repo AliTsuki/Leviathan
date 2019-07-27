@@ -265,7 +265,7 @@ public abstract partial class Ship
             if(this.IsPlayer == true)
             {
                 // Show damage vignette
-                UIController.ShowHealthDamageEffect();
+                UIControllerNew.ShowHealthDamageEffect();
             }
         }
         // If health has reached 0
@@ -726,7 +726,7 @@ public abstract partial class Ship
                 if(this.IsPlayer == true)
                 {
                     // Show health damage vignette
-                    UIController.ShowHealthDamageEffect();
+                    UIControllerNew.ShowHealthDamageEffect();
                 }
             }
             // If shields are still above 0
@@ -736,7 +736,7 @@ public abstract partial class Ship
                 if(this.IsPlayer == true)
                 {
                     // Show shield damage vignette
-                    UIController.ShowShieldDamageEffect();
+                    UIControllerNew.ShowShieldDamageEffect();
                 }
             }
             // Set last damage taken time
@@ -797,7 +797,7 @@ public abstract partial class Ship
             this.AbilityOnCooldown[i] = false;
         }
         // Tell UI to remove healthbar for this ship
-        UIController.RemoveHealthbar(this.ID);
+        UIControllerNew.RemoveHealthbar(this.ID);
         // If ship is an enemy
         if(this.IFF == GameController.IFF.Enemy)
         {
@@ -820,7 +820,7 @@ public abstract partial class Ship
         // Set to not alive
         this.Alive = false;
         // Tell UI to remove healthbar for this ship
-        UIController.RemoveHealthbar(this.ID);
+        UIControllerNew.RemoveHealthbar(this.ID);
         // Destroy ship object
         GameObject.Destroy(this.ShipObject);
         // Add ship to removal list

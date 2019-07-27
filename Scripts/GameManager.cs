@@ -6,6 +6,11 @@ public class GameManager : MonoBehaviour
     // Singleton
     public static GameManager Instance { get; private set; }
 
+    // References
+    [Header("Game Object References")]
+    [SerializeField]
+    public GameObject Cameras;
+
     // Start is called before the first frame update
     private void Start()
     {

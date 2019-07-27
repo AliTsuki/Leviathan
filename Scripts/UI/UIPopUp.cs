@@ -8,6 +8,10 @@ public class UIPopUp : MonoBehaviour
     public bool DefaultActive = false;
     [SerializeField]
     public bool OnlyPopUp = false;
+    [SerializeField]
+    public GameObject[] Buttons;
+    [SerializeField]
+    public GameObject[] ModifiableTexts;
 
     // Start is called before the first frame update
     private void Start()

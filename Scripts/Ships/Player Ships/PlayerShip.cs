@@ -166,7 +166,8 @@ public abstract class PlayerShip : Ship
         {
             GameObject.Destroy(this.ShipObject.transform.GetChild(i).gameObject);
         }
+        // TODO: Fix game over screen
         // Show game over screen
-        GameController.ChangeGameState(GameController.GameState.GameOver);
+        //UIControllerNew.OpenPopUp();
     }
 }

@@ -606,7 +606,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -667,7 +667,7 @@ Transform:
   m_Children:
   - {fileID: 7984014422365198670}
   m_Father: {fileID: 2094565383048829888}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &645922301306000012
 GameObject:
@@ -789,7 +789,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -1415,7 +1415,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -1725,7 +1725,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -2036,7 +2036,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3919688335805331653}
+      - m_Target: {fileID: 0}
         m_MethodName: RebindInput
         m_Mode: 5
         m_Arguments:
@@ -2738,7 +2738,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -2962,6 +2962,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4084871978d80f244868b1baf9e9bc51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Cameras: {fileID: 6406864587206949031}
 --- !u!1 &980673213731897776
 GameObject:
   m_ObjectHideFlags: 0
@@ -3458,7 +3459,7 @@ Transform:
   - {fileID: 1130788053921046632}
   - {fileID: 980673214230982753}
   m_Father: {fileID: 2094565383048829888}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &980673213899427445
 GameObject:
@@ -3534,62 +3535,6 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!1 &980673214021432468
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 980673214021432554}
-  - component: {fileID: 980673214021432555}
-  - component: {fileID: 3919688335805331653}
-  m_Layer: 0
-  m_Name: InputManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
---- !u!4 &980673214021432554
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 980673214021432468}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2094565383048829888}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &980673214021432555
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 980673214021432468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc48dad8ee8234341bbb3685597f2ade, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &3919688335805331653
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 980673214021432468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7505854b8b3cf6340bfbcd6a3d1d5619, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &980673214031628197
 GameObject:
   m_ObjectHideFlags: 0
@@ -4257,7 +4202,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -4318,7 +4263,7 @@ Transform:
   m_Children:
   - {fileID: 980673214696375505}
   m_Father: {fileID: 2094565383048829888}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &980673214455304779
 GameObject:
@@ -4514,7 +4459,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -5090,7 +5035,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -5242,7 +5187,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -5998,7 +5943,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -6150,7 +6095,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -7448,6 +7393,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DefaultActive: 0
   OnlyPopUp: 0
+  Buttons: []
+  ModifiableTexts: []
 --- !u!1 &1439256542535136913
 GameObject:
   m_ObjectHideFlags: 0
@@ -7604,7 +7551,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3919688335805331653}
+      - m_Target: {fileID: 0}
         m_MethodName: RebindInput
         m_Mode: 5
         m_Arguments:
@@ -7636,6 +7583,58 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!1 &1667667061665451998
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5420432149992514605}
+  - component: {fileID: 8038256547029017389}
+  m_Layer: 5
+  m_Name: Game Over PopUp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &5420432149992514605
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1667667061665451998}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5996758415426715285}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &8038256547029017389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1667667061665451998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed1d9c5ad8c3f704b8ca92f297f4f49c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultActive: 0
+  OnlyPopUp: 0
+  Buttons: []
+  ModifiableTexts: []
 --- !u!1 &1841271678239481462
 GameObject:
   m_ObjectHideFlags: 0
@@ -7751,6 +7750,8 @@ RectTransform:
   - {fileID: 7756759755755522705}
   - {fileID: 7227140742801700901}
   - {fileID: 7968496863627746933}
+  - {fileID: 2605108665647294754}
+  - {fileID: 5420432149992514605}
   m_Father: {fileID: 7188774232843922547}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8200,7 +8201,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -8448,6 +8449,11 @@ MonoBehaviour:
   BackScreen: {fileID: 269526001004547356}
   SlideDirection: 0
   SlideRate: 0.2
+  Buttons:
+  - {fileID: 5741841084678078888}
+  - {fileID: 1993021749894017432}
+  ModifiableTexts: []
+  ModifiableUIElements: []
 --- !u!1 &2289983728952378210
 GameObject:
   m_ObjectHideFlags: 0
@@ -8499,6 +8505,9 @@ MonoBehaviour:
   BackScreen: {fileID: 269526001004547356}
   SlideDirection: 0
   SlideRate: 0.2
+  Buttons: []
+  ModifiableTexts: []
+  ModifiableUIElements: []
 --- !u!1 &2300725535814121867
 GameObject:
   m_ObjectHideFlags: 0
@@ -8947,6 +8956,9 @@ MonoBehaviour:
   BackScreen: {fileID: 269526001004547356}
   SlideDirection: 2
   SlideRate: 0.2
+  Buttons: []
+  ModifiableTexts: []
+  ModifiableUIElements: []
 --- !u!1 &2720193052300161739
 GameObject:
   m_ObjectHideFlags: 0
@@ -11818,7 +11830,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -11878,7 +11890,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 980673213662995979}
-  - {fileID: 980673214021432554}
   - {fileID: 2171651223516087880}
   - {fileID: 7188774232843922547}
   - {fileID: 1663832760781173336}
@@ -12096,7 +12107,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: ChangeMovementStyle
         m_Mode: 0
         m_Arguments:
@@ -12817,7 +12828,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2094565383048829888}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5533624923144091342
 MonoBehaviour:
@@ -12840,6 +12851,8 @@ MonoBehaviour:
   DefaultScreen: {fileID: 269526001004547356}
   UIPopUps:
   - {fileID: 4365007415241280404}
+  - {fileID: 1017747179244785804}
+  - {fileID: 8038256547029017389}
   ErrorText: {fileID: 5520176782600129750}
 --- !u!1 &5863574924378884459
 GameObject:
@@ -13497,6 +13510,9 @@ MonoBehaviour:
   BackScreen: {fileID: 269526001004547356}
   SlideDirection: 1
   SlideRate: 0.2
+  Buttons: []
+  ModifiableTexts: []
+  ModifiableUIElements: []
 --- !u!1 &6092889503722631352
 GameObject:
   m_ObjectHideFlags: 0
@@ -14027,7 +14043,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -14246,7 +14262,7 @@ Transform:
   m_Children:
   - {fileID: 4814854207674806356}
   m_Father: {fileID: 2094565383048829888}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6580201320869720145
 GameObject:
@@ -14352,7 +14368,7 @@ Transform:
   m_Children:
   - {fileID: 5996758415426715285}
   m_Father: {fileID: 2094565383048829888}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6789113352237269999
 GameObject:
@@ -14419,8 +14435,60 @@ Transform:
   m_Children:
   - {fileID: 5392595576845086407}
   m_Father: {fileID: 2094565383048829888}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6944820297536535534
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2605108665647294754}
+  - component: {fileID: 1017747179244785804}
+  m_Layer: 5
+  m_Name: Pause PopUp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &2605108665647294754
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6944820297536535534}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5996758415426715285}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1017747179244785804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6944820297536535534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed1d9c5ad8c3f704b8ca92f297f4f49c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultActive: 0
+  OnlyPopUp: 0
+  Buttons: []
+  ModifiableTexts: []
 --- !u!1 &7042252641285444776
 GameObject:
   m_ObjectHideFlags: 0
@@ -15692,7 +15760,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -15844,7 +15912,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 980673214021432555}
+      - m_Target: {fileID: 0}
         m_MethodName: UIInput
         m_Mode: 5
         m_Arguments:
@@ -17060,6 +17128,9 @@ MonoBehaviour:
   BackScreen: {fileID: 269526001004547356}
   SlideDirection: 3
   SlideRate: 0.2
+  Buttons: []
+  ModifiableTexts: []
+  ModifiableUIElements: []
 --- !u!1 &8077680646433461333
 GameObject:
   m_ObjectHideFlags: 0
@@ -18084,7 +18155,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3919688335805331653}
+      - m_Target: {fileID: 0}
         m_MethodName: RebindInput
         m_Mode: 5
         m_Arguments:
@@ -18712,7 +18783,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3919688335805331653}
+      - m_Target: {fileID: 0}
         m_MethodName: RebindInput
         m_Mode: 5
         m_Arguments:
