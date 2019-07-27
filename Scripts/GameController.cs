@@ -11,18 +11,17 @@ using UnityEngine;
 // TODO: Add a value for enemies so large enemies are worth more than small enemies for Enemy Count purposes maybe...
 // TODO: Add different player ship types to pick at beginning of game
 // TODO: Add more enemy types and behaviours
+// TODO: Add boss enemies
 // TODO: Add more projectile types and behaviours
-// TODO: Add enemy type based on which background tile it is generated on
 // TODO: Add space stations where you can purchase inventory items
-// TODO: Add gameover conditions
-// TODO: Add story stuff
+// TODO: Either add story stuff like missions and NPCs to talk to, or make rogue-lite style where each run is randomized and bosses appear after a set time
 // TODO: Eventualllly add multiplayer support
 
 // Keeps track of all entites and updates all systems in the game
 public static class GameController
 {
     // Version
-    public const string Version = "0.0.16a";
+    public const string Version = "0.0.16b";
 
     // Random number generator
     public static System.Random RandomNumGen { get; private set; } = new System.Random();

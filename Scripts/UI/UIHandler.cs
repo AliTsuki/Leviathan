@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+// Contains list of all screens and button behaviours for those screens
 public class UIHandler : MonoBehaviour
 {
     // Singleton
@@ -7,7 +8,13 @@ public class UIHandler : MonoBehaviour
 
     // UI screen objects
     [SerializeField]
-    public GameObject[] UIScreenObjects;
+    public UIScreen[] UIScreens;
+    [SerializeField]
+    public UIScreen DefaultScreen;
+    [SerializeField]
+    public UIPopUp[] UIPopUps;
+    [SerializeField]
+    public GameObject ErrorText;
 
     // Start is called before the first frame update
     private void Start()
@@ -15,21 +22,51 @@ public class UIHandler : MonoBehaviour
         Instance = this;
     }
 
-    // Handle button input
-    public void ButtonPress(GameObject _button)
+    // Change error text
+    public void ChangeErrorText(string _newErrorText)
     {
-        switch(_button.name)
-        {
-            case "":
-            {
-                break;
-            }
-        }
+        UIControllerNew.ChangeErrorText(_newErrorText);
+    }
+
+    // Select player ship type
+    public void SelectPlayerShipType(PlayerShip.PlayerShipType _type)
+    {
+        // TODO: Player ship select
     }
 
     // Change screen
-    public void ChangeScreen(GameObject _newScreen)
+    public void ChangeScreen(UIScreen _newScreen)
     {
-        UIControllerNew.ChangeScreen(_newScreen.GetComponent<UIScreen>());
+        UIControllerNew.ChangeScreen(_newScreen);
+    }
+
+    // Back
+    public void Back()
+    {
+        UIControllerNew.Back();
+    }
+
+    // Open PopUp
+    public void OpenPopUp(UIPopUp _popUpToOpen)
+    {
+        UIControllerNew.OpenPopUp(_popUpToOpen);
+    }
+
+    // Close PopUp
+    public void ClosePopUp(UIPopUp _popUpToClose)
+    {
+        UIControllerNew.ClosePopUp(_popUpToClose);
+    }
+
+    // Start game
+    public void StartNewGame()
+    {
+        UIControllerNew.StartNewGame();
+    }
+
+    // Quit game
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

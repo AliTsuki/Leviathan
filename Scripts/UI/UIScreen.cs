@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 
+// UIScreen script is added to a screen gameobject in Editor
+[RequireComponent(typeof(RectTransform))]
 public class UIScreen : MonoBehaviour
 {
-    // Fields
+    // Editor fields
     [SerializeField]
-    public GameObject PreviousScreen;
+    public UIScreen BackScreen;
     [SerializeField]
     public SlideDirectionEnum SlideDirection = SlideDirectionEnum.Right;
     [SerializeField, Range(0.001f, 0.999f)]
@@ -42,31 +44,38 @@ public class UIScreen : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        this.UpdateScreenSlide();
+    }
+
+    // Update screen slide
+    public void UpdateScreenSlide()
+    {
         // If sliding in
-        if(this.CurrentSlidingStatus == InOutEnum.In)
+        if(this.IsCurrentlySliding == true && this.CurrentSlidingStatus == InOutEnum.In)
         {
-            // If currently sliding and not yet to zero position
-            if(this.IsCurrentlySliding == true && this.Rect.anchoredPosition != Vector2.zero)
+            // If not yet to zero position
+            if(this.Rect.anchoredPosition != Vector2.zero)
             {
                 // Lerp toward zero position by specified rate
                 this.Rect.anchoredPosition = Vector2.Lerp(this.Rect.anchoredPosition, Vector2.zero, this.SlideRate);
             }
-            // If currently sliding and reached zero position
+            // If reached zero position
             else
             {
                 // Stop sliding
                 this.IsCurrentlySliding = false;
             }
         }
-        else if(this.CurrentSlidingStatus == InOutEnum.Out)
+        // If sliding out
+        else if(this.IsCurrentlySliding == true && this.CurrentSlidingStatus == InOutEnum.Out)
         {
-            // If currently sliding and not yet to zero position
-            if(this.IsCurrentlySliding == true && this.Rect.anchoredPosition != this.OutwardRestingPosition)
+            // If not yet to zero position
+            if(this.Rect.anchoredPosition != this.OutwardRestingPosition)
             {
                 // Lerp toward zero position by specified rate
                 this.Rect.anchoredPosition = Vector2.Lerp(this.Rect.anchoredPosition, this.OutwardRestingPosition, this.SlideRate);
             }
-            // If currently sliding and reached zero position
+            // If reached zero position
             else
             {
                 // Stop sliding
@@ -78,7 +87,7 @@ public class UIScreen : MonoBehaviour
     }
 
     // Slide screen
-    public void SlideScreen(InOutEnum _inOrOut)
+    public void SetupSlideScreen(InOutEnum _inOrOut)
     {
         // Set to is currently sliding
         this.IsCurrentlySliding = true;

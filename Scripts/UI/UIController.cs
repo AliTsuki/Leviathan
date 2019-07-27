@@ -674,7 +674,6 @@ public static class UIController
     private static void ShowGameOver()
     {
         GameOverMenuScreen.SetActive(true);
-        GameOverText = GameObject.Find(GameController.GameOverTextName);
         GameOverText.GetComponent<TextMeshProUGUI>().text = $@"GAME OVER{Environment.NewLine}{Environment.NewLine}TIME: {TimeString}{Environment.NewLine}SCORE: {GameController.Score}";
     }
 
