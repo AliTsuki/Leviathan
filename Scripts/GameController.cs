@@ -21,7 +21,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public const string Version = "0.0.16c";
+    public const string Version = "0.0.16d";
 
     // GM reference
     private static GameManager gm = GameManager.Instance;
@@ -76,8 +76,6 @@ public static class GameController
     private static bool GameplayInitialized = false;
 
     // Constant references to Prefab filenames
-    // Cursor
-    public const string AimCursorTextureName = "Cursor/AimCursor";
     // Background tiles
     public const string TilemapName = "Tilemap/Tilemap";
     public const string BackgroundPrefabName = "Environment/Background";
@@ -85,11 +83,12 @@ public static class GameController
     public const string PlayerPrefabName = "Ships/Player Ships/Player Ship";
     public const string DronePrefabName = "Ships/Drone Ships/Drone Ship";
     public const string EnemyShipPrefabName = "Ships/Enemy Ships/Enemy Ship";
-    // Ship parts
+    // Universal ship parts
     public const string ImpulseEngineObjectName = "Impulse Engine";
     public const string WarpEngineObjectName = "Warp Engine";
     public const string GunBarrelObjectName = "Gun Barrel";
     public const string GunBarrelLightsObjectName = "Gun Barrel Lights";
+    // Specific ship parts
     public const string ShieldObjectName = "Shield";
     public const string BarrierObjectName = "Barrier";
     public const string ShieldOverchargeObjectName = "Overcharge";
@@ -109,7 +108,7 @@ public static class GameController
     public static void Initialize()
     {
         Logger.Initialize();
-        UIControllerNew.Initialize();
+        UIController.Initialize();
         InitializeCamera();
     }
 
@@ -134,7 +133,7 @@ public static class GameController
             CleanupProjectileList();
             Background.Update();
         }
-        UIControllerNew.Update();
+        UIController.Update();
         Logger.Update();
     }
 
@@ -152,8 +151,17 @@ public static class GameController
     // Change game state
     public static void ChangeGameState(GameState _newGameState)
     {
-        UIControllerNew.ChangeGameState(_newGameState);
         CurrentGameState = _newGameState;
+        UIController.ChangeGameState(_newGameState);
+        // Pause time during pause game state
+        if(_newGameState == GameState.Paused)
+        {
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
     }
 
     // Change player ship type
@@ -193,10 +201,9 @@ public static class GameController
         ProjectilesToRemove.Clear();
         // Call restart method in background and UI
         Background.Restart();
-        UIControllerNew.StartNewGame();
+        UIController.StartNewGame();
         // Set gameplay initialized to default value of false
         GameplayInitialized = false;
-        CurrentGameState = GameState.Playing;
     }
 
     // Initialize camera

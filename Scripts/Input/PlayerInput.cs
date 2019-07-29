@@ -141,7 +141,7 @@ public static class PlayerInput
         {
             // No longer rebinding, send message that time out was reached
             RebindingInputs = false;
-            UIControllerNew.ChangeErrorText($@"Input Rebinding has timed out");
+            UIController.ChangeErrorText($@"Input Rebinding has timed out");
             Logger.Log($@"Input Rebinding has timed out");
         }
         // If any button is being pressed
@@ -149,7 +149,7 @@ public static class PlayerInput
         {
             // Get the pressed button and update binding to pressed button
             Logger.Log($@"Input detected: {GetPressedButton()}");
-            UIControllerNew.ChangeErrorText($@"Input detected: {GetPressedButton()}");
+            UIController.ChangeErrorText($@"Input detected: {GetPressedButton()}");
             InputBindingsController[InputToRebind].UpdateInputButton(GetPressedButton());
             RebindingInputs = false;
             Logger.Log($@"Input binding for {InputBindingsController[InputToRebind].InputName} is currently {InputBindingsController[InputToRebind].InputButton}");
@@ -159,14 +159,14 @@ public static class PlayerInput
         {
             // Cancel rebinding
             RebindingInputs = false;
-            UIControllerNew.ChangeErrorText($@"Input Rebinding has been cancelled");
+            UIController.ChangeErrorText($@"Input Rebinding has been cancelled");
             Logger.Log($@"Input Rebinding has been cancelled");
         }
         // Default state during rebinding
         else
         {
             // Update message with rebinding instructions
-            UIControllerNew.ChangeErrorText($@"Press Input you wish to rebind to {InputBindingsController[InputToRebind].InputName}. Press Esc to cancel. Cancelling in 5 seconds...");
+            UIController.ChangeErrorText($@"Press Input you wish to rebind to {InputBindingsController[InputToRebind].InputName}. Press Esc to cancel. Cancelling in 5 seconds...");
         }
     }
 

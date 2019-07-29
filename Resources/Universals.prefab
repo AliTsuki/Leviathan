@@ -7392,7 +7392,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DefaultActive: 0
-  OnlyPopUp: 0
+  OnlyPopUp: 1
   Buttons: []
   ModifiableTexts: []
 --- !u!1 &1439256542535136913
@@ -8406,6 +8406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 702908272068781342}
   - component: {fileID: 269526001004547356}
+  - component: {fileID: 8970019558633175210}
   m_Layer: 5
   m_Name: Main Menu Screen
   m_TagString: Untagged
@@ -8449,11 +8450,19 @@ MonoBehaviour:
   BackScreen: {fileID: 269526001004547356}
   SlideDirection: 0
   SlideRate: 0.2
-  Buttons:
-  - {fileID: 5741841084678078888}
-  - {fileID: 1993021749894017432}
-  ModifiableTexts: []
-  ModifiableUIElements: []
+--- !u!114 &8970019558633175210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2262362727446358688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af0b03f42541ae447b0495f44345bb69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  VersionText: {fileID: 0}
 --- !u!1 &2289983728952378210
 GameObject:
   m_ObjectHideFlags: 0
@@ -8464,6 +8473,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7227140742801700901}
   - component: {fileID: 5681012316807639729}
+  - component: {fileID: 9208778570840171834}
   m_Layer: 5
   m_Name: Player UI Screen
   m_TagString: Untagged
@@ -8505,9 +8515,37 @@ MonoBehaviour:
   BackScreen: {fileID: 269526001004547356}
   SlideDirection: 0
   SlideRate: 0.2
-  Buttons: []
-  ModifiableTexts: []
-  ModifiableUIElements: []
+--- !u!114 &9208778570840171834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2289983728952378210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5826fd71ea311844bac580cbc04e5180, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InfoLabel: {fileID: 0}
+  MinimapCoords: {fileID: 0}
+  ShieldDamageEffect: {fileID: 0}
+  HealthDamageEffect: {fileID: 0}
+  HealthForeground: {fileID: 0}
+  HealthText: {fileID: 0}
+  ShieldForeground: {fileID: 0}
+  ShieldText: {fileID: 0}
+  EnergyForeground: {fileID: 0}
+  EnergyText: {fileID: 0}
+  Ability1Background: {fileID: 0}
+  Ability1CD: {fileID: 0}
+  Ability1CDText: {fileID: 0}
+  Ability2Background: {fileID: 0}
+  Ability2CD: {fileID: 0}
+  Ability2CDText: {fileID: 0}
+  Ability3Background: {fileID: 0}
+  Ability3CD: {fileID: 0}
+  Ability3CDText: {fileID: 0}
 --- !u!1 &2300725535814121867
 GameObject:
   m_ObjectHideFlags: 0
@@ -8956,9 +8994,6 @@ MonoBehaviour:
   BackScreen: {fileID: 269526001004547356}
   SlideDirection: 2
   SlideRate: 0.2
-  Buttons: []
-  ModifiableTexts: []
-  ModifiableUIElements: []
 --- !u!1 &2720193052300161739
 GameObject:
   m_ObjectHideFlags: 0
@@ -12842,6 +12877,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ce416c729ea80344a8f64013baf1a3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AimCursor: {fileID: 2800000, guid: 207f5c5edc855d345a904e9b7ee12dd7, type: 3}
   UIScreens:
   - {fileID: 269526001004547356}
   - {fileID: 2026959066611811723}
@@ -12854,6 +12890,8 @@ MonoBehaviour:
   - {fileID: 1017747179244785804}
   - {fileID: 8038256547029017389}
   ErrorText: {fileID: 5520176782600129750}
+  NPCUIPrefab: {fileID: 2721156345719607914, guid: 779eff8ba909873479913ae8818a4246,
+    type: 3}
 --- !u!1 &5863574924378884459
 GameObject:
   m_ObjectHideFlags: 0
@@ -13510,9 +13548,6 @@ MonoBehaviour:
   BackScreen: {fileID: 269526001004547356}
   SlideDirection: 1
   SlideRate: 0.2
-  Buttons: []
-  ModifiableTexts: []
-  ModifiableUIElements: []
 --- !u!1 &6092889503722631352
 GameObject:
   m_ObjectHideFlags: 0
@@ -17128,9 +17163,6 @@ MonoBehaviour:
   BackScreen: {fileID: 269526001004547356}
   SlideDirection: 3
   SlideRate: 0.2
-  Buttons: []
-  ModifiableTexts: []
-  ModifiableUIElements: []
 --- !u!1 &8077680646433461333
 GameObject:
   m_ObjectHideFlags: 0

@@ -104,7 +104,7 @@ public class DroneShip : Ship
         // Set to not alive
         this.Alive = false;
         // Tell UI to remove healthbar for this ship
-        UIControllerNew.RemoveHealthbar(this.ID);
+        UIController.RemoveHealthbar(this.ID);
         // Create an explosion
         this.Explosion = GameObject.Instantiate(this.ExplosionPrefab, this.ShipObject.transform.position, Quaternion.identity);
         // Set explosion object to self destroy after 1 second

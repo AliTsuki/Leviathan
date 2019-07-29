@@ -169,7 +169,7 @@ public class PSBomber : PlayerShip
                     if(this.IsPlayer == true)
                     {
                         // Show health damage vignette
-                        UIControllerNew.ShowHealthDamageEffect();
+                        UIController.ShowHealthDamageEffect();
                     }
                 }
                 // If shields are still above 0
@@ -179,7 +179,7 @@ public class PSBomber : PlayerShip
                     if(this.IsPlayer == true)
                     {
                         // Show shield damage vignette
-                        UIControllerNew.ShowShieldDamageEffect();
+                        UIController.ShowShieldDamageEffect();
                     }
                 }
                 // Set last damage taken time
