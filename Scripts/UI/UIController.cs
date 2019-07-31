@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 // Controls the UI
@@ -16,19 +17,20 @@ public static class UIController
     // Individual screen object references
     private static GameObject MainMenuScreen;
     private static GameObject NewGameMenuScreen;
-    private static GameObject LoadGameMenuScreen;
     private static GameObject SettingsMenuScreen;
     private static GameObject PlayerUIScreen;
     // Elements
     private static UIElementsMainMenu MainMenuElements;
     private static UIElementsPlayerUI PlayerUIElements;
 
-    // Dictionary of Healthbar UIs
-    private static Dictionary<uint, GameObject> Healthbars = new Dictionary<uint, GameObject>();
-
-    // Version text
-    private static TextMeshProUGUI VersionText;
-    
+    // Universals
+    // Event system
+    private static EventSystem EventSys;
+    // Cursor
+    private static Texture2D AimCursorTexture;
+    private static Vector2 AimCursorHotspot;
+    // Background
+    private static GameObject MenuBackground;
     // Error text
     private static TextMeshProUGUI ErrorText;
     private static bool ErrorTextVisible = false;
@@ -36,7 +38,18 @@ public static class UIController
     private const float ErrorTextDuration = 4f;
     private const float ErrorTextFadeRate = 0.2f;
 
+    // Main menu
+    // Version text
+    private static TextMeshProUGUI VersionText;
+
     // Player UI
+    // Dictionary of Healthbar UIs
+    private static Dictionary<uint, GameObject> Healthbars = new Dictionary<uint, GameObject>();
+    // NPC UIs
+    private static RectTransform PlayerUIRectTransform;
+    private static GameObject NPCUIPrefab;
+    private static GameObject HealthbarUI;
+    private static Vector2 UIOffset;
     // Info label
     private static TextMeshProUGUI InfoLabel;
     private static float deltaTime = 0.0f;
@@ -63,13 +76,6 @@ public static class UIController
     private static Image PlayerAbility3Background;
     private static Image PlayerAbility3Cooldown;
     private static TextMeshProUGUI PlayerAbility3CDText;
-
-    // NPC UI
-    private static RectTransform PlayerUIRectTransform;
-    private static GameObject NPCUIPrefab;
-    private static GameObject HealthbarUI;
-    private static Vector2 UIOffset;
-
     // FX
     private static GameObject ShieldDamageEffect;
     private static GameObject HealthDamageEffect;
@@ -77,15 +83,10 @@ public static class UIController
     private static float HealthDamageEffectStartTime = 0f;
     private const float ShowDamageEffectDuration = 0.25f;
 
-    // Cursor
-    private static Texture2D AimCursorTexture;
-    private static Vector2 AimCursorHotspot;
-
     // Constant names
     // Screen names
     private const string MainMenuName = "Main Menu Screen";
     private const string NewGameMenuName = "New Game Menu Screen";
-    private const string LoadGameMenuName = "Load Game Menu Screen";
     private const string SettingsMenuName = "Settings Menu Screen";
     private const string PlayerUIName = "Player UI Screen";
     // Pop Up names
@@ -162,17 +163,20 @@ public static class UIController
     // Initialize UI object references
     private static void InitializeUIObjectReferences()
     {
+        // Get event system reference
+        EventSys = EventSystem.current;
+        // Cursor
+        AimCursorTexture = UIHandler.Instance.AimCursor;
+        AimCursorHotspot = new Vector2(AimCursorTexture.width / 2, AimCursorTexture.height / 2);
+        // Background
+        MenuBackground = UIHandler.Instance.MenuBackground;
         // Get error text reference
         ErrorText = UIHandler.Instance.ErrorText.GetComponent<TextMeshProUGUI>();
         // Initalize error text to fully transparent
         ErrorText.alpha = 0f;
-        // Cursor
-        AimCursorTexture = UIHandler.Instance.AimCursor;
-        AimCursorHotspot = new Vector2(AimCursorTexture.width / 2, AimCursorTexture.height / 2);
         // Screen Objects
         MainMenuScreen = UIScreens[MainMenuName].gameObject;
         NewGameMenuScreen = UIScreens[NewGameMenuName].gameObject;
-        LoadGameMenuScreen = UIScreens[LoadGameMenuName].gameObject;
         SettingsMenuScreen = UIScreens[SettingsMenuName].gameObject;
         PlayerUIScreen = UIScreens[PlayerUIName].gameObject;
         // Elements
@@ -186,6 +190,8 @@ public static class UIController
         NPCUIPrefab = UIHandler.Instance.NPCUIPrefab;
         // Player UI
         PlayerUIRectTransform = PlayerUIScreen.GetComponent<RectTransform>();
+        InfoLabel = PlayerUIElements.InfoLabel;
+        MinimapCoords = PlayerUIElements.MinimapCoords;
         PlayerHealthForeground = PlayerUIElements.HealthForeground;
         PlayerHealthText = PlayerUIElements.HealthText;
         PlayerShieldForeground = PlayerUIElements.ShieldForeground;
@@ -201,8 +207,6 @@ public static class UIController
         PlayerAbility3Background = PlayerUIElements.Ability3Background;
         PlayerAbility3Cooldown = PlayerUIElements.Ability3CD;
         PlayerAbility3CDText = PlayerUIElements.Ability3CDText;
-        MinimapCoords = PlayerUIElements.MinimapCoords;
-        InfoLabel = PlayerUIElements.InfoLabel;
         ShieldDamageEffect = PlayerUIElements.ShieldDamageEffect;
         HealthDamageEffect = PlayerUIElements.HealthDamageEffect;
     }
@@ -468,8 +472,8 @@ public static class UIController
         Healthbars.Clear();
     }
 
-    // Change cursor
-    private static void ChangeCursor(bool _forceCursorVisible)
+    // Update cursor state
+    private static void UpdateCursorState(bool _forceCursorVisible)
     {
         // If input mode is controller
         if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
@@ -556,7 +560,7 @@ public static class UIController
     public static void ChangeGameState(GameController.GameState _newGameState)
     {
         // Update cursor
-        ChangeCursor(false);
+        UpdateCursorState(false);
         // If game state is paused
         if(_newGameState == GameController.GameState.Paused)
         {
@@ -568,6 +572,14 @@ public static class UIController
         {
             // Change screen to main menu
             ChangeScreen(UIScreens[MainMenuName]);
+            // Show menu background
+            MenuBackground.SetActive(true);
+        }
+        // If game state is playing
+        else
+        {
+            // Hide menu background
+            MenuBackground.SetActive(false);
         }
     }
 
@@ -580,6 +592,12 @@ public static class UIController
         CurrentScreen = _newScreen;
         // Slide in new screen
         CurrentScreen.SetupSlideScreen(UIAnimations.InOutEnum.In);
+        // If input mode is controller
+        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        {
+            // Select default button for screen
+            EventSys.SetSelectedGameObject(CurrentScreen.DefaultButton);
+        }
     }
 
     // Back
@@ -593,9 +611,9 @@ public static class UIController
     public static void OpenPopUp(UIPopUp _newPopUp)
     {
         // Update cursor
-        ChangeCursor(true);
-        // Activate new pop up
-        _newPopUp.gameObject.SetActive(true);
+        UpdateCursorState(true);
+        // Slide in pop up
+        _newPopUp.SetupSlideScreen(UIAnimations.InOutEnum.In);
         // If pop up is supposed to be only pop up on screen
         if(_newPopUp.OnlyPopUp == true)
         {
@@ -610,15 +628,27 @@ public static class UIController
                 }
             }
         }
+        // If input mode is controller
+        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        {
+            // Select default button for pop up
+            EventSys.SetSelectedGameObject(_newPopUp.DefaultButton);
+        }
     }
 
     // Close Popup
     public static void ClosePopUp(UIPopUp _popUp)
     {
         // Update cursor
-        ChangeCursor(false);
-        // Deactivate pop up
-        _popUp.gameObject.SetActive(false);
+        UpdateCursorState(false);
+        // Slide out pop up
+        _popUp.SetupSlideScreen(UIAnimations.InOutEnum.Out);
+        // If input mode is controller
+        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        {
+            // Select default button for screen
+            EventSys.SetSelectedGameObject(CurrentScreen.DefaultButton);
+        }
     }
 
     // Change error text

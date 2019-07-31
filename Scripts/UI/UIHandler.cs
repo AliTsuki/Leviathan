@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-// Contains list of all screens and button behaviours for those screens
+// Contains list of all screens and button behaviours
 public class UIHandler : MonoBehaviour
 {
     // Singleton
@@ -21,6 +21,9 @@ public class UIHandler : MonoBehaviour
     [Header("Error Text")]
     [SerializeField]
     public GameObject ErrorText;
+    [Header("Menu Background")]
+    [SerializeField]
+    public GameObject MenuBackground;
     [Header("NPC UI Prefab")]
     [SerializeField]
     public GameObject NPCUIPrefab;

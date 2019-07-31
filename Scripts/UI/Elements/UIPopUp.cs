@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 // UI PopUp script is added to a pop up object in Editor
+[RequireComponent(typeof(RectTransform))]
 public class UIPopUp : MonoBehaviour
 {
     // Editor fields
@@ -12,6 +13,8 @@ public class UIPopUp : MonoBehaviour
     public UIAnimations.SlideDirectionEnum SlideDirection = UIAnimations.SlideDirectionEnum.Right;
     [SerializeField, Range(0.001f, 0.999f)]
     public float SlideRate = 0.2f;
+    [SerializeField]
+    public GameObject DefaultButton;
 
     // Private fields
     private RectTransform Rect;
