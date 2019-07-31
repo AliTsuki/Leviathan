@@ -14,11 +14,14 @@ public class UIPopUp : MonoBehaviour
     [SerializeField, Range(0.001f, 0.999f)]
     public float SlideRate = 0.2f;
     [SerializeField]
+    public bool SelectButtonOnOpen = false;
+    [SerializeField]
     public GameObject DefaultButton;
 
     // Private fields
     private RectTransform Rect;
     private readonly UIAnimations UIAnims = new UIAnimations();
+
 
     // Start is called before the first frame update
     private void Start()

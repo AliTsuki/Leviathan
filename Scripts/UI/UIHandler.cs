@@ -27,6 +27,10 @@ public class UIHandler : MonoBehaviour
     [Header("NPC UI Prefab")]
     [SerializeField]
     public GameObject NPCUIPrefab;
+    [Header("Ship Models")]
+    [SerializeField]
+    public GameObject[] ShipModels;
+
 
     // Start is called before the first frame update
     private void Start()
@@ -40,11 +44,10 @@ public class UIHandler : MonoBehaviour
         UIController.ChangeErrorText(_newErrorText);
     }
 
-    // Select player ship type
-    public void SelectPlayerShipType(PlayerShip.PlayerShipType _type)
+    // Get selected toggle
+    public void GetShipSelectToggle()
     {
-        GameController.ChangePlayerShipType(_type);
-        UIController.ViewNewShipType(_type);
+        UIController.GetShipSelectToggle();
     }
 
     // Change game state

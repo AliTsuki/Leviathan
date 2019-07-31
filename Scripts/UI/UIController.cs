@@ -16,12 +16,19 @@ public static class UIController
     private static UIScreen CurrentScreen;
     // Individual screen object references
     private static GameObject MainMenuScreen;
-    private static GameObject NewGameMenuScreen;
+    private static GameObject ShipSelectMenuScreen;
     private static GameObject SettingsMenuScreen;
     private static GameObject PlayerUIScreen;
     // Elements
     private static UIElementsMainMenu MainMenuElements;
+    private static UIElementsShipSelect ShipSelectElements;
     private static UIElementsPlayerUI PlayerUIElements;
+    // PopUps
+    private static UIPopUp BomberInfoPopUp;
+    private static UIPopUp EngineerInfoPopUp;
+    private static UIPopUp GameOverPopUp;
+    private static UIPopUp PausePopUp;
+    private static UIPopUp QuitConfirmPopUp;
 
     // Universals
     // Event system
@@ -41,6 +48,11 @@ public static class UIController
     // Main menu
     // Version text
     private static TextMeshProUGUI VersionText;
+
+    // Ship select
+    private static Dictionary<string, GameObject> ShipModels = new Dictionary<string, GameObject>();
+    private static GameObject BomberModel;
+    private static GameObject EngineerModel;
 
     // Player UI
     // Dictionary of Healthbar UIs
@@ -86,13 +98,18 @@ public static class UIController
     // Constant names
     // Screen names
     private const string MainMenuName = "Main Menu Screen";
-    private const string NewGameMenuName = "New Game Menu Screen";
+    private const string ShipSelectMenuName = "Ship Select Menu Screen";
     private const string SettingsMenuName = "Settings Menu Screen";
     private const string PlayerUIName = "Player UI Screen";
     // Pop Up names
-    private const string QuitConfirmPopUpName = "Quit Confirm PopUp";
-    private const string PausePopUpName = "Pause PopUp";
+    private const string BomberInfoPopUpName = "Bomber Info PopUp";
+    private const string EngineerInfoPopUpName = "Engineer Info PopUp";
     private const string GameOverPopUpName = "Game Over PopUp";
+    private const string PausePopUpName = "Pause PopUp";
+    private const string QuitConfirmPopUpName = "Quit Confirm PopUp";
+    // Model names
+    private const string BomberModelName = "Bomber Model";
+    private const string EngineerModelName = "Engineer Model";
 
 
     // Initialize
@@ -119,9 +136,9 @@ public static class UIController
 
         }
         // If current screen is New Game Menu
-        else if(CurrentScreen == UIScreens[NewGameMenuName])
+        else if(CurrentScreen == UIScreens[ShipSelectMenuName])
         {
-
+            
         }
         // If current screen is Settings Menu
         else if(CurrentScreen == UIScreens[SettingsMenuName])
@@ -176,16 +193,31 @@ public static class UIController
         ErrorText.alpha = 0f;
         // Screen Objects
         MainMenuScreen = UIScreens[MainMenuName].gameObject;
-        NewGameMenuScreen = UIScreens[NewGameMenuName].gameObject;
+        ShipSelectMenuScreen = UIScreens[ShipSelectMenuName].gameObject;
         SettingsMenuScreen = UIScreens[SettingsMenuName].gameObject;
         PlayerUIScreen = UIScreens[PlayerUIName].gameObject;
         // Elements
         MainMenuElements = MainMenuScreen.GetComponent<UIElementsMainMenu>();
+        ShipSelectElements = ShipSelectMenuScreen.GetComponent<UIElementsShipSelect>();
         PlayerUIElements = PlayerUIScreen.GetComponent<UIElementsPlayerUI>();
+        // PopUps
+        BomberInfoPopUp = UIPopUps[BomberInfoPopUpName];
+        EngineerInfoPopUp = UIPopUps[EngineerInfoPopUpName];
+        GameOverPopUp = UIPopUps[GameOverPopUpName];
+        PausePopUp = UIPopUps[PausePopUpName];
+        QuitConfirmPopUp = UIPopUps[QuitConfirmPopUpName];
         // Main menu
         VersionText = MainMenuElements.VersionText;
         // Set version text
         VersionText.text = GameController.Version;
+        // Ship select
+        foreach(GameObject model in UIHandler.Instance.ShipModels)
+        {
+            ShipModels.Add(model.name, model);
+        }
+        BomberModel = ShipModels[BomberModelName];
+        EngineerModel = ShipModels[EngineerModelName];
+        HideAllShipModels();
         // NPC UI
         NPCUIPrefab = UIHandler.Instance.NPCUIPrefab;
         // Player UI
@@ -598,6 +630,12 @@ public static class UIController
             // Select default button for screen
             EventSys.SetSelectedGameObject(CurrentScreen.DefaultButton);
         }
+        // If new screen is ship select menu
+        if(CurrentScreen.gameObject == ShipSelectMenuScreen)
+        {
+            // Get current ship select toggle
+            GetShipSelectToggle();
+        }
     }
 
     // Back
@@ -605,6 +643,10 @@ public static class UIController
     {
         // Change screen to the back screen of the current screen
         ChangeScreen(CurrentScreen.BackScreen);
+        // Close all popups
+        CloseAllPopUps();
+        // Hide all ship models
+        HideAllShipModels();
     }
 
     // Open Popup
@@ -617,7 +659,7 @@ public static class UIController
         // If pop up is supposed to be only pop up on screen
         if(_newPopUp.OnlyPopUp == true)
         {
-            // Loop through all pop ups on this screen
+            // Loop through all pop ups
             foreach(KeyValuePair<string, UIPopUp> popUp in UIPopUps)
             {
                 // If pop up is not the new pop up
@@ -629,14 +671,14 @@ public static class UIController
             }
         }
         // If input mode is controller
-        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        if(_newPopUp.SelectButtonOnOpen == true && PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
         {
             // Select default button for pop up
             EventSys.SetSelectedGameObject(_newPopUp.DefaultButton);
         }
     }
 
-    // Close Popup
+    // Close pop up
     public static void ClosePopUp(UIPopUp _popUp)
     {
         // Update cursor
@@ -644,10 +686,49 @@ public static class UIController
         // Slide out pop up
         _popUp.SetupSlideScreen(UIAnimations.InOutEnum.Out);
         // If input mode is controller
-        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        if(_popUp.SelectButtonOnOpen == true && PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
         {
             // Select default button for screen
             EventSys.SetSelectedGameObject(CurrentScreen.DefaultButton);
+        }
+    }
+
+    // Close all pop ups
+    public static void CloseAllPopUps()
+    {
+        // Loop through all pop ups
+        foreach(KeyValuePair<string, UIPopUp> popUp in UIPopUps)
+        {
+            // Deactivate pop up
+            ClosePopUp(popUp.Value);
+        }
+    }
+
+    // Show ship model
+    public static void ShowShipModel(GameObject _model)
+    {
+        // Set model game object active
+        _model.SetActive(true);
+        // Loop through all models
+        foreach(KeyValuePair<string, GameObject> model in ShipModels)
+        {
+            // If current model is not model to be shown
+            if(model.Value != _model)
+            {
+                // Deactivate model
+                model.Value.SetActive(false);
+            }
+        }
+    }
+
+    // Hide all ship models
+    public static void HideAllShipModels()
+    {
+        // Loop through all models
+        foreach(KeyValuePair<string, GameObject> model in ShipModels)
+        {
+            // Deactivate model
+            model.Value.SetActive(false);
         }
     }
 
@@ -671,17 +752,45 @@ public static class UIController
         ErrorText.alpha = Mathf.Lerp(ErrorText.alpha, 0f, ErrorTextFadeRate);
     }
 
-    // View new ship type
-    public static void ViewNewShipType(PlayerShip.PlayerShipType _type)
+    // Get ship select toggle
+    public static void GetShipSelectToggle()
     {
-        // TODO: View new ship type UI Controller
+        // Get ship select toggle
+        ShipSelectElements.GetShipSelectToggle();
+        // If toggle is bomber
+        if(ShipSelectElements.CurrentSelection.gameObject.name == UIElementsShipSelect.BomberToggleName)
+        {
+            // Update player ship type
+            GameController.ChangePlayerShipType(PlayerShip.PlayerShipType.Bomber);
+            // Open bomber info panel
+            OpenPopUp(BomberInfoPopUp);
+            // Show bomber model
+            ShowShipModel(BomberModel);
+        }
+        // If toggle is engineer
+        else if(ShipSelectElements.CurrentSelection.gameObject.name == UIElementsShipSelect.EngineerToggleName)
+        {
+            // Update player ship type
+            GameController.ChangePlayerShipType(PlayerShip.PlayerShipType.Engineer);
+            // Open engineer info panel
+            OpenPopUp(EngineerInfoPopUp);
+            // Show engineer model
+            ShowShipModel(EngineerModel);
+        }
     }
 
     // Start new game
     public static void StartNewGame()
     {
+        // Clear all healthbars
         ClearHealthbars();
+        // Change screen to player UI
         ChangeScreen(UIScreens[PlayerUIName]);
+        // Close all pop ups
+        CloseAllPopUps();
+        // Hide all ship models
+        HideAllShipModels();
+        // Change game state to playing
         GameController.ChangeGameState(GameController.GameState.Playing);
     }
 }
