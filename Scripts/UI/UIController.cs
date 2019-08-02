@@ -23,6 +23,7 @@ public static class UIController
     private static UIElementsMainMenu MainMenuElements;
     private static UIElementsShipSelect ShipSelectElements;
     private static UIElementsPlayerUI PlayerUIElements;
+    private static UIPlayerAbilityIcons PlayerAbilityIcons;
     // PopUps
     private static UIPopUp BomberInfoPopUp;
     private static UIPopUp EngineerInfoPopUp;
@@ -80,12 +81,15 @@ public static class UIController
     private static Image PlayerEnergyForeground;
     private static TextMeshProUGUI PlayerEnergyText;
     private static Image PlayerAbility1Background;
+    private static Image PlayerAbility1Icon;
     private static Image PlayerAbility1Cooldown;
     private static TextMeshProUGUI PlayerAbility1CDText;
     private static Image PlayerAbility2Background;
+    private static Image PlayerAbility2Icon;
     private static Image PlayerAbility2Cooldown;
     private static TextMeshProUGUI PlayerAbility2CDText;
     private static Image PlayerAbility3Background;
+    private static Image PlayerAbility3Icon;
     private static Image PlayerAbility3Cooldown;
     private static TextMeshProUGUI PlayerAbility3CDText;
     // FX
@@ -200,6 +204,7 @@ public static class UIController
         MainMenuElements = MainMenuScreen.GetComponent<UIElementsMainMenu>();
         ShipSelectElements = ShipSelectMenuScreen.GetComponent<UIElementsShipSelect>();
         PlayerUIElements = PlayerUIScreen.GetComponent<UIElementsPlayerUI>();
+        PlayerAbilityIcons = PlayerUIScreen.GetComponent<UIPlayerAbilityIcons>();
         // PopUps
         BomberInfoPopUp = UIPopUps[BomberInfoPopUpName];
         EngineerInfoPopUp = UIPopUps[EngineerInfoPopUpName];
@@ -231,12 +236,15 @@ public static class UIController
         PlayerEnergyForeground = PlayerUIElements.EnergyForeground;
         PlayerEnergyText = PlayerUIElements.EnergyText;
         PlayerAbility1Background = PlayerUIElements.Ability1Background;
+        PlayerAbility1Icon = PlayerUIElements.Ability1Icon;
         PlayerAbility1Cooldown = PlayerUIElements.Ability1CD;
         PlayerAbility1CDText = PlayerUIElements.Ability1CDText;
         PlayerAbility2Background = PlayerUIElements.Ability2Background;
+        PlayerAbility2Icon = PlayerUIElements.Ability2Icon;
         PlayerAbility2Cooldown = PlayerUIElements.Ability2CD;
         PlayerAbility2CDText = PlayerUIElements.Ability2CDText;
         PlayerAbility3Background = PlayerUIElements.Ability3Background;
+        PlayerAbility3Icon = PlayerUIElements.Ability3Icon;
         PlayerAbility3Cooldown = PlayerUIElements.Ability3CD;
         PlayerAbility3CDText = PlayerUIElements.Ability3CDText;
         ShieldDamageEffect = PlayerUIElements.ShieldDamageEffect;
@@ -274,6 +282,25 @@ public static class UIController
                 // Deactivate pop up
                 popUp.Value.gameObject.SetActive(false);
             }
+        }
+    }
+
+    // Initialize ability icons
+    private static void InitializeAbilityIcons()
+    {
+        // If player ship is bomber
+        if(GameController.PlayerShipType == PlayerShip.PlayerShipType.Bomber)
+        {
+            PlayerAbility1Icon.overrideSprite = PlayerAbilityIcons.BomberAbilityIcons[0];
+            PlayerAbility2Icon.overrideSprite = PlayerAbilityIcons.BomberAbilityIcons[1];
+            PlayerAbility3Icon.overrideSprite = PlayerAbilityIcons.BomberAbilityIcons[2];
+        }
+        // If player ship is engineer
+        else if(GameController.PlayerShipType == PlayerShip.PlayerShipType.Engineer)
+        {
+            PlayerAbility1Icon.overrideSprite = PlayerAbilityIcons.EngineerAbilityIcons[0];
+            PlayerAbility2Icon.overrideSprite = PlayerAbilityIcons.EngineerAbilityIcons[1];
+            PlayerAbility3Icon.overrideSprite = PlayerAbilityIcons.EngineerAbilityIcons[2];
         }
     }
 
@@ -635,6 +662,11 @@ public static class UIController
         {
             // Get current ship select toggle
             GetShipSelectToggle();
+        }
+        // If new screen is player UI
+        if(CurrentScreen.gameObject == PlayerUIScreen)
+        {
+            InitializeAbilityIcons();
         }
     }
 

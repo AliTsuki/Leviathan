@@ -18,12 +18,15 @@ public class UIElementsPlayerUI : MonoBehaviour
     public Image EnergyForeground;
     public TextMeshProUGUI EnergyText;
     public Image Ability1Background;
+    public Image Ability1Icon;
     public Image Ability1CD;
     public TextMeshProUGUI Ability1CDText;
     public Image Ability2Background;
+    public Image Ability2Icon;
     public Image Ability2CD;
     public TextMeshProUGUI Ability2CDText;
     public Image Ability3Background;
+    public Image Ability3Icon;
     public Image Ability3CD;
     public TextMeshProUGUI Ability3CDText;
 }

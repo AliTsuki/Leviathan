@@ -2,8 +2,10 @@
 
 using UnityEngine;
 
+// Controls the player ship engineer type
 public class PSEngineer : PlayerShip
 {
+    // Engineer objects
     private readonly GameObject ShieldOverchargeObject;
     private readonly GameObject EMPObject;
 

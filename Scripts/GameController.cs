@@ -21,7 +21,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public const string Version = "0.0.16f";
+    public const string Version = "0.0.16g";
 
     // GM reference
     private static GameManager gm = GameManager.Instance;
@@ -41,7 +41,7 @@ public static class GameController
 
     // Player fields
     public static Ship Player { get; private set; }
-    private static PlayerShip.PlayerShipType PlayerShipType;
+    public static PlayerShip.PlayerShipType PlayerShipType { get; private set; }
 
     // Enemy spawn fields
     private static uint EnemyCount = 0;

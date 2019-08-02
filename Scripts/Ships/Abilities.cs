@@ -131,6 +131,7 @@ public abstract partial class Ship
             this.SubtractEnergy(_EMPEnergyCost);
             // Activate EMP gameobject
             _EMPObject.SetActive(true);
+            _EMPObject.GetComponent<ParticleSystem>().Play();
             // Set ability active
             this.AbilityActive[2] = true;
             // Record ability activated time

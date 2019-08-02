@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 
+// Controls the player ship bomber type
 public class PSBomber : PlayerShip
 {
-    // Player-only GameObjects
+    // Bomber GameObjects
     private readonly GameObject BarrierObject;
     private Bomb bomb;
 
