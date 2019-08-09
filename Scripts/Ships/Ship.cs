@@ -613,7 +613,7 @@ public abstract partial class Ship
                         shotRotation = Quaternion.Euler(0f, this.GunBarrelObjects[c].transform.rotation.eulerAngles.y + accuracy, 0f);
                     }
                     // Spawn a projectile
-                    GameController.SpawnProjectile(this.IFF, this.Stats.GunShotProjectileType, this.Stats.GunShotCurvature, this.Stats.GunShotSightCone, 
+                    GameController.SpawnBolt(this.IFF, this.Stats.GunShotProjectileType, this.Stats.GunShotCurvature, this.Stats.GunShotSightCone, 
                         this.Stats.GunShotDamage, this.GunBarrelObjects[c].transform.position, shotRotation, this.ShipRigidbody.velocity, this.Stats.GunShotSpeed, 
                         this.Stats.GunShotLifetime);
                     // Turn on gun lights

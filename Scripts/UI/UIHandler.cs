@@ -50,11 +50,46 @@ public class UIHandler : MonoBehaviour
         UIController.GetShipSelectToggle();
     }
 
-    // Change game state
-    public void ChangeGameState(GameController.GameState _newGameState)
+    // Movement style toggle
+    public void MovementStyleToggle()
     {
-        GameController.ChangeGameState(_newGameState);
-        UIController.ChangeGameState(_newGameState);
+        UIController.GetMovementStyleToggle();
+    }
+
+    // Input type toggle
+    public void InputTypeToggle()
+    {
+        UIController.GetInputTypeToggle();
+    }
+
+    // Change game state
+    public void ChangeGameState(int _newGameState)
+    {
+        // int 0: menus, 1: playing, 2: paused
+        switch(_newGameState)
+        {
+            case 0:
+            {
+                GameController.ChangeGameState(GameController.GameState.Menus);
+                break;
+            }
+            case 1:
+            {
+                GameController.ChangeGameState(GameController.GameState.Playing);
+                break;
+            }
+            case 2:
+            {
+                GameController.ChangeGameState(GameController.GameState.Paused);
+                break;
+            }
+            default:
+            {
+                Debug.Log($@"Invalid Game State: {_newGameState}");
+                Logger.Log($@"Invalid Game State: {_newGameState}");
+                break;
+            }
+        }
     }
 
     // Change screen
@@ -81,16 +116,16 @@ public class UIHandler : MonoBehaviour
         UIController.ClosePopUp(_popUpToClose);
     }
 
+    // Clear all
+    public void ClearAll()
+    {
+        GameController.ClearAll();
+    }
+
     // Start game
     public void StartNewGame()
     {
-        UIController.StartNewGame();
-    }
-
-    // Restart
-    public void Restart()
-    {
-        GameController.Restart();
+        GameController.StartNewGame();
     }
 
     // Quit game

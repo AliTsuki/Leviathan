@@ -22,6 +22,7 @@ public static class UIController
     // Elements
     private static UIElementsMainMenu MainMenuElements;
     private static UIElementsShipSelect ShipSelectElements;
+    private static UIElementsSettings SettingsElements;
     private static UIElementsPlayerUI PlayerUIElements;
     private static UIPlayerAbilityIcons PlayerAbilityIcons;
     // PopUps
@@ -203,6 +204,7 @@ public static class UIController
         // Elements
         MainMenuElements = MainMenuScreen.GetComponent<UIElementsMainMenu>();
         ShipSelectElements = ShipSelectMenuScreen.GetComponent<UIElementsShipSelect>();
+        SettingsElements = SettingsMenuScreen.GetComponent<UIElementsSettings>();
         PlayerUIElements = PlayerUIScreen.GetComponent<UIElementsPlayerUI>();
         PlayerAbilityIcons = PlayerUIScreen.GetComponent<UIPlayerAbilityIcons>();
         // PopUps
@@ -594,6 +596,61 @@ public static class UIController
         }
     }
 
+    // Check select default button
+    private static void CheckSelectDefaultButton(GameObject _defaultButton)
+    {
+        // If input mode is controller
+        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        {
+            // Select default button for screen
+            EventSys.SetSelectedGameObject(_defaultButton);
+        }
+    }
+
+    // Make unique changes depending on new screen entered
+    private static void NewScreenUniqueChanges()
+    {
+        // If new screen is main menu
+        if(CurrentScreen.gameObject == MainMenuScreen)
+        {
+            // Show menu background
+            MenuBackground.SetActive(true);
+        }
+        // If new screen is ship select menu
+        else if(CurrentScreen.gameObject == ShipSelectMenuScreen)
+        {
+            // Show menu background
+            MenuBackground.SetActive(true);
+            // Get current ship select toggle
+            GetShipSelectToggle();
+        }
+        // If new screen is settings menu
+        else if(CurrentScreen.gameObject == SettingsMenuScreen)
+        {
+            // Show menu background
+            MenuBackground.SetActive(true);
+        }
+        // If new screen is player UI
+        else if(CurrentScreen.gameObject == PlayerUIScreen)
+        {
+            // Hide menu background
+            MenuBackground.SetActive(false);
+            // Initialize ability icons
+            InitializeAbilityIcons();
+        }
+    }
+
+    // Clear all
+    public static void ClearAll()
+    {
+        // Clear all healthbars
+        ClearHealthbars();
+        // Close all pop ups
+        CloseAllPopUps();
+        // Hide all ship models
+        HideAllShipModels();
+    }
+
     // Remove Healthbar
     public static void RemoveHealthbar(uint _id)
     {
@@ -620,26 +677,6 @@ public static class UIController
     {
         // Update cursor
         UpdateCursorState(false);
-        // If game state is paused
-        if(_newGameState == GameController.GameState.Paused)
-        {
-            // Open pause pop up
-            OpenPopUp(UIPopUps[PausePopUpName]);
-        }
-        // If game state is menus
-        else if(_newGameState == GameController.GameState.Menus)
-        {
-            // Change screen to main menu
-            ChangeScreen(UIScreens[MainMenuName]);
-            // Show menu background
-            MenuBackground.SetActive(true);
-        }
-        // If game state is playing
-        else
-        {
-            // Hide menu background
-            MenuBackground.SetActive(false);
-        }
     }
 
     // Change screen
@@ -647,38 +684,27 @@ public static class UIController
     {
         // Slide out current screen
         CurrentScreen.SetupSlideScreen(UIAnimations.InOutEnum.Out);
+        CurrentScreen.Active = false;
         // Set current screen to new screen
         CurrentScreen = _newScreen;
         // Slide in new screen
         CurrentScreen.SetupSlideScreen(UIAnimations.InOutEnum.In);
-        // If input mode is controller
-        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
-        {
-            // Select default button for screen
-            EventSys.SetSelectedGameObject(CurrentScreen.DefaultButton);
-        }
-        // If new screen is ship select menu
-        if(CurrentScreen.gameObject == ShipSelectMenuScreen)
-        {
-            // Get current ship select toggle
-            GetShipSelectToggle();
-        }
-        // If new screen is player UI
-        if(CurrentScreen.gameObject == PlayerUIScreen)
-        {
-            InitializeAbilityIcons();
-        }
+        CurrentScreen.Active = true;
+        // Check select default button
+        CheckSelectDefaultButton(CurrentScreen.DefaultButton);
+        // Make unique changes depending on new screen
+        NewScreenUniqueChanges();
     }
 
     // Back
     public static void Back()
     {
-        // Change screen to the back screen of the current screen
-        ChangeScreen(CurrentScreen.BackScreen);
         // Close all popups
         CloseAllPopUps();
         // Hide all ship models
         HideAllShipModels();
+        // Change screen to the back screen of the current screen
+        ChangeScreen(CurrentScreen.BackScreen);
     }
 
     // Open Popup
@@ -688,6 +714,7 @@ public static class UIController
         UpdateCursorState(true);
         // Slide in pop up
         _newPopUp.SetupSlideScreen(UIAnimations.InOutEnum.In);
+        _newPopUp.Active = true;
         // If pop up is supposed to be only pop up on screen
         if(_newPopUp.OnlyPopUp == true)
         {
@@ -702,11 +729,11 @@ public static class UIController
                 }
             }
         }
-        // If input mode is controller
-        if(_newPopUp.SelectButtonOnOpen == true && PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        // If select button on open is enabled for this pop up
+        if(_newPopUp.SelectButtonOnOpen == true)
         {
-            // Select default button for pop up
-            EventSys.SetSelectedGameObject(_newPopUp.DefaultButton);
+            // Check if default button should be selected and select if so
+            CheckSelectDefaultButton(_newPopUp.DefaultButton);
         }
     }
 
@@ -717,11 +744,12 @@ public static class UIController
         UpdateCursorState(false);
         // Slide out pop up
         _popUp.SetupSlideScreen(UIAnimations.InOutEnum.Out);
-        // If input mode is controller
-        if(_popUp.SelectButtonOnOpen == true && PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        _popUp.Active = false;
+        // If select button on open is enabled for this pop up
+        if(_popUp.SelectButtonOnOpen == true)
         {
-            // Select default button for screen
-            EventSys.SetSelectedGameObject(CurrentScreen.DefaultButton);
+            // Check if default button should be selected and select if so
+            CheckSelectDefaultButton(CurrentScreen.DefaultButton);
         }
     }
 
@@ -734,6 +762,8 @@ public static class UIController
             // Deactivate pop up
             ClosePopUp(popUp.Value);
         }
+        // Check select default button
+        CheckSelectDefaultButton(CurrentScreen.DefaultButton);
     }
 
     // Show ship model
@@ -811,18 +841,78 @@ public static class UIController
         }
     }
 
+    // Get movement style toggle
+    public static void GetMovementStyleToggle()
+    {
+        // Get movement style
+        SettingsElements.GetMovementStyleToggle();
+        // If movement style is 0
+        if(SettingsElements.MovementStyle == 0)
+        {
+            // Change movement style to screenspace
+            PlayerInput.ChangeMovementStyle(PlayerInput.MovementStyleEnum.ScreenSpace);
+        }
+        // If movement style is 1
+        else if(SettingsElements.MovementStyle == 1)
+        {
+            // Change movement style to tank
+            PlayerInput.ChangeMovementStyle(PlayerInput.MovementStyleEnum.Tank);
+        }
+    }
+
+    // Get input type toggle
+    public static void GetInputTypeToggle()
+    {
+        // Get input type
+        SettingsElements.GetInputTypeToggle();
+        // If input type is 0
+        if(SettingsElements.InputType == 0)
+        {
+            // Change input type to KB&M
+            PlayerInput.ChangeInputType(PlayerInput.InputModeEnum.KBM);
+            // Select default button as nothing
+            CheckSelectDefaultButton(null);
+        }
+        // If input type is 1
+        else if(SettingsElements.InputType == 1)
+        {
+            // Change input type to controller
+            PlayerInput.ChangeInputType(PlayerInput.InputModeEnum.Controller);
+            // Select default button for controller
+            CheckSelectDefaultButton(CurrentScreen.DefaultButton);
+        }
+    }
+
     // Start new game
     public static void StartNewGame()
     {
-        // Clear all healthbars
-        ClearHealthbars();
         // Change screen to player UI
         ChangeScreen(UIScreens[PlayerUIName]);
-        // Close all pop ups
-        CloseAllPopUps();
-        // Hide all ship models
-        HideAllShipModels();
-        // Change game state to playing
-        GameController.ChangeGameState(GameController.GameState.Playing);
+    }
+
+    // Open pause pop up
+    public static void OpenPausePopUp(bool _open)
+    {
+        if(_open == true)
+        {
+            OpenPopUp(UIPopUps[PausePopUpName]);
+        }
+        else
+        {
+            ClosePopUp(UIPopUps[PausePopUpName]);
+        }
+    }
+
+    // Open game over pop up
+    public static void OpenGameOverPopUp(bool _open)
+    {
+        if(_open == true)
+        {
+            OpenPopUp(UIPopUps[GameOverPopUpName]);
+        }
+        else
+        {
+            ClosePopUp(UIPopUps[GameOverPopUpName]);
+        }
     }
 }

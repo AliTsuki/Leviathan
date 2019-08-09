@@ -21,7 +21,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public const string Version = "0.0.16g";
+    public const string Version = "0.0.16h";
 
     // GM reference
     private static GameManager gm = GameManager.Instance;
@@ -123,10 +123,10 @@ public static class GameController
             if(GameplayInitialized == false)
             {
                 InitializeGameplay();
-                GameplayInitialized = true;
             }
             FollowCamera();
             ProcessShipUpdate();
+            AddShips();
             EnemyDespawnUpdate();
             EnemySpawnUpdate();
             CleanupShipList();
@@ -176,8 +176,19 @@ public static class GameController
         Logger.OnApplicationQuit();
     }
 
-    // On restart
-    public static void Restart()
+    // Start new game
+    public static void StartNewGame()
+    {
+        // Clear all to default
+        ClearAll();
+        // UI controller start new game set up
+        UIController.StartNewGame();
+        // Change game state to playing
+        ChangeGameState(GameState.Playing);
+    }
+
+    // Clear all
+    public static void ClearAll()
     {
         // Loop through ships
         foreach(KeyValuePair<uint, Ship> ship in Ships)
@@ -200,8 +211,9 @@ public static class GameController
         Projectiles.Clear();
         ProjectilesToRemove.Clear();
         // Call restart method in background and UI
-        Background.Restart();
-        UIController.StartNewGame();
+        Background.ClearAll();
+        UIController.ClearAll();
+        ResetCamera();
         // Set gameplay initialized to default value of false
         GameplayInitialized = false;
     }
@@ -249,6 +261,7 @@ public static class GameController
         SpawnPlayer(PlayerShipType);
         FollowCamera();
         Background.Initialize();
+        GameplayInitialized = true;
     }
 
     // Initialize player ship in world
@@ -287,8 +300,8 @@ public static class GameController
         EnemyCount++;
     }
 
-    // Spawn projectile
-    public static void SpawnProjectile(IFF _iff, uint _type, float _curvature, float _sightCone, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    // Spawn bolt
+    public static void SpawnBolt(IFF _iff, uint _type, float _curvature, float _sightCone, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
     {
         NextProjectileID();
         Projectiles.Add(ProjectileID, new Bolt(ProjectileID, _iff, _type, _curvature, _sightCone, _damage, _position, _rotation, _velocity, _speed, _lifetime));
@@ -342,14 +355,6 @@ public static class GameController
             // Update ship
             ship.Value.Update();
         }
-        // Loop through all ships to add to scene
-        foreach(KeyValuePair<uint, Ship> ship in ShipsToAdd)
-        {
-            // Add to ships list
-            Ships.Add(ship.Key, ship.Value);
-        }
-        // Clear ships to add list
-        ShipsToAdd.Clear();
     }
 
     // Process ship physics updates
@@ -372,6 +377,19 @@ public static class GameController
             // Physics update projectile
             projectile.Value.FixedUpdate();
         }
+    }
+
+    // Add ships to ship list
+    public static void AddShips()
+    {
+        // Loop through all ships to add to scene
+        foreach(KeyValuePair<uint, Ship> ship in ShipsToAdd)
+        {
+            // Add to ships list
+            Ships.Add(ship.Key, ship.Value);
+        }
+        // Clear ships to add list
+        ShipsToAdd.Clear();
     }
 
     // Add ship to removal list

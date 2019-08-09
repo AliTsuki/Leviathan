@@ -6,5 +6,6 @@ using UnityEngine;
 public class UIElementsMainMenu : MonoBehaviour
 {
     // Element references
+    [SerializeField]
     public TextMeshProUGUI VersionText;
 }

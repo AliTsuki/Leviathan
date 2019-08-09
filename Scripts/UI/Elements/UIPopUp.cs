@@ -18,6 +18,9 @@ public class UIPopUp : MonoBehaviour
     [SerializeField]
     public GameObject DefaultButton;
 
+    // State
+    public bool Active = false;
+
     // Private fields
     private RectTransform Rect;
     private readonly UIAnimations UIAnims = new UIAnimations();

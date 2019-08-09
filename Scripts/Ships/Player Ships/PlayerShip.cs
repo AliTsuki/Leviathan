@@ -25,12 +25,6 @@ public abstract class PlayerShip : Ship
         this.AbilityInput[1] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability2] == 1f) ? true : false;
         this.AbilityInput[2] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability3] == 1f) ? true : false;
         this.PauseInput = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Pause] == 1f) ? true : false;
-        // Pause game if pause is pressed
-        if(this.PauseInput == true)
-        {
-            GameController.ChangeGameState(GameController.GameState.Paused);
-            this.PauseInput = false;
-        }
     }
 
     // Gets intended rotation
@@ -46,7 +40,6 @@ public abstract class PlayerShip : Ship
         }
     }
 
-    // TODO: fix accelerate to use new Movement style system
     // Accelerates the ship
     protected override void AccelerateShip()
     {
@@ -166,8 +159,7 @@ public abstract class PlayerShip : Ship
         {
             GameObject.Destroy(this.ShipObject.transform.GetChild(i).gameObject);
         }
-        // TODO: Fix game over screen
         // Show game over screen
-        //UIControllerNew.OpenPopUp();
+        UIController.OpenGameOverPopUp(true);
     }
 }

@@ -6,13 +6,18 @@ using UnityEngine;
 // Reads and stores inputs from player
 public static class PlayerInput
 {
+    // TODO: Fix rebinding to work with new input system
+    // TODO: Change default controller buttons to make more sense
+    // TODO: Find out why on controller pressing down when Engineer is selected seems to do nothing
+    // TODO: Update cursor check to remove cursor when in controller mode
+
     // Input mode
     public enum InputModeEnum
     {
         KBM,
         Controller
     }
-    public static InputModeEnum InputMode = InputModeEnum.KBM;
+    public static InputModeEnum InputMode { get; private set; } = InputModeEnum.KBM;
 
     // Movement style
     public enum MovementStyleEnum
@@ -20,7 +25,7 @@ public static class PlayerInput
         ScreenSpace,
         Tank
     }
-    public static MovementStyleEnum MovementStyle = MovementStyleEnum.ScreenSpace;
+    public static MovementStyleEnum MovementStyle { get; private set; } = MovementStyleEnum.ScreenSpace;
 
     // Input dictionary
     public static Dictionary<InputBinding.GameInputsEnum, float> CurrentInputValues { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, float>();
@@ -57,6 +62,10 @@ public static class PlayerInput
         {InputBinding.GameInputsEnum.AimInputXAxis, new InputBinding(InputBinding.GameInputsEnum.AimInputXAxis, InputBinding.InputTypeEnum.Axis, ControllerRightStickHorizontalInput)},
         {InputBinding.GameInputsEnum.AimInputYAxis, new InputBinding(InputBinding.GameInputsEnum.AimInputYAxis, InputBinding.InputTypeEnum.Axis, ControllerRightStickVerticalInput)},
     };
+
+    // Pause check
+    private static float LastPauseCheck = 0f;
+    private const float PauseCheckCD = 1f;
 
     // Rebinding input fields
     public static bool RebindingInputs = false;
@@ -221,52 +230,57 @@ public static class PlayerInput
             // Loop through all input binding types
             foreach(InputBinding.GameInputsEnum input in (InputBinding.GameInputsEnum[])Enum.GetValues(typeof(InputBinding.GameInputsEnum)))
             {
-                // If input key has already been added, update value
-                if(CurrentInputValues.ContainsKey(input))
+                if(InputBindingsController.ContainsKey(input))
                 {
-                    // If input is type axis, report value directly
-                    if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Axis)
+                    // If input key has already been added, update value
+                    if(CurrentInputValues.ContainsKey(input))
                     {
-                        CurrentInputValues[input] = Input.GetAxis(InputBindingsController[input].InputButton);
+                        // If input is type axis, report value directly
+                        if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Axis)
+                        {
+                            CurrentInputValues[input] = Input.GetAxis(InputBindingsController[input].InputButton);
+                        }
+                        // If input is type button, set value to 1 for pressed and 0 for unpressed
+                        else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Button)
+                        {
+                            CurrentInputValues[input] = (Input.GetButton(InputBindingsController[input].InputButton) == true) ? 1f : 0f;
+                        }
+                        // If input is type trigger, set value to 1 for pressed and 0 for unpressed
+                        else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Trigger)
+                        {
+                            CurrentInputValues[input] = (Input.GetAxis(InputBindingsController[input].InputButton) >= 0.5f || Input.GetAxis(InputBindingsController[input].InputButton) <= -0.5f) ? 1f : 0f;
+                        }
+                        // If input is type DPad, ....
+                        else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.DPad)
+                        {
+                            // TODO: set up dpad input scheme, not sure how I wanna set this up yet, also do below in add section
+                        }
+                        // Invert y input on move axis
+                        CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYAxis] *= -1;
                     }
-                    // If input is type button, set value to 1 for pressed and 0 for unpressed
-                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Button)
+                    // If input key hasn't been added, add it with the correct value
+                    else
                     {
-                        CurrentInputValues[input] = (Input.GetButton(InputBindingsController[input].InputButton) == true) ? 1f : 0f;
-                    }
-                    // If input is type trigger, set value to 1 for pressed and 0 for unpressed
-                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Trigger)
-                    {
-                        CurrentInputValues[input] = (Input.GetAxis(InputBindingsController[input].InputButton) >= 0.5f || Input.GetAxis(InputBindingsController[input].InputButton) <= -0.5f) ? 1f : 0f;
-                    }
-                    // If input is type DPad, ....
-                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.DPad)
-                    {
-                        // TODO: set up dpad input scheme, not sure how I wanna set this up yet, also do below in add section
-                    }
-                }
-                // If input key hasn't been added, add it with the correct value
-                else
-                {
-                    // If input is type axis, report value directly
-                    if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Axis)
-                    {
-                        CurrentInputValues.Add(input, Input.GetAxis(InputBindingsController[input].InputButton));
-                    }
-                    // If input is type button, set value to 1 for pressed and 0 for unpressed
-                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Button)
-                    {
-                        CurrentInputValues.Add(input, (Input.GetButton(InputBindingsController[input].InputButton) == true) ? 1f : 0f);
-                    }
-                    // If input is type trigger, set value to 1 for pressed and 0 for unpressed
-                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Trigger)
-                    {
-                        CurrentInputValues.Add(input, (Input.GetAxis(InputBindingsController[input].InputButton) >= 0.5f || Input.GetAxis(InputBindingsController[input].InputButton) <= -0.5f) ? 1f : 0f);
-                    }
-                    // If input is type DPad, ....
-                    else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.DPad)
-                    {
-                        // Not sure how I wanna set this up yet
+                        // If input is type axis, report value directly
+                        if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Axis)
+                        {
+                            CurrentInputValues.Add(input, Input.GetAxis(InputBindingsController[input].InputButton));
+                        }
+                        // If input is type button, set value to 1 for pressed and 0 for unpressed
+                        else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Button)
+                        {
+                            CurrentInputValues.Add(input, (Input.GetButton(InputBindingsController[input].InputButton) == true) ? 1f : 0f);
+                        }
+                        // If input is type trigger, set value to 1 for pressed and 0 for unpressed
+                        else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Trigger)
+                        {
+                            CurrentInputValues.Add(input, (Input.GetAxis(InputBindingsController[input].InputButton) >= 0.5f || Input.GetAxis(InputBindingsController[input].InputButton) <= -0.5f) ? 1f : 0f);
+                        }
+                        // If input is type DPad, ....
+                        else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.DPad)
+                        {
+                            // Not sure how I wanna set this up yet
+                        }
                     }
                 }
             }
@@ -411,6 +425,48 @@ public static class PlayerInput
                 }
             }
         }
+        PauseCheck();
+    }
+
+    // Pause check
+    private static void PauseCheck()
+    {
+        // If pause is pressed and it has been long enough since last checked
+        if(CurrentInputValues[InputBinding.GameInputsEnum.Pause] == 1 && Time.time - LastPauseCheck > PauseCheckCD)
+        {
+            // Pause game if pause is pressed
+            if(CurrentInputValues[InputBinding.GameInputsEnum.Pause] == 1)
+            {
+                // If game state is playing
+                if(GameController.CurrentGameState == GameController.GameState.Playing)
+                {
+                    GameController.ChangeGameState(GameController.GameState.Paused);
+                    UIController.OpenPausePopUp(true);
+                    CurrentInputValues[InputBinding.GameInputsEnum.Pause] = 0;
+                    LastPauseCheck = Time.time;
+                }
+                // If game state is paused
+                else if(GameController.CurrentGameState == GameController.GameState.Paused)
+                {
+                    GameController.ChangeGameState(GameController.GameState.Playing);
+                    UIController.OpenPausePopUp(false);
+                    CurrentInputValues[InputBinding.GameInputsEnum.Pause] = 0;
+                    LastPauseCheck = Time.time;
+                }
+            }
+        }
+    }
+
+    // Change movement style
+    public static void ChangeMovementStyle(MovementStyleEnum _newMovementStyle)
+    {
+        MovementStyle = _newMovementStyle;
+    }
+
+    // Change input type
+    public static void ChangeInputType(InputModeEnum _newInputType)
+    {
+        InputMode = _newInputType;
     }
 }
 

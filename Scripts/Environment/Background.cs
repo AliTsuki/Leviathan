@@ -84,8 +84,8 @@ public static class Background
         AddNewBackgrounds();
     }
 
-    // Restart
-    public static void Restart()
+    // Clear all
+    public static void ClearAll()
     {
         // Loop through all backgrounds
         foreach(KeyValuePair<Vector2Int, GameObject> background in Backgrounds)

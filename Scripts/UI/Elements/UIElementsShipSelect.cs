@@ -5,7 +5,9 @@ using UnityEngine.UI;
 public class UIElementsShipSelect : MonoBehaviour
 {
     // Element references
+    [SerializeField]
     public Toggle[] ShipToggles;
+    [SerializeField]
     public Toggle CurrentSelection;
 
     // Const names
