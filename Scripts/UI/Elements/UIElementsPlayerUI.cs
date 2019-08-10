@@ -7,10 +7,13 @@ using UnityEngine.UI;
 public class UIElementsPlayerUI : MonoBehaviour
 {
     // Element references
+    [Header("Info Label")]
     [SerializeField]
     public TextMeshProUGUI InfoLabel;
+    [Header("Minimap")]
     [SerializeField]
     public TextMeshProUGUI MinimapCoords;
+    [Header("Health, Shields, Energy")]
     [SerializeField]
     public GameObject ShieldDamageEffect;
     [SerializeField]
@@ -27,6 +30,7 @@ public class UIElementsPlayerUI : MonoBehaviour
     public Image EnergyForeground;
     [SerializeField]
     public TextMeshProUGUI EnergyText;
+    [Header("Abilities")]
     [SerializeField]
     public Image Ability1Background;
     [SerializeField]

@@ -7,9 +7,6 @@ using UnityEngine;
 public static class PlayerInput
 {
     // TODO: Fix rebinding to work with new input system
-    // TODO: Change default controller buttons to make more sense
-    // TODO: Find out why on controller pressing down when Engineer is selected seems to do nothing
-    // TODO: Update cursor check to remove cursor when in controller mode
 
     // Input mode
     public enum InputModeEnum
@@ -49,14 +46,14 @@ public static class PlayerInput
     // Default controller input bindings
     public static Dictionary<InputBinding.GameInputsEnum, InputBinding> InputBindingsController { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, InputBinding>
     {
-        {InputBinding.GameInputsEnum.Submit, new InputBinding(InputBinding.GameInputsEnum.Submit, InputBinding.InputTypeEnum.Button, ControllerButton0Input)},
-        {InputBinding.GameInputsEnum.Cancel, new InputBinding(InputBinding.GameInputsEnum.Cancel, InputBinding.InputTypeEnum.Button, ControllerButton1Input)},
-        {InputBinding.GameInputsEnum.Pause, new InputBinding(InputBinding.GameInputsEnum.Pause, InputBinding.InputTypeEnum.Button, ControllerButton7Input)},
-        {InputBinding.GameInputsEnum.MainGun, new InputBinding(InputBinding.GameInputsEnum.MainGun, InputBinding.InputTypeEnum.Button, ControllerButton0Input)},
-        {InputBinding.GameInputsEnum.Ability1, new InputBinding(InputBinding.GameInputsEnum.Ability1, InputBinding.InputTypeEnum.Button, ControllerButton2Input)},
-        {InputBinding.GameInputsEnum.Ability2, new InputBinding(InputBinding.GameInputsEnum.Ability2, InputBinding.InputTypeEnum.Button, ControllerButton3Input)},
-        {InputBinding.GameInputsEnum.Ability3, new InputBinding(InputBinding.GameInputsEnum.Ability3, InputBinding.InputTypeEnum.Button, ControllerButton1Input)},
-        {InputBinding.GameInputsEnum.Warp, new InputBinding(InputBinding.GameInputsEnum.Warp, InputBinding.InputTypeEnum.Trigger, ControllerLeftTriggerInput)},
+        {InputBinding.GameInputsEnum.Submit, new InputBinding(InputBinding.GameInputsEnum.Submit, InputBinding.InputTypeEnum.Button, ControllerAButtonInput)},
+        {InputBinding.GameInputsEnum.Cancel, new InputBinding(InputBinding.GameInputsEnum.Cancel, InputBinding.InputTypeEnum.Button, ControllerBButtonInput)},
+        {InputBinding.GameInputsEnum.Pause, new InputBinding(InputBinding.GameInputsEnum.Pause, InputBinding.InputTypeEnum.Button, ControllerStartButtonInput)},
+        {InputBinding.GameInputsEnum.MainGun, new InputBinding(InputBinding.GameInputsEnum.MainGun, InputBinding.InputTypeEnum.Trigger, ControllerRightTriggerInput)},
+        {InputBinding.GameInputsEnum.Ability1, new InputBinding(InputBinding.GameInputsEnum.Ability1, InputBinding.InputTypeEnum.Button, ControllerLeftBumperInput)},
+        {InputBinding.GameInputsEnum.Ability2, new InputBinding(InputBinding.GameInputsEnum.Ability2, InputBinding.InputTypeEnum.Trigger, ControllerLeftTriggerInput)},
+        {InputBinding.GameInputsEnum.Ability3, new InputBinding(InputBinding.GameInputsEnum.Ability3, InputBinding.InputTypeEnum.Button, ControllerRightBumperInput)},
+        {InputBinding.GameInputsEnum.Warp, new InputBinding(InputBinding.GameInputsEnum.Warp, InputBinding.InputTypeEnum.Button, ControllerLeftStickClickInput)},
         {InputBinding.GameInputsEnum.MoveInputXAxis, new InputBinding(InputBinding.GameInputsEnum.MoveInputXAxis, InputBinding.InputTypeEnum.Axis, ControllerLeftStickHorizontalInput)},
         {InputBinding.GameInputsEnum.MoveInputYAxis, new InputBinding(InputBinding.GameInputsEnum.MoveInputYAxis, InputBinding.InputTypeEnum.Axis, ControllerLeftStickVerticalInput)},
         {InputBinding.GameInputsEnum.AimInputXAxis, new InputBinding(InputBinding.GameInputsEnum.AimInputXAxis, InputBinding.InputTypeEnum.Axis, ControllerRightStickHorizontalInput)},
@@ -80,16 +77,16 @@ public static class PlayerInput
     private const string ControllerRightStickVerticalInput = "Controller Right Stick Vertical";
     private const string ControllerDPadHorizontalInput = "Controller DPad Horizontal";
     private const string ControllerDPadVerticalInput = "Controller DPad Vertical";
-    private const string ControllerButton0Input = "Controller Button 0";
-    private const string ControllerButton1Input = "Controller Button 1";
-    private const string ControllerButton2Input = "Controller Button 2";
-    private const string ControllerButton3Input = "Controller Button 3";
-    private const string ControllerButton4Input = "Controller Button 4";
-    private const string ControllerButton5Input = "Controller Button 5";
-    private const string ControllerButton6Input = "Controller Button 6";
-    private const string ControllerButton7Input = "Controller Button 7";
-    private const string ControllerButton8Input = "Controller Button 8";
-    private const string ControllerButton9Input = "Controller Button 9";
+    private const string ControllerAButtonInput = "Controller Button 0";
+    private const string ControllerBButtonInput = "Controller Button 1";
+    private const string ControllerXButtonInput = "Controller Button 2";
+    private const string ControllerYButtonInput = "Controller Button 3";
+    private const string ControllerLeftBumperInput = "Controller Button 4";
+    private const string ControllerRightBumperInput = "Controller Button 5";
+    private const string ControllerBackButtonInput = "Controller Button 6";
+    private const string ControllerStartButtonInput = "Controller Button 7";
+    private const string ControllerLeftStickClickInput = "Controller Button 8";
+    private const string ControllerRightStickClickInput = "Controller Button 9";
     private const string ControllerButton10Input = "Controller Button 10";
     private const string ControllerButton11Input = "Controller Button 11";
     private const string ControllerLeftTriggerInput = "Controller Left Trigger";
@@ -106,16 +103,16 @@ public static class PlayerInput
     // Controller button names list
     private static readonly List<string> ControllerButtons = new List<string>
     {
-        ControllerButton0Input,
-        ControllerButton1Input,
-        ControllerButton2Input,
-        ControllerButton3Input,
-        ControllerButton4Input,
-        ControllerButton5Input,
-        ControllerButton6Input,
-        ControllerButton7Input,
-        ControllerButton8Input,
-        ControllerButton9Input,
+        ControllerAButtonInput,
+        ControllerBButtonInput,
+        ControllerXButtonInput,
+        ControllerYButtonInput,
+        ControllerLeftBumperInput,
+        ControllerRightBumperInput,
+        ControllerBackButtonInput,
+        ControllerStartButtonInput,
+        ControllerLeftStickClickInput,
+        ControllerRightStickClickInput,
         ControllerButton10Input,
         ControllerButton11Input
     };
@@ -230,6 +227,7 @@ public static class PlayerInput
             // Loop through all input binding types
             foreach(InputBinding.GameInputsEnum input in (InputBinding.GameInputsEnum[])Enum.GetValues(typeof(InputBinding.GameInputsEnum)))
             {
+                // Checks if input is contained in input bindings controller
                 if(InputBindingsController.ContainsKey(input))
                 {
                     // If input key has already been added, update value
@@ -281,6 +279,8 @@ public static class PlayerInput
                         {
                             // Not sure how I wanna set this up yet
                         }
+                        // Invert y input on move axis
+                        CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYAxis] *= -1;
                     }
                 }
             }
@@ -467,6 +467,126 @@ public static class PlayerInput
     public static void ChangeInputType(InputModeEnum _newInputType)
     {
         InputMode = _newInputType;
+    }
+
+    // Get keybind name for ability
+    public static string GetKeybindNameForInput(InputBinding.GameInputsEnum _input)
+    {
+        // If input mode is controller
+        if(InputMode == InputModeEnum.Controller)
+        {
+            // Get string for keybind for controller input for ability 1
+            return GetStringForKeybind(InputBindingsController[_input]);
+        }
+        // If input mode is KB&M
+        else if(InputMode == InputModeEnum.KBM)
+        {
+            // Get string for keybind for KB&M input for ability 1
+            return GetStringForKeybind(InputBindingsKBM[_input]);
+        }
+        // Default return
+        return "N/A";
+    }
+
+    // Get string for keybind
+    private static string GetStringForKeybind(InputBinding _keybind)
+    {
+        // If input type is trigger
+        if(_keybind.InputType == InputBinding.InputTypeEnum.Trigger)
+        {
+            // Check list of input button triggers and return appropriate name
+            if(_keybind.InputButton == ControllerRightTriggerInput)
+            {
+                return "Right Trigger";
+            }
+            else if(_keybind.InputButton == ControllerLeftTriggerInput)
+            {
+                return "Left Trigger";
+            }
+        }
+        // If input type is button
+        else if(_keybind.InputType == InputBinding.InputTypeEnum.Button)
+        {
+            // Check list of input buttons and return appropriate name
+            if(_keybind.InputButton == ControllerAButtonInput)
+            {
+                return "A";
+            }
+            else if(_keybind.InputButton == ControllerBButtonInput)
+            {
+                return "B";
+            }
+            else if(_keybind.InputButton == ControllerXButtonInput)
+            {
+                return "X";
+            }
+            else if(_keybind.InputButton == ControllerYButtonInput)
+            {
+                return "Y";
+            }
+            else if(_keybind.InputButton == ControllerRightBumperInput)
+            {
+                return "Right Bumper";
+            }
+            else if(_keybind.InputButton == ControllerLeftBumperInput)
+            {
+                return "Left Bumper";
+            }
+            else if(_keybind.InputButton == ControllerRightStickClickInput)
+            {
+                return "Right Stick Click";
+            }
+            else if(_keybind.InputButton == ControllerLeftStickClickInput)
+            {
+                return "Left Stick Click";
+            }
+            else if(_keybind.InputButton == ControllerBackButtonInput)
+            {
+                return "Back";
+            }
+            else if(_keybind.InputButton == ControllerStartButtonInput)
+            {
+                return "Start";
+            }
+        }
+        // If input type is axis
+        else if(_keybind.InputType == InputBinding.InputTypeEnum.Axis)
+        {
+            // Return stick name
+            if(_keybind.InputButton == ControllerLeftStickHorizontalInput || _keybind.InputButton == ControllerLeftStickVerticalInput)
+            {
+                return "Left Stick";
+            }
+            else if(_keybind.InputButton == ControllerRightStickHorizontalInput || _keybind.InputButton == ControllerRightStickVerticalInput)
+            {
+                return "Right Stick";
+            }
+        }
+        // If input type is key
+        else if(_keybind.InputType == InputBinding.InputTypeEnum.Key)
+        {
+            // Return key name
+            return _keybind.InputKey.ToString();
+        }
+        // If input type is mouse button
+        else if(_keybind.InputType == InputBinding.InputTypeEnum.MouseButton)
+        {
+            // Check list of input mouse buttons and return appropriate name
+            if(_keybind.InputMouseButton == MouseLeftClick)
+            {
+                return "M1";
+            }
+            else if(_keybind.InputMouseButton == MouseRightClick)
+            {
+                return "M2";
+            }
+            else if(_keybind.InputMouseButton == MouseMiddleClick)
+            {
+                return "M3";
+            }
+        }
+        // Default return
+        return "N/A";
     }
 }
 

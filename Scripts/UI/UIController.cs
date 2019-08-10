@@ -304,6 +304,21 @@ public static class UIController
             PlayerAbility2Icon.overrideSprite = PlayerAbilityIcons.EngineerAbilityIcons[1];
             PlayerAbility3Icon.overrideSprite = PlayerAbilityIcons.EngineerAbilityIcons[2];
         }
+        InitializeAbilityKeybindText();
+    }
+
+    // Initialize ability keybind text
+    private static void InitializeAbilityKeybindText()
+    {
+        PlayerAbilityIcons.Ability1Keybind.text = PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.Ability1);
+        PlayerAbilityIcons.Ability2Keybind.text = PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.Ability2);
+        PlayerAbilityIcons.Ability3Keybind.text = PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.Ability3);
+        PlayerAbilityIcons.MainGunKeybind.text = PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MainGun);
+        PlayerAbilityIcons.WarpKeybind.text = PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.Warp);
+        PlayerAbilityIcons.MoveKeybind.text = (PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller) ? $@"{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MoveInputXAxis)}" : 
+            $@"{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MoveInputYPos)}{Environment.NewLine}{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MoveInputXNeg)}{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MoveInputYNeg)}{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MoveInputXPos)}";
+        PlayerAbilityIcons.AimKeybind.text = (PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller) ? $@"{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.AimInputXAxis)}" : "Mouse";
+        PlayerAbilityIcons.PauseKeybind.text = PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.Pause);
     }
 
     // Update error text
@@ -539,31 +554,10 @@ public static class UIController
         // If input mode is controller
         if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
         {
-            // If game state is menus or paused
-            if(GameController.CurrentGameState == GameController.GameState.Menus || GameController.CurrentGameState == GameController.GameState.Paused)
-            {
-                // Use default cursor and set visible
-                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-                Cursor.visible = true;
-            }
-            // If game state is playing
-            else
-            {
-                // Use default cursor and set invisible
-                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-                // If force cursor visible is true
-                if(_forceCursorVisible == true)
-                {
-                    // Set visible
-                    Cursor.visible = true;
-                }
-                // If force cursor visible is not true
-                else
-                {
-                    // Set invisible
-                    Cursor.visible = false;
-                }
-            }
+            // Use default cursor and set invisible
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+            // Set invisible
+            Cursor.visible = false;
         }
         // If input mode is KB&M
         else
@@ -824,20 +818,34 @@ public static class UIController
         {
             // Update player ship type
             GameController.ChangePlayerShipType(PlayerShip.PlayerShipType.Bomber);
-            // Open bomber info panel
-            OpenPopUp(BomberInfoPopUp);
             // Show bomber model
             ShowShipModel(BomberModel);
+            // If bomber pop up is not open
+            if(BomberInfoPopUp.Active == false)
+            {
+                // Open bomber info panel
+                OpenPopUp(BomberInfoPopUp);
+            }
         }
         // If toggle is engineer
         else if(ShipSelectElements.CurrentSelection.gameObject.name == UIElementsShipSelect.EngineerToggleName)
         {
             // Update player ship type
             GameController.ChangePlayerShipType(PlayerShip.PlayerShipType.Engineer);
-            // Open engineer info panel
-            OpenPopUp(EngineerInfoPopUp);
             // Show engineer model
             ShowShipModel(EngineerModel);
+            // If engineer pop up is not open
+            if(EngineerInfoPopUp.Active == false)
+            {
+                // Open engineer info panel
+                OpenPopUp(EngineerInfoPopUp);
+            }
+        }
+        // If input is controller
+        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        {
+            // Select currently selected toggle
+            EventSys.SetSelectedGameObject(ShipSelectElements.CurrentSelection.gameObject);
         }
     }
 
@@ -872,6 +880,8 @@ public static class UIController
             PlayerInput.ChangeInputType(PlayerInput.InputModeEnum.KBM);
             // Select default button as nothing
             CheckSelectDefaultButton(null);
+            // Update cursor
+            UpdateCursorState(false);
         }
         // If input type is 1
         else if(SettingsElements.InputType == 1)
@@ -880,6 +890,8 @@ public static class UIController
             PlayerInput.ChangeInputType(PlayerInput.InputModeEnum.Controller);
             // Select default button for controller
             CheckSelectDefaultButton(CurrentScreen.DefaultButton);
+            // Update cursor
+            UpdateCursorState(false);
         }
     }
 
@@ -893,12 +905,16 @@ public static class UIController
     // Open pause pop up
     public static void OpenPausePopUp(bool _open)
     {
+        // If open is true
         if(_open == true)
         {
+            // Open pause pop up
             OpenPopUp(UIPopUps[PausePopUpName]);
         }
+        // If open is false
         else
         {
+            // Close pause pop up
             ClosePopUp(UIPopUps[PausePopUpName]);
         }
     }
@@ -906,12 +922,16 @@ public static class UIController
     // Open game over pop up
     public static void OpenGameOverPopUp(bool _open)
     {
+        // If open is true
         if(_open == true)
         {
+            // Open game over pop up
             OpenPopUp(UIPopUps[GameOverPopUpName]);
         }
+        // If open is false
         else
         {
+            // Close game over pop up
             ClosePopUp(UIPopUps[GameOverPopUpName]);
         }
     }
