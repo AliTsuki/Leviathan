@@ -94,7 +94,7 @@ public abstract partial class Ship
         else if(this.AItype == Ship.AIType.Drone)
         {
             // If ship is drone and it is past its leash distance from parent
-            if((this.AItype == Ship.AIType.Drone && Vector3.Distance(this.ShipObject.transform.position, this.Parent.ShipObject.transform.position) > this.MaxLeashDistance) || this.Parent.WarpEngineInput > 0f)
+            if((this.AItype == Ship.AIType.Drone && Vector3.Distance(this.ShipObject.transform.position, this.Parent.ShipObject.transform.position) > this.MaxLeashDistance) || this.Parent.WarpEngineInput == true)
             {
                 this.CanFollowParent = true;
             }

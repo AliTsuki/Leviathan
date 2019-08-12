@@ -21,7 +21,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public const string Version = "0.0.16i";
+    public const string Version = "0.0.16j";
 
     // GM reference
     private static GameManager gm = GameManager.Instance;

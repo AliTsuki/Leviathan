@@ -6,7 +6,7 @@ using UnityEngine;
 // Reads and stores inputs from player
 public static class PlayerInput
 {
-    // TODO: Fix rebinding to work with new input system
+    // TODO: Rebind system set up, now add buttons to settings screen to start rebind process and update text of buttons to reflect current keybind, maybe put them in a pop up
 
     // Input mode
     public enum InputModeEnum
@@ -65,9 +65,10 @@ public static class PlayerInput
     private const float PauseCheckCD = 1f;
 
     // Rebinding input fields
-    public static bool RebindingInputs = false;
-    public static InputBinding.GameInputsEnum InputToRebind;
-    public static float RebindingStartedTime = 0f;
+    private static bool RebindingInputs = false;
+    private static InputBinding InputToRebind;
+    private static InputModeEnum InputToRebindMode;
+    private static float RebindingStartedTime = 0f;
     private const float MaxRebindingInputDuration = 5f;
 
     // Input names in editor
@@ -119,8 +120,8 @@ public static class PlayerInput
     // Controller axis button names list
     private static readonly List<string> ControllerAxisButtons = new List<string>
     {
-        ControllerDPadHorizontalInput,
-        ControllerDPadVerticalInput,
+        //ControllerDPadHorizontalInput,
+        //ControllerDPadVerticalInput,
         ControllerLeftTriggerInput,
         ControllerRightTriggerInput
     };
@@ -129,93 +130,151 @@ public static class PlayerInput
     // Update is called once per frame
     public static void Update()
     {
+        // If rebinding inputs is true
         if(RebindingInputs == true)
         {
-            Rebind();
+            // Check rebind
+            CheckRebind();
         }
+        // If not rebinding inputs
         else
         {
+            // Process inputs
             ProcessInputs();
         }
     }
 
-    // Rebind input
-    private static void Rebind()
+    // Set up rebind keybind
+    public static void SetupRebind(InputModeEnum _inputMode, string _inputToRebind)
     {
+        // Set rebinding inputs to true
+        RebindingInputs = true;
+        // Get input rebind mode
+        InputToRebindMode = _inputMode;
+        // If input mode is controller
+        if(InputToRebindMode == InputModeEnum.Controller)
+        {
+            // Set input to rebind to the controller input identified
+            InputToRebind = InputBindingsController[(InputBinding.GameInputsEnum)Enum.Parse(typeof(InputBinding.GameInputsEnum), _inputToRebind)];
+        }
+        // If input mode is KBM
+        else if(InputToRebindMode == InputModeEnum.KBM)
+        {
+            // Set input to rebind to the KBM input identified
+            InputToRebind = InputBindingsKBM[(InputBinding.GameInputsEnum)Enum.Parse(typeof(InputBinding.GameInputsEnum), _inputToRebind)];
+        }
+        // Get rebind started time
+        RebindingStartedTime = Time.time;
+        Debug.Log($@"Starting input rebinding: {InputToRebind.InputName} for {InputToRebindMode.ToString()}.");
+        Logger.Log($@"Starting input rebinding: {InputToRebind.InputName} for {InputToRebindMode.ToString()}.");
+    }
+
+    // Rebind input
+    private static void CheckRebind()
+    {
+        // Update message with rebinding instructions
+        UIController.ChangeErrorText($@"Press input you wish to rebind {InputToRebind.InputName} to for {InputToRebindMode.ToString()}.{Environment.NewLine}Press Esc to cancel. Auto-Cancelling in {(MaxRebindingInputDuration - (Time.time - RebindingStartedTime)).ToString("0.0")} seconds...");
         // If time since rebinding was started is greater than max rebinding allowed time
         if(Time.time - RebindingStartedTime >= MaxRebindingInputDuration)
         {
-            // No longer rebinding, send message that time out was reached
+            // Time out rebinding
             RebindingInputs = false;
-            UIController.ChangeErrorText($@"Input Rebinding has timed out");
-            Logger.Log($@"Input Rebinding has timed out");
-        }
-        // If any button is being pressed
-        else if(IsAnyButtonPressed() == true)
-        {
-            // Get the pressed button and update binding to pressed button
-            Logger.Log($@"Input detected: {GetPressedButton()}");
-            UIController.ChangeErrorText($@"Input detected: {GetPressedButton()}");
-            InputBindingsController[InputToRebind].UpdateInputButton(GetPressedButton());
-            RebindingInputs = false;
-            Logger.Log($@"Input binding for {InputBindingsController[InputToRebind].InputName} is currently {InputBindingsController[InputToRebind].InputButton}");
+            UIController.ChangeErrorText($@"Input rebinding has timed out");
+            Debug.Log($@"Input rebinding has timed out");
+            Logger.Log($@"Input rebinding has timed out");
         }
         // If escape key is pressed
         else if(Input.GetKeyDown(KeyCode.Escape) == true)
         {
             // Cancel rebinding
             RebindingInputs = false;
-            UIController.ChangeErrorText($@"Input Rebinding has been cancelled");
-            Logger.Log($@"Input Rebinding has been cancelled");
+            UIController.ChangeErrorText($@"Input rebinding has been cancelled.");
+            Debug.Log($@"Input rebinding has been cancelled.");
+            Logger.Log($@"Input rebinding has been cancelled.");
         }
-        // Default state during rebinding
-        else
+        // If any button or key was pressed and rebound
+        else if(CheckPressedKeyButtonAndRebind() == true)
         {
-            // Update message with rebinding instructions
-            UIController.ChangeErrorText($@"Press Input you wish to rebind to {InputBindingsController[InputToRebind].InputName}. Press Esc to cancel. Cancelling in 5 seconds...");
+            // End rebinding
+            RebindingInputs = false;
+            Debug.Log($@"Input rebinding completed successfully.");
+            Logger.Log($@"Input rebinding completed successfully.");
         }
     }
 
-    // Is any button pressed
-    private static bool IsAnyButtonPressed()
+    // Get pressed key or button and rebind input to pressed key or button
+    private static bool CheckPressedKeyButtonAndRebind()
     {
-        // Loop through all controller buttons and axis buttons, if any are pressed return true, else false
-        foreach(string button in ControllerButtons)
+        // If input mode is controller
+        if(InputToRebindMode == InputModeEnum.Controller)
         {
-            if(Input.GetButton(button) == true)
+            // Loop through all controller buttons
+            foreach(string button in ControllerButtons)
             {
-                return true;
+                // If button is pressed
+                if(Input.GetButton(button) == true)
+                {
+                    // Update binding to pressed button
+                    InputToRebind.UpdateInputButton(button);
+                    InputToRebind.UpdateInputType(InputBinding.InputTypeEnum.Button);
+                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    return true;
+                }
+            }
+            // Loop through all controller axis buttons (triggers)
+            foreach(string axisButton in ControllerAxisButtons)
+            {
+                // If axis button is pressed
+                if(Input.GetAxis(axisButton) != 0f)
+                {
+                    // Update binding to pressed axis button
+                    InputToRebind.UpdateInputButton(axisButton);
+                    InputToRebind.UpdateInputType(InputBinding.InputTypeEnum.Trigger);
+                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    return true;
+                }
             }
         }
-        foreach(string button in ControllerAxisButtons)
+        // If input mode is KBM
+        else if(InputToRebindMode == InputModeEnum.KBM)
         {
-            if(Input.GetAxis(button) != 0f)
+            // Loop through all mouse buttons
+            for(int mouseButton = 0; mouseButton < 3; mouseButton++)
             {
-                return true;
+                // If mouse button is pressed
+                if(Input.GetMouseButton(mouseButton) == true)
+                {
+                    // Update binding to pressed mouse button
+                    InputToRebind.UpdateInputMouseButton(mouseButton);
+                    InputToRebind.UpdateInputType(InputBinding.InputTypeEnum.MouseButton);
+                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    return true;
+                }
+            }
+            // Loop through all keys
+            foreach(KeyCode key in (KeyCode[])Enum.GetValues(typeof(KeyCode)))
+            {
+                // If key is pressed
+                if(Input.GetKey(key) == true)
+                {
+                    // Update binding to pressed key
+                    InputToRebind.UpdateInputKey(key);
+                    InputToRebind.UpdateInputType(InputBinding.InputTypeEnum.Key);
+                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    return true;
+                }
             }
         }
+        // If nothing is pressed return false
         return false;
-    }
-
-    // Get pressed button
-    private static string GetPressedButton()
-    {
-        // Loop through all controller buttons and axis buttons, if any are pressed return the button name, else N/A
-        foreach(string button in ControllerButtons)
-        {
-            if(Input.GetButton(button) == true)
-            {
-                return button;
-            }
-        }
-        foreach(string button in ControllerAxisButtons)
-        {
-            if(Input.GetAxis(button) != 0f)
-            {
-                return button;
-            }
-        }
-        return "N/A";
     }
 
     // Reads the inputs and stores them
@@ -489,7 +548,7 @@ public static class PlayerInput
     }
 
     // Get string for keybind
-    private static string GetStringForKeybind(InputBinding _keybind)
+    public static string GetStringForKeybind(InputBinding _keybind)
     {
         // If input type is trigger
         if(_keybind.InputType == InputBinding.InputTypeEnum.Trigger)
@@ -547,6 +606,14 @@ public static class PlayerInput
             else if(_keybind.InputButton == ControllerStartButtonInput)
             {
                 return "Start";
+            }
+            else if(_keybind.InputButton == ControllerButton10Input)
+            {
+                return "Button 10";
+            }
+            else if(_keybind.InputButton == ControllerButton11Input)
+            {
+                return "Button 11";
             }
         }
         // If input type is axis

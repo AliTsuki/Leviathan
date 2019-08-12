@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using TMPro;
 
@@ -14,6 +15,7 @@ public static class UIController
     private static Dictionary<string, UIScreen> UIScreens = new Dictionary<string, UIScreen>();
     private static Dictionary<string, UIPopUp> UIPopUps = new Dictionary<string, UIPopUp>();
     private static UIScreen CurrentScreen;
+    private static List<UIPopUp> ActivePopUps = new List<UIPopUp>();
     // Individual screen object references
     private static GameObject MainMenuScreen;
     private static GameObject ShipSelectMenuScreen;
@@ -148,7 +150,7 @@ public static class UIController
         // If current screen is Settings Menu
         else if(CurrentScreen == UIScreens[SettingsMenuName])
         {
-
+            
         }
         // If current screen is Player UI
         else if(CurrentScreen == UIScreens[PlayerUIName])
@@ -709,6 +711,7 @@ public static class UIController
         // Slide in pop up
         _newPopUp.SetupSlideScreen(UIAnimations.InOutEnum.In);
         _newPopUp.Active = true;
+        ActivePopUps.Add(_newPopUp);
         // If pop up is supposed to be only pop up on screen
         if(_newPopUp.OnlyPopUp == true)
         {
@@ -739,11 +742,22 @@ public static class UIController
         // Slide out pop up
         _popUp.SetupSlideScreen(UIAnimations.InOutEnum.Out);
         _popUp.Active = false;
+        ActivePopUps.Remove(_popUp);
         // If select button on open is enabled for this pop up
         if(_popUp.SelectButtonOnOpen == true)
         {
-            // Check if default button should be selected and select if so
-            CheckSelectDefaultButton(CurrentScreen.DefaultButton);
+            // If this pop up was the only pop up active
+            if(ActivePopUps.Count == 0)
+            {
+                // Check if default button should be selected for screen and select if so
+                CheckSelectDefaultButton(CurrentScreen.DefaultButton);
+            }
+            // If there are other active pop ups
+            else
+            {
+                // Check if default button should be selected for last pop up and select if so
+                CheckSelectDefaultButton(ActivePopUps.Last().DefaultButton);
+            }
         }
     }
 

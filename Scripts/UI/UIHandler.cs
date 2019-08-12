@@ -62,6 +62,18 @@ public class UIHandler : MonoBehaviour
         UIController.GetInputTypeToggle();
     }
 
+    // Rebind keybind KBM
+    public void RebindKeybindKBM(string _inputToRebind)
+    {
+        PlayerInput.SetupRebind(PlayerInput.InputModeEnum.KBM, _inputToRebind);
+    }
+
+    // Rebind keybind controller
+    public void RebindKeybindController(string _inputToRebind)
+    {
+        PlayerInput.SetupRebind(PlayerInput.InputModeEnum.Controller, _inputToRebind);
+    }
+
     // Change game state
     public void ChangeGameState(int _newGameState)
     {

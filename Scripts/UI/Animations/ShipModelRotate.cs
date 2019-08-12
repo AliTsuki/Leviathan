@@ -8,8 +8,8 @@ public class ShipModelRotate : MonoBehaviour
     public float RotationSpeed = 1;
 
 
-    // Update is called once per frame
-    private void Update()
+    // Fixed Update is called a fixed number of times per second
+    private void FixedUpdate()
     {
         this.gameObject.transform.Rotate(this.RotationSpeed, this.RotationSpeed, this.RotationSpeed);
     }

@@ -35,7 +35,7 @@ public abstract partial class Ship
     // Inputs
     protected Float2 MoveInput = new Float2();
     protected Float2 AimInput = new Float2();
-    protected float WarpEngineInput = 0f;
+    protected bool WarpEngineInput = false;
     protected bool MainGunInput = false;
     protected bool[] AbilityInput = new bool[3];
     public bool PauseInput = false;
@@ -456,7 +456,7 @@ public abstract partial class Ship
     protected virtual void AccelerateShip()
     {
         // If impulse engine is activated by player input or AI and warp engine is not activated
-        if(this.ImpulseInput == true && this.WarpEngineInput <= 0f)
+        if(this.ImpulseInput == true && this.WarpEngineInput == false)
         {
             // Accelerate forward
             this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.Stats.ImpulseAcceleration));
@@ -485,7 +485,7 @@ public abstract partial class Ship
             }
         }
         // If warp engine is activated by player input or AI
-        else if(this.WarpEngineInput > 0f)
+        else if(this.WarpEngineInput == true)
         {
             // Accelerate forward with warp multiplier to speed
             this.ShipRigidbody.AddRelativeForce(new Vector3(0f, 0f, this.Stats.ImpulseAcceleration * this.Stats.WarpAccelerationMultiplier));
