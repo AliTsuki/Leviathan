@@ -65,13 +65,20 @@ public class UIHandler : MonoBehaviour
     // Rebind keybind KBM
     public void RebindKeybindKBM(string _inputToRebind)
     {
-        PlayerInput.SetupRebind(PlayerInput.InputModeEnum.KBM, _inputToRebind);
+        PlayerInput.SetupRebind(PlayerInput.InputModeEnum.KeyboardAndMouse, _inputToRebind);
     }
 
     // Rebind keybind controller
     public void RebindKeybindController(string _inputToRebind)
     {
         PlayerInput.SetupRebind(PlayerInput.InputModeEnum.Controller, _inputToRebind);
+    }
+
+    // Set bindings to default
+    public void SetDefaultBindings()
+    {
+        PlayerInput.SetDefaultBindings();
+        UIController.ChangeErrorText($@"Input bindings set to defaults.");
     }
 
     // Change game state
@@ -126,6 +133,12 @@ public class UIHandler : MonoBehaviour
     public void ClosePopUp(UIPopUp _popUpToClose)
     {
         UIController.ClosePopUp(_popUpToClose);
+    }
+
+    // Close all PopUps
+    public void CloseAllPopUps()
+    {
+        UIController.CloseAllPopUps();
     }
 
     // Clear all

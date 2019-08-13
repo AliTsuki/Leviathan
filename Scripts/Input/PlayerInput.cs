@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 
 // Reads and stores inputs from player
 public static class PlayerInput
 {
-    // TODO: Rebind system set up, now add buttons to settings screen to start rebind process and update text of buttons to reflect current keybind, maybe put them in a pop up
-
     // Input mode
     public enum InputModeEnum
     {
-        KBM,
+        KeyboardAndMouse,
         Controller
     }
-    public static InputModeEnum InputMode { get; private set; } = InputModeEnum.KBM;
+    public static InputModeEnum InputMode { get; private set; } = InputModeEnum.KeyboardAndMouse;
 
     // Movement style
     public enum MovementStyleEnum
@@ -28,7 +27,7 @@ public static class PlayerInput
     public static Dictionary<InputBinding.GameInputsEnum, float> CurrentInputValues { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, float>();
 
     // Default KB&M input bindings
-    public static Dictionary<InputBinding.GameInputsEnum, InputBinding> InputBindingsKBM { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, InputBinding>
+    public static Dictionary<InputBinding.GameInputsEnum, InputBinding> InputBindingsKBMDefault { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, InputBinding>
     {
         {InputBinding.GameInputsEnum.Submit, new InputBinding(InputBinding.GameInputsEnum.Submit, InputBinding.InputTypeEnum.Key, KeyCode.Return)},
         {InputBinding.GameInputsEnum.Cancel, new InputBinding(InputBinding.GameInputsEnum.Cancel, InputBinding.InputTypeEnum.Key, KeyCode.Backspace)},
@@ -38,27 +37,32 @@ public static class PlayerInput
         {InputBinding.GameInputsEnum.Ability2, new InputBinding(InputBinding.GameInputsEnum.Ability2, InputBinding.InputTypeEnum.Key, KeyCode.Q)},
         {InputBinding.GameInputsEnum.Ability3, new InputBinding(InputBinding.GameInputsEnum.Ability3, InputBinding.InputTypeEnum.MouseButton, MouseRightClick)},
         {InputBinding.GameInputsEnum.Warp, new InputBinding(InputBinding.GameInputsEnum.Warp, InputBinding.InputTypeEnum.Key, KeyCode.LeftShift)},
-        {InputBinding.GameInputsEnum.MoveInputXPos, new InputBinding(InputBinding.GameInputsEnum.MoveInputXPos, InputBinding.InputTypeEnum.Key, KeyCode.D)},
-        {InputBinding.GameInputsEnum.MoveInputXNeg, new InputBinding(InputBinding.GameInputsEnum.MoveInputXNeg, InputBinding.InputTypeEnum.Key, KeyCode.A)},
-        {InputBinding.GameInputsEnum.MoveInputYPos, new InputBinding(InputBinding.GameInputsEnum.MoveInputYPos, InputBinding.InputTypeEnum.Key, KeyCode.W)},
-        {InputBinding.GameInputsEnum.MoveInputYNeg, new InputBinding(InputBinding.GameInputsEnum.MoveInputYNeg, InputBinding.InputTypeEnum.Key, KeyCode.S)},
+        {InputBinding.GameInputsEnum.MoveRight, new InputBinding(InputBinding.GameInputsEnum.MoveRight, InputBinding.InputTypeEnum.Key, KeyCode.D)},
+        {InputBinding.GameInputsEnum.MoveLeft, new InputBinding(InputBinding.GameInputsEnum.MoveLeft, InputBinding.InputTypeEnum.Key, KeyCode.A)},
+        {InputBinding.GameInputsEnum.MoveForward, new InputBinding(InputBinding.GameInputsEnum.MoveForward, InputBinding.InputTypeEnum.Key, KeyCode.W)},
+        {InputBinding.GameInputsEnum.MoveBack, new InputBinding(InputBinding.GameInputsEnum.MoveBack, InputBinding.InputTypeEnum.Key, KeyCode.S)},
     };
     // Default controller input bindings
-    public static Dictionary<InputBinding.GameInputsEnum, InputBinding> InputBindingsController { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, InputBinding>
+    public static Dictionary<InputBinding.GameInputsEnum, InputBinding> InputBindingsControllerDefault { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, InputBinding>
     {
-        {InputBinding.GameInputsEnum.Submit, new InputBinding(InputBinding.GameInputsEnum.Submit, InputBinding.InputTypeEnum.Button, ControllerAButtonInput)},
-        {InputBinding.GameInputsEnum.Cancel, new InputBinding(InputBinding.GameInputsEnum.Cancel, InputBinding.InputTypeEnum.Button, ControllerBButtonInput)},
-        {InputBinding.GameInputsEnum.Pause, new InputBinding(InputBinding.GameInputsEnum.Pause, InputBinding.InputTypeEnum.Button, ControllerStartButtonInput)},
+        {InputBinding.GameInputsEnum.Submit, new InputBinding(InputBinding.GameInputsEnum.Submit, InputBinding.InputTypeEnum.ControllerButton, ControllerAButtonInput)},
+        {InputBinding.GameInputsEnum.Cancel, new InputBinding(InputBinding.GameInputsEnum.Cancel, InputBinding.InputTypeEnum.ControllerButton, ControllerBButtonInput)},
+        {InputBinding.GameInputsEnum.Pause, new InputBinding(InputBinding.GameInputsEnum.Pause, InputBinding.InputTypeEnum.ControllerButton, ControllerStartButtonInput)},
         {InputBinding.GameInputsEnum.MainGun, new InputBinding(InputBinding.GameInputsEnum.MainGun, InputBinding.InputTypeEnum.Trigger, ControllerRightTriggerInput)},
-        {InputBinding.GameInputsEnum.Ability1, new InputBinding(InputBinding.GameInputsEnum.Ability1, InputBinding.InputTypeEnum.Button, ControllerLeftBumperInput)},
+        {InputBinding.GameInputsEnum.Ability1, new InputBinding(InputBinding.GameInputsEnum.Ability1, InputBinding.InputTypeEnum.ControllerButton, ControllerLeftBumperInput)},
         {InputBinding.GameInputsEnum.Ability2, new InputBinding(InputBinding.GameInputsEnum.Ability2, InputBinding.InputTypeEnum.Trigger, ControllerLeftTriggerInput)},
-        {InputBinding.GameInputsEnum.Ability3, new InputBinding(InputBinding.GameInputsEnum.Ability3, InputBinding.InputTypeEnum.Button, ControllerRightBumperInput)},
-        {InputBinding.GameInputsEnum.Warp, new InputBinding(InputBinding.GameInputsEnum.Warp, InputBinding.InputTypeEnum.Button, ControllerLeftStickClickInput)},
-        {InputBinding.GameInputsEnum.MoveInputXAxis, new InputBinding(InputBinding.GameInputsEnum.MoveInputXAxis, InputBinding.InputTypeEnum.Axis, ControllerLeftStickHorizontalInput)},
-        {InputBinding.GameInputsEnum.MoveInputYAxis, new InputBinding(InputBinding.GameInputsEnum.MoveInputYAxis, InputBinding.InputTypeEnum.Axis, ControllerLeftStickVerticalInput)},
-        {InputBinding.GameInputsEnum.AimInputXAxis, new InputBinding(InputBinding.GameInputsEnum.AimInputXAxis, InputBinding.InputTypeEnum.Axis, ControllerRightStickHorizontalInput)},
-        {InputBinding.GameInputsEnum.AimInputYAxis, new InputBinding(InputBinding.GameInputsEnum.AimInputYAxis, InputBinding.InputTypeEnum.Axis, ControllerRightStickVerticalInput)},
+        {InputBinding.GameInputsEnum.Ability3, new InputBinding(InputBinding.GameInputsEnum.Ability3, InputBinding.InputTypeEnum.ControllerButton, ControllerRightBumperInput)},
+        {InputBinding.GameInputsEnum.Warp, new InputBinding(InputBinding.GameInputsEnum.Warp, InputBinding.InputTypeEnum.ControllerButton, ControllerLeftStickClickInput)},
+        {InputBinding.GameInputsEnum.MoveXAxis, new InputBinding(InputBinding.GameInputsEnum.MoveXAxis, InputBinding.InputTypeEnum.Axis, ControllerLeftStickHorizontalInput)},
+        {InputBinding.GameInputsEnum.MoveYAxis, new InputBinding(InputBinding.GameInputsEnum.MoveYAxis, InputBinding.InputTypeEnum.Axis, ControllerLeftStickVerticalInput)},
+        {InputBinding.GameInputsEnum.AimXAxis, new InputBinding(InputBinding.GameInputsEnum.AimXAxis, InputBinding.InputTypeEnum.Axis, ControllerRightStickHorizontalInput)},
+        {InputBinding.GameInputsEnum.AimYAxis, new InputBinding(InputBinding.GameInputsEnum.AimYAxis, InputBinding.InputTypeEnum.Axis, ControllerRightStickVerticalInput)},
     };
+
+    // Current KB&M input bindings
+    public static Dictionary<InputBinding.GameInputsEnum, InputBinding> InputBindingsKBM { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, InputBinding>();
+    // Current controller input bindings
+    public static Dictionary<InputBinding.GameInputsEnum, InputBinding> InputBindingsController { get; private set; } = new Dictionary<InputBinding.GameInputsEnum, InputBinding>();
 
     // Pause check
     private static float LastPauseCheck = 0f;
@@ -127,6 +131,12 @@ public static class PlayerInput
     };
 
 
+    // Initialize
+    public static void Initialize()
+    {
+        SetDefaultBindings();
+    }
+
     // Update is called once per frame
     public static void Update()
     {
@@ -156,9 +166,11 @@ public static class PlayerInput
         {
             // Set input to rebind to the controller input identified
             InputToRebind = InputBindingsController[(InputBinding.GameInputsEnum)Enum.Parse(typeof(InputBinding.GameInputsEnum), _inputToRebind)];
+            // Get currently selected button
+            UIController.GetOrSetSelectedButton(true);
         }
         // If input mode is KBM
-        else if(InputToRebindMode == InputModeEnum.KBM)
+        else if(InputToRebindMode == InputModeEnum.KeyboardAndMouse)
         {
             // Set input to rebind to the KBM input identified
             InputToRebind = InputBindingsKBM[(InputBinding.GameInputsEnum)Enum.Parse(typeof(InputBinding.GameInputsEnum), _inputToRebind)];
@@ -179,24 +191,44 @@ public static class PlayerInput
         {
             // Time out rebinding
             RebindingInputs = false;
-            UIController.ChangeErrorText($@"Input rebinding has timed out");
-            Debug.Log($@"Input rebinding has timed out");
-            Logger.Log($@"Input rebinding has timed out");
+            // Set selected button to last selected
+            UIController.GetOrSetSelectedButton(false);
+            UIController.ChangeErrorText($@"Input rebinding has timed out.");
+            Debug.Log($@"Input rebinding has timed out.");
+            Logger.Log($@"Input rebinding has timed out.");
         }
         // If escape key is pressed
         else if(Input.GetKeyDown(KeyCode.Escape) == true)
         {
             // Cancel rebinding
             RebindingInputs = false;
+            // Set selected button to last selected
+            UIController.GetOrSetSelectedButton(false);
             UIController.ChangeErrorText($@"Input rebinding has been cancelled.");
             Debug.Log($@"Input rebinding has been cancelled.");
             Logger.Log($@"Input rebinding has been cancelled.");
+        }
+        // If input to rebind mode is controller
+        else if(InputToRebindMode == InputModeEnum.Controller)
+        {
+            // If time since starting is longer than the last frame took (basically skip one frame before you do the below) and a button was pressed and rebound
+            if(Time.time - RebindingStartedTime > Time.deltaTime && CheckPressedKeyButtonAndRebind() == true)
+            {
+                // End rebinding
+                RebindingInputs = false;
+                // Set selected button to last selected
+                UIController.GetOrSetSelectedButton(false);
+                Debug.Log($@"Input rebinding completed successfully.");
+                Logger.Log($@"Input rebinding completed successfully.");
+            }
         }
         // If any button or key was pressed and rebound
         else if(CheckPressedKeyButtonAndRebind() == true)
         {
             // End rebinding
             RebindingInputs = false;
+            // Set selected button to last selected
+            UIController.GetOrSetSelectedButton(false);
             Debug.Log($@"Input rebinding completed successfully.");
             Logger.Log($@"Input rebinding completed successfully.");
         }
@@ -212,14 +244,14 @@ public static class PlayerInput
             foreach(string button in ControllerButtons)
             {
                 // If button is pressed
-                if(Input.GetButton(button) == true)
+                if(Input.GetButtonDown(button) == true)
                 {
                     // Update binding to pressed button
                     InputToRebind.UpdateInputButton(button);
-                    InputToRebind.UpdateInputType(InputBinding.InputTypeEnum.Button);
-                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
-                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
-                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    InputToRebind.UpdateInputType(InputBinding.InputTypeEnum.ControllerButton);
+                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
+                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
+                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
                     return true;
                 }
             }
@@ -232,15 +264,15 @@ public static class PlayerInput
                     // Update binding to pressed axis button
                     InputToRebind.UpdateInputButton(axisButton);
                     InputToRebind.UpdateInputType(InputBinding.InputTypeEnum.Trigger);
-                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
-                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
-                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
+                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
+                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
                     return true;
                 }
             }
         }
         // If input mode is KBM
-        else if(InputToRebindMode == InputModeEnum.KBM)
+        else if(InputToRebindMode == InputModeEnum.KeyboardAndMouse)
         {
             // Loop through all mouse buttons
             for(int mouseButton = 0; mouseButton < 3; mouseButton++)
@@ -251,9 +283,9 @@ public static class PlayerInput
                     // Update binding to pressed mouse button
                     InputToRebind.UpdateInputMouseButton(mouseButton);
                     InputToRebind.UpdateInputType(InputBinding.InputTypeEnum.MouseButton);
-                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
-                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
-                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
+                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
+                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
                     return true;
                 }
             }
@@ -266,9 +298,9 @@ public static class PlayerInput
                     // Update binding to pressed key
                     InputToRebind.UpdateInputKey(key);
                     InputToRebind.UpdateInputType(InputBinding.InputTypeEnum.Key);
-                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
-                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
-                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}, Type: {InputToRebind.InputType.ToString()}");
+                    UIController.ChangeErrorText($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
+                    Debug.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
+                    Logger.Log($@"{InputToRebind.InputName} for {InputToRebindMode.ToString()} is now bound to {GetStringForKeybind(InputToRebind)}.");
                     return true;
                 }
             }
@@ -298,7 +330,7 @@ public static class PlayerInput
                             CurrentInputValues[input] = Input.GetAxis(InputBindingsController[input].InputButton);
                         }
                         // If input is type button, set value to 1 for pressed and 0 for unpressed
-                        else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Button)
+                        else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.ControllerButton)
                         {
                             CurrentInputValues[input] = (Input.GetButton(InputBindingsController[input].InputButton) == true) ? 1f : 0f;
                         }
@@ -313,7 +345,7 @@ public static class PlayerInput
                             // TODO: set up dpad input scheme, not sure how I wanna set this up yet, also do below in add section
                         }
                         // Invert y input on move axis
-                        CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYAxis] *= -1;
+                        CurrentInputValues[InputBinding.GameInputsEnum.MoveYAxis] *= -1;
                     }
                     // If input key hasn't been added, add it with the correct value
                     else
@@ -324,7 +356,7 @@ public static class PlayerInput
                             CurrentInputValues.Add(input, Input.GetAxis(InputBindingsController[input].InputButton));
                         }
                         // If input is type button, set value to 1 for pressed and 0 for unpressed
-                        else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.Button)
+                        else if(InputBindingsController[input].InputType == InputBinding.InputTypeEnum.ControllerButton)
                         {
                             CurrentInputValues.Add(input, (Input.GetButton(InputBindingsController[input].InputButton) == true) ? 1f : 0f);
                         }
@@ -339,13 +371,13 @@ public static class PlayerInput
                             // Not sure how I wanna set this up yet
                         }
                         // Invert y input on move axis
-                        CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYAxis] *= -1;
+                        CurrentInputValues[InputBinding.GameInputsEnum.MoveYAxis] *= -1;
                     }
                 }
             }
         }
         // If input mode is keyboard and mouse
-        else if(InputMode == InputModeEnum.KBM)
+        else if(InputMode == InputModeEnum.KeyboardAndMouse)
         {
             // Loop through all input binding types
             foreach(InputBinding.GameInputsEnum input in (InputBinding.GameInputsEnum[]) Enum.GetValues(typeof(InputBinding.GameInputsEnum)))
@@ -354,12 +386,12 @@ public static class PlayerInput
                 if(CurrentInputValues.ContainsKey(input))
                 {
                     // If input is move x axis, get value
-                    if(input == InputBinding.GameInputsEnum.MoveInputXAxis)
+                    if(input == InputBinding.GameInputsEnum.MoveXAxis)
                     {
                         // Default value to 0, get xPos and xNeg values from input
                         float value = 0f;
-                        float xPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXPos];
-                        float xNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXNeg];
+                        float xPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveRight];
+                        float xNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveLeft];
                         // If xPos is not 0, add it to value, if xNeg is not 0, subtract it from value
                         if(xPosValue != 0f)
                         {
@@ -373,12 +405,12 @@ public static class PlayerInput
                         CurrentInputValues[input] = value;
                     }
                     // If input is move y axis, get value
-                    else if(input == InputBinding.GameInputsEnum.MoveInputYAxis)
+                    else if(input == InputBinding.GameInputsEnum.MoveYAxis)
                     {
                         // Default value to 0, get yPos and yNeg values from input
                         float value = 0f;
-                        float yPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYPos];
-                        float yNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYNeg];
+                        float yPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveForward];
+                        float yNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveBack];
                         // If yPos is not 0, add it to value, if yNeg is not 0, subtract it from value
                         if(yPosValue != 0f)
                         {
@@ -392,14 +424,14 @@ public static class PlayerInput
                         CurrentInputValues[input] = value;
                     }
                     // If input is aim x axis, get value
-                    else if(input == InputBinding.GameInputsEnum.AimInputXAxis)
+                    else if(input == InputBinding.GameInputsEnum.AimXAxis)
                     {
                         // Get half the screen width, use to transform mouse position to a value of -1 for left and 1 for right
                         int halfWidth = Screen.width / 2;
                         CurrentInputValues[input] = (Input.mousePosition.x - halfWidth) / halfWidth;
                     }
                     // If input is aim y axis special case
-                    else if(input == InputBinding.GameInputsEnum.AimInputYAxis)
+                    else if(input == InputBinding.GameInputsEnum.AimYAxis)
                     {
                         // Get half the screen height, use to transform mouse position to a value of -1 for top and 1 for bottom
                         int halfHeight = Screen.height / 2;
@@ -420,12 +452,12 @@ public static class PlayerInput
                 else
                 {
                     // If input is move x axis, get value
-                    if(input == InputBinding.GameInputsEnum.MoveInputXAxis)
+                    if(input == InputBinding.GameInputsEnum.MoveXAxis)
                     {
                         // Default value to 0, get xPos and xNeg values from input
                         float value = 0f;
-                        float xPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXPos];
-                        float xNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXNeg];
+                        float xPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveRight];
+                        float xNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveLeft];
                         // If xPos is not 0, add it to value, if xNeg is not 0, subtract it from value
                         if(xPosValue != 0f)
                         {
@@ -439,12 +471,12 @@ public static class PlayerInput
                         CurrentInputValues.Add(input, value);
                     }
                     // If input is move y axis, get value
-                    else if(input == InputBinding.GameInputsEnum.MoveInputYAxis)
+                    else if(input == InputBinding.GameInputsEnum.MoveYAxis)
                     {
                         // Default value to 0, get yPos and yNeg values from input
                         float value = 0f;
-                        float yPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYPos];
-                        float yNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYNeg];
+                        float yPosValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveForward];
+                        float yNegValue = CurrentInputValues[InputBinding.GameInputsEnum.MoveBack];
                         // If yPos is not 0, add it to value, if yNeg is not 0, subtract it from value
                         if(yPosValue != 0f)
                         {
@@ -458,14 +490,14 @@ public static class PlayerInput
                         CurrentInputValues.Add(input, value);
                     }
                     // If input is aim x axis, get value
-                    else if(input == InputBinding.GameInputsEnum.AimInputXAxis)
+                    else if(input == InputBinding.GameInputsEnum.AimXAxis)
                     {
                         // Get half the screen width, use to transform mouse position to a value of -1 for left and 1 for right
                         int halfWidth = Screen.width / 2;
                         CurrentInputValues.Add(input, (Input.mousePosition.x - halfWidth) / halfWidth);
                     }
                     // If input is aim y axis special case
-                    else if(input == InputBinding.GameInputsEnum.AimInputYAxis)
+                    else if(input == InputBinding.GameInputsEnum.AimYAxis)
                     {
                         // Get half the screen height, use to transform mouse position to a value of -1 for top and 1 for bottom
                         int halfHeight = Screen.height / 2;
@@ -538,7 +570,7 @@ public static class PlayerInput
             return GetStringForKeybind(InputBindingsController[_input]);
         }
         // If input mode is KB&M
-        else if(InputMode == InputModeEnum.KBM)
+        else if(InputMode == InputModeEnum.KeyboardAndMouse)
         {
             // Get string for keybind for KB&M input for ability 1
             return GetStringForKeybind(InputBindingsKBM[_input]);
@@ -564,7 +596,7 @@ public static class PlayerInput
             }
         }
         // If input type is button
-        else if(_keybind.InputType == InputBinding.InputTypeEnum.Button)
+        else if(_keybind.InputType == InputBinding.InputTypeEnum.ControllerButton)
         {
             // Check list of input buttons and return appropriate name
             if(_keybind.InputButton == ControllerAButtonInput)
@@ -632,8 +664,16 @@ public static class PlayerInput
         // If input type is key
         else if(_keybind.InputType == InputBinding.InputTypeEnum.Key)
         {
-            // Return key name
-            return _keybind.InputKey.ToString();
+            // Return key name (with spaces between words)
+            // Borrowed from https://stackoverflow.com/questions/9964467/create-space-between-capital-letters-and-skip-space-between-consecutive
+            string key = _keybind.InputKey.ToString();
+            key = string.Join(
+                    string.Empty,
+                    key.Select((x, i) => (
+                         char.IsUpper(x) && i > 0 &&
+                         (char.IsLower(key[i - 1]) || (i < key.Count() - 1 && char.IsLower(key[i + 1])))
+                    ) ? " " + x : x.ToString()));
+            return key;
         }
         // If input type is mouse button
         else if(_keybind.InputType == InputBinding.InputTypeEnum.MouseButton)
@@ -641,19 +681,54 @@ public static class PlayerInput
             // Check list of input mouse buttons and return appropriate name
             if(_keybind.InputMouseButton == MouseLeftClick)
             {
-                return "M1";
+                return "Left Click";
             }
             else if(_keybind.InputMouseButton == MouseRightClick)
             {
-                return "M2";
+                return "Right Click";
             }
             else if(_keybind.InputMouseButton == MouseMiddleClick)
             {
-                return "M3";
+                return "Middle Click";
             }
         }
         // Default return
         return "N/A";
+    }
+
+    // Set bindings to default settings
+    public static void SetDefaultBindings()
+    {
+        // Clear input bindings for KBM
+        InputBindingsKBM.Clear();
+        foreach(KeyValuePair<InputBinding.GameInputsEnum, InputBinding> binding in InputBindingsKBMDefault)
+        {
+            // If input type is key
+            if(binding.Value.InputType == InputBinding.InputTypeEnum.Key)
+            {
+                // Add a new binding of key type to input bindings dictionary
+                InputBindingsKBM.Add(binding.Key, new InputBinding(binding.Key, binding.Value.InputType, binding.Value.InputKey));
+            }
+            // If input type is mouse button
+            else if(binding.Value.InputType == InputBinding.InputTypeEnum.MouseButton)
+            {
+                // Add a new binding of mouse button type to input bindings dictionary
+                InputBindingsKBM.Add(binding.Key, new InputBinding(binding.Key, binding.Value.InputType, binding.Value.InputMouseButton));
+            }
+        }
+        // Set controller bindngs to new dictionary, clear it, and add each value from default to new dictionary
+        InputBindingsController.Clear();
+        foreach(KeyValuePair<InputBinding.GameInputsEnum, InputBinding> binding in InputBindingsControllerDefault)
+        {
+            // If input type is controller button, trigger, or axis
+            if(binding.Value.InputType == InputBinding.InputTypeEnum.ControllerButton || binding.Value.InputType == InputBinding.InputTypeEnum.Trigger || binding.Value.InputType == InputBinding.InputTypeEnum.Axis)
+            {
+                // Add a new binding of controller button type to input bindings dictionary
+                InputBindingsController.Add(binding.Key, new InputBinding(binding.Key, binding.Value.InputType, binding.Value.InputButton));
+            }
+        }
+        Debug.Log($@"Input bindings set to defaults.");
+        Logger.Log($@"Input bindings set to defaults.");
     }
 }
 
@@ -666,7 +741,7 @@ public class InputBinding
     {
         Key,
         MouseButton,
-        Button,
+        ControllerButton,
         DPad,
         Trigger,
         Axis
@@ -682,14 +757,14 @@ public class InputBinding
         Ability2,
         Ability3,
         Warp,
-        MoveInputXPos,
-        MoveInputXNeg,
-        MoveInputYPos,
-        MoveInputYNeg,
-        MoveInputXAxis,
-        MoveInputYAxis,
-        AimInputXAxis,
-        AimInputYAxis
+        MoveRight,
+        MoveLeft,
+        MoveForward,
+        MoveBack,
+        MoveXAxis,
+        MoveYAxis,
+        AimXAxis,
+        AimYAxis
     }
     // Constructor fields
     public GameInputsEnum InputName { get; private set; }

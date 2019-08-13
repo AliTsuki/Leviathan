@@ -3,6 +3,7 @@
 // Helpful math functions
 public static class Mathematics
 {
+    // Rounds to nearest half
     public static float RoundToNearestHalf(float _input)
     {
         return (float)(Math.Round(_input * 2, MidpointRounding.AwayFromZero) / 2);

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // GENERAL STUFF TO DO
+// TODO: Create save system for player settings and load them on game start, save them in JSON maybe
+// TODO: Set up Dpad inputs
 // TODO: Add leveling system / stats
 // TODO: Add an inventory system for player and update player stats based on what inventory is equipped
 // TODO: Add a save system for progress
@@ -21,7 +23,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public const string Version = "0.0.16j";
+    public const string Version = "0.0.16k";
 
     // GM reference
     private static GameManager gm = GameManager.Instance;
@@ -109,6 +111,7 @@ public static class GameController
     {
         Logger.Initialize();
         UIController.Initialize();
+        PlayerInput.Initialize();
         InitializeCamera();
     }
 

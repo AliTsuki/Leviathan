@@ -47,7 +47,7 @@ public class UIAnimations
         else if(this.IsCurrentlySliding == true && this.CurrentSlidingStatus == InOutEnum.Out)
         {
             // If not yet to zero position
-            if(_rect.anchoredPosition != this.OutwardRestingPosition)
+            if(Vector2.Distance(_rect.anchoredPosition, this.OutwardRestingPosition) > 0.1f)
             {
                 // Lerp toward zero position by specified rate
                 _rect.anchoredPosition = Vector2.Lerp(_rect.anchoredPosition, this.OutwardRestingPosition, _slideRate);
@@ -57,8 +57,6 @@ public class UIAnimations
             {
                 // Stop sliding
                 this.IsCurrentlySliding = false;
-                // Deactivate game object
-                _go.SetActive(false);
             }
         }
     }

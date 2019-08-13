@@ -17,8 +17,8 @@ public abstract class PlayerShip : Ship
     protected override void ProcessInputs()
     {
         // Get inputs from PlayerInput
-        this.MoveInput.Set(PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MoveInputXAxis], PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MoveInputYAxis]);
-        this.AimInput.Set(PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.AimInputXAxis], PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.AimInputYAxis]);
+        this.MoveInput.Set(PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MoveXAxis], PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MoveYAxis]);
+        this.AimInput.Set(PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.AimXAxis], PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.AimYAxis]);
         this.WarpEngineInput = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Warp] > 0f) ? true : false;
         this.MainGunInput = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MainGun] > 0f) ? true : false;
         this.AbilityInput[0] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability1] > 0f) ? true : false;
