@@ -13,18 +13,19 @@ public class Bomb : Projectile
     private readonly float Radius;
 
     // Projectile constructor
-    public Bomb(Ship _player, uint _id, GameController.IFF _iff, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public Bomb(Ship player, uint id, GameController.IFF iff, float damage, float radius, Vector3 position, Quaternion rotation, 
+        Vector3 velocity, float speed, float lifetime)
     {
-        this.Player = _player;
-        this.ID = _id;
-        this.IFF = _iff;
-        this.Damage = _damage;
-        this.Radius = _radius;
-        this.Position = _position;
-        this.Rotation = _rotation;
-        this.Velocity = _velocity;
-        this.Speed = _speed;
-        this.Lifetime = _lifetime;
+        this.Player = player;
+        this.ID = id;
+        this.IFF = iff;
+        this.Damage = damage;
+        this.Radius = radius;
+        this.Position = position;
+        this.Rotation = rotation;
+        this.Velocity = velocity;
+        this.Speed = speed;
+        this.Lifetime = lifetime;
         this.ProjectilePrefab = Resources.Load<GameObject>(GameController.BombPrefabName);
         this.ProjectileObject = GameObject.Instantiate(this.ProjectilePrefab, this.Position, this.Rotation);
         this.BombExplosionPrefab = Resources.Load<GameObject>(GameController.BombExplostionPrefabName);

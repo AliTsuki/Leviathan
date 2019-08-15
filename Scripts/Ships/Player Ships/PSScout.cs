@@ -3,7 +3,7 @@
 public class PSScout : PlayerShip
 {
     // Player ship constructor
-    public PSScout(uint _id)
+    public PSScout(uint id)
     {
 
     }

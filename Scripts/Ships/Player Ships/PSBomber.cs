@@ -24,9 +24,9 @@ public class PSBomber : PlayerShip
     private float BombPrimerTime; // Number of seconds the bomb must fly before it can be detonated
 
     // Player ship constructor
-    public PSBomber(uint _id)
+    public PSBomber(uint id)
     {
-        this.ID = _id;
+        this.ID = id;
         // TODO: Change starting position to be last home zone saved to
         this.StartingPosition = new Vector3(0, 0, 0);
         this.Type = PlayerShipType.Bomber;
@@ -123,17 +123,17 @@ public class PSBomber : PlayerShip
     // Check ability 3
     protected override void CheckAbility3()
     {
-        this.bomb = this.CheckBomb(2, this.bomb, this.BombDamage, this.BombRadius, this.BombPrimerTime, this.BombSpeed, this.BombLifetime);
+        this.CheckBomb(2, ref this.bomb, this.BombDamage, this.BombRadius, this.BombPrimerTime, this.BombSpeed, this.BombLifetime);
     }
 
     // Called when receiving collision from projectile
-    public override void ReceivedCollisionFromProjectile(float _damage, Vector3 _projectileStrikeLocation)
+    public override void ReceivedCollisionFromProjectile(float damage, Vector3 projectileStrikeLocation)
     {
         // If shields are above 0 or barrier is active
         if(this.Stats.Shields > 0f || this.AbilityActive[0] == true)
         {
             // Spawn a shield strike particle effect
-            this.ProjectileShieldStrike = GameObject.Instantiate(this.ProjectileShieldStrikePrefab, _projectileStrikeLocation, Quaternion.identity);
+            this.ProjectileShieldStrike = GameObject.Instantiate(this.ProjectileShieldStrikePrefab, projectileStrikeLocation, Quaternion.identity);
             // Set particle effect to self destroy after 1 second
             GameObject.Destroy(this.ProjectileShieldStrike, 1f);
         }
@@ -141,16 +141,16 @@ public class PSBomber : PlayerShip
         else
         {
             // Spawn a hull strike particle effect
-            this.ProjectileHullStrike = GameObject.Instantiate(this.ProjectileHullStrikePrefab, _projectileStrikeLocation, Quaternion.identity);
+            this.ProjectileHullStrike = GameObject.Instantiate(this.ProjectileHullStrikePrefab, projectileStrikeLocation, Quaternion.identity);
             // Set particle effect to self destroy after 1 second
             GameObject.Destroy(this.ProjectileHullStrike, 1f);
         }
         // Take damage from projectile
-        this.TakeDamage(_damage);
+        this.TakeDamage(damage);
     }
 
     // Called when ship receives a damaging attack
-    public override void TakeDamage(float _damage)
+    public override void TakeDamage(float damage)
     {
         if(this.Stats.Health > 0f)
         {
@@ -158,7 +158,7 @@ public class PSBomber : PlayerShip
             if(this.AbilityActive[0] == false)
             {
                 // Apply damage to shields
-                this.Stats.Shields -= _damage;
+                this.Stats.Shields -= damage;
                 // If shields are knocked below 0
                 if(this.Stats.Shields < 0f)
                 {

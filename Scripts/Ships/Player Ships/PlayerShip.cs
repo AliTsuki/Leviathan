@@ -19,12 +19,12 @@ public abstract class PlayerShip : Ship
         // Get inputs from PlayerInput
         this.MoveInput.Set(PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MoveXAxis], PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MoveYAxis]);
         this.AimInput.Set(PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.AimXAxis], PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.AimYAxis]);
-        this.WarpEngineInput = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Warp] > 0f) ? true : false;
-        this.MainGunInput = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MainGun] > 0f) ? true : false;
-        this.AbilityInput[0] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability1] > 0f) ? true : false;
-        this.AbilityInput[1] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability2] > 0f) ? true : false;
-        this.AbilityInput[2] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability3] > 0f) ? true : false;
-        this.PauseInput = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Pause] > 0f) ? true : false;
+        this.WarpEngineInput = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Warp] > 0.1f) ? true : false;
+        this.MainGunInput = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.MainGun] > 0.1f) ? true : false;
+        this.AbilityInput[0] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability1] > 0.1f) ? true : false;
+        this.AbilityInput[1] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability2] > 0.1f) ? true : false;
+        this.AbilityInput[2] = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Ability3] > 0.1f) ? true : false;
+        this.PauseInput = (PlayerInput.CurrentInputValues[InputBinding.GameInputsEnum.Pause] > 0.1f) ? true : false;
     }
 
     // Gets intended rotation
@@ -47,7 +47,7 @@ public abstract class PlayerShip : Ship
         if((this.MoveInput.x != 0f || this.MoveInput.y != 0f) && this.WarpEngineInput == false)
         {
             // If movement style is screenspace, add force based on worldspace
-            if(PlayerInput.MovementStyle == PlayerInput.MovementStyleEnum.ScreenSpace)
+            if(PlayerInput.InputSettings.MovementStyle == PlayerInput.MovementStyleEnum.ScreenSpace)
             {
                 this.ShipRigidbody.AddForce(this.Stats.ImpulseAcceleration * this.MoveInput.x, 0f, this.Stats.ImpulseAcceleration * this.MoveInput.y);
             }
@@ -84,7 +84,7 @@ public abstract class PlayerShip : Ship
         else if(this.WarpEngineInput == true)
         {
             // If movement style is screenspace, add force based on worldspace using warp multiplier
-            if(PlayerInput.MovementStyle == PlayerInput.MovementStyleEnum.ScreenSpace)
+            if(PlayerInput.InputSettings.MovementStyle == PlayerInput.MovementStyleEnum.ScreenSpace)
             {
                 this.ShipRigidbody.AddForce(this.Stats.ImpulseAcceleration * this.MoveInput.x * this.Stats.WarpAccelerationMultiplier, 0f, this.Stats.ImpulseAcceleration * this.MoveInput.y * this.Stats.WarpAccelerationMultiplier);
             }

@@ -4,63 +4,63 @@
 public static class AudioController
 {
     // Fade in Audio
-    public static void FadeIn(AudioSource _source, float _step, float _maxVolume)
+    public static void FadeIn(AudioSource source, float step, float maxVolume)
     {
         // Get volume of audio source
-        float volume = _source.volume;
+        float volume = source.volume;
         // If source is playing...
-        if(_source.isPlaying)
+        if(source.isPlaying)
         {
             // If volume is less than max...
-            if(volume < _maxVolume)
+            if(volume < maxVolume)
             {
                 // If volume plus step is less than max, add step to volume
-                if(volume + _step <= _maxVolume)
+                if(volume + step <= maxVolume)
                 {
-                    _source.volume += _step;
+                    source.volume += step;
                 }
                 // If volume plus step is more than max, set to max volume
-                else if(volume + _step > _maxVolume)
+                else if(volume + step > maxVolume)
                 {
-                    _source.volume = _maxVolume;
+                    source.volume = maxVolume;
                 }
             }
         }
         // If source is not playing, set to 0 and start playing audio
         else
         {
-            _source.volume = 0f;
-            _source.Play();
+            source.volume = 0f;
+            source.Play();
         }
     }
 
     // Fade out Audio
-    public static void FadeOut(AudioSource _source, float _step, float _minVolume)
+    public static void FadeOut(AudioSource source, float step, float minVolume)
     {
         // Get volume of audio source
-        float volume = _source.volume;
+        float volume = source.volume;
         // If volume is greater than zero...
         if(volume > 0)
         {
             // If volume is greater than min...
-            if(volume > _minVolume)
+            if(volume > minVolume)
             {
                 // If volume minus step is greater or equal to min, minus step from volume
-                if(volume - _step >= _minVolume)
+                if(volume - step >= minVolume)
                 {
-                    _source.volume -= _step;
+                    source.volume -= step;
                 }
                 // If volume minus step is less than min, set volume to min volume
-                else if(volume - _step < _minVolume)
+                else if(volume - step < minVolume)
                 {
-                    _source.volume = _minVolume;
+                    source.volume = minVolume;
                 }
             }
         }
         // If volume is 0, stop playing audio
         else
         {
-            _source.Stop();
+            source.Stop();
         }
     }
 }

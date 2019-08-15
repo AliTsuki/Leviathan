@@ -40,8 +40,8 @@ public class UIPopUp : MonoBehaviour
     }
 
     // Set up slide animation
-    public void SetupSlideScreen(UIAnimations.InOutEnum _inOrOut)
+    public void SetupSlideScreen(UIAnimations.InOutEnum inOrOut)
     {
-        this.UIAnims.SetupSlideScreen(this.gameObject, this.Rect, _inOrOut, this.SlideDirection);
+        this.UIAnims.SetupSlideScreen(this.gameObject, this.Rect, inOrOut, this.SlideDirection);
     }
 }

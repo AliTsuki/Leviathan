@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 // Class for Logging-to-file functions
 public static class Logger
@@ -15,22 +17,22 @@ public static class Logger
     // Logger Update: Write mainlogtxt to Log.txt FILE
     public static void Update()
     {
-        System.IO.File.WriteAllLines("Log.txt", MainLogTxt.ToArray());
+        File.WriteAllLines("Log.txt", MainLogTxt.ToArray());
     }
 
     // Logger On Application Quit
     public static void OnApplicationQuit()
     {
-        System.IO.File.WriteAllLines("Log.txt", MainLogTxt.ToArray());
+        File.WriteAllLines("Log.txt", MainLogTxt.ToArray());
     }
 
     // Logging methods
-    public static void Log(string _ll)
+    public static void Log(string text)
     {
-        MainLogTxt.Add(_ll);
+        MainLogTxt.Add($@"{DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss")} - {text}");
     }
-    public static void Log(System.Exception _e)
+    public static void Log(System.Exception error)
     {
-        MainLogTxt.Add(_e.ToString());
+        MainLogTxt.Add($@"{DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss")} - {error.ToString()}");
     }
 }

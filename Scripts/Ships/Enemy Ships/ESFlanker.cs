@@ -10,10 +10,10 @@ public class ESFlanker : EnemyShip
     private readonly float FlankTeleportRange;
 
     // Enemy ship standard constructor
-    public ESFlanker(uint _id, Vector3 _startingPosition)
+    public ESFlanker(uint id, Vector3 startingPosition)
     {
-        this.ID = _id;
-        this.StartingPosition = _startingPosition;
+        this.ID = id;
+        this.StartingPosition = startingPosition;
         this.Type = EnemyShipType.Flanker;
         this.AItype = AIType.Flanker;
         this.IFF = GameController.IFF.Enemy;

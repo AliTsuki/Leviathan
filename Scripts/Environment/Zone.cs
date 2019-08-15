@@ -104,10 +104,10 @@ public class Zone
     private int TotalWeight;
 
     // Zone constructor
-    public Zone(ZoneType _zoneType, EnemyAndSpawnRate[] _enemyArray)
+    public Zone(ZoneType zoneType, EnemyAndSpawnRate[] enemyArray)
     {
-        this.Type = _zoneType;
-        this.ZoneEnemyTypeArray = _enemyArray;
+        this.Type = zoneType;
+        this.ZoneEnemyTypeArray = enemyArray;
         for(int i = 0; i < this.ZoneEnemyTypeArray.Length; i++)
         {
             this.TotalWeight += this.ZoneEnemyTypeArray[i].SpawnRate;
@@ -116,16 +116,16 @@ public class Zone
 
 
     // Get zone type at pixel coords
-    public static ZoneType GetZoneAtPixelCoords(Vector2Int _pixelCoords)
+    public static ZoneType GetZoneAtPixelCoords(Vector2Int pixelCoords)
     {
-        Color color = Background.TilemapTexture.GetPixel(_pixelCoords.x, _pixelCoords.y);
+        Color color = Background.TilemapTexture.GetPixel(pixelCoords.x, pixelCoords.y);
         return GetZoneIDByColor(color);
     }
 
     // Get zone type at world coords
-    public static ZoneType GetZoneAtWorldCoords(Vector3 _worldCoords)
+    public static ZoneType GetZoneAtWorldCoords(Vector3 worldCoords)
     {
-        Vector2Int TileCoords = Background.WorldCoordsToTileCoords(_worldCoords);
+        Vector2Int TileCoords = Background.WorldCoordsToTileCoords(worldCoords);
         return Background.Tilemap[TileCoords].ZoneType;
     }
 
@@ -178,14 +178,14 @@ public class Zone
     }
 
     // Random weighted select enemy from enemy list for zone
-    public static EnemyShip.EnemyShipType GetRandomEnemyTypeInZone(ZoneType _zoneType)
+    public static EnemyShip.EnemyShipType GetRandomEnemyTypeInZone(ZoneType zoneType)
     {
         // Default enemyID
         EnemyShip.EnemyShipType EnemyType = EnemyShip.EnemyShipType.Standard;
         // Get a random number between 0 and total weight for enemies in zone
-        int randomNumber = GameController.RandomNumGen.Next(0, Zones[_zoneType].TotalWeight);
+        int randomNumber = GameController.RandomNumGen.Next(0, Zones[zoneType].TotalWeight);
         // Get enemy array
-        EnemyAndSpawnRate[] EnemyArray = Zones[_zoneType].ZoneEnemyTypeArray;
+        EnemyAndSpawnRate[] EnemyArray = Zones[zoneType].ZoneEnemyTypeArray;
         // Loop through enemy array
         for(int i = 0; i < EnemyArray.Length; i++)
         {
@@ -204,28 +204,28 @@ public class Zone
     }
 
     // Spawn enemy
-    public static EnemyShip SpawnEnemy(uint _shipID, Vector3 _startingPosition)
+    public static EnemyShip SpawnEnemy(uint shipID, Vector3 startingPosition)
     {
         // Get enemy type
-        EnemyShip.EnemyShipType EnemyType = GetRandomEnemyTypeInZone(GetZoneAtWorldCoords(_startingPosition));
+        EnemyShip.EnemyShipType EnemyType = GetRandomEnemyTypeInZone(GetZoneAtWorldCoords(startingPosition));
         // Return enemy indicated by enemyID
         switch(EnemyType)
         {
             case EnemyShip.EnemyShipType.Standard:
             {
-                return new ESStandard(_shipID, _startingPosition);
+                return new ESStandard(shipID, startingPosition);
             }
             case EnemyShip.EnemyShipType.Ramming:
             {
-                return new ESRamming(_shipID, _startingPosition);
+                return new ESRamming(shipID, startingPosition);
             }
             case EnemyShip.EnemyShipType.Broadside:
             {
-                return new ESBroadside(_shipID, _startingPosition);
+                return new ESBroadside(shipID, startingPosition);
             }
             case EnemyShip.EnemyShipType.Flanker:
             {
-                return new ESFlanker(_shipID, _startingPosition);
+                return new ESFlanker(shipID, startingPosition);
             }
             default:
             {
@@ -240,9 +240,9 @@ public struct EnemyAndSpawnRate
     public EnemyShip.EnemyShipType EnemyType { get; private set; }
     public int SpawnRate { get; private set; }
 
-    public EnemyAndSpawnRate(EnemyShip.EnemyShipType _enemyType, int _spawnRate)
+    public EnemyAndSpawnRate(EnemyShip.EnemyShipType enemyType, int spawnRate)
     {
-        this.EnemyType = _enemyType;
-        this.SpawnRate = _spawnRate;
+        this.EnemyType = enemyType;
+        this.SpawnRate = spawnRate;
     }
 }

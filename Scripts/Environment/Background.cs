@@ -96,21 +96,21 @@ public static class Background
     }
 
     // Convert tilemap pixel coords to tile coords
-    public static Vector2Int TilemapPixelCoordsToTileCoords(Vector2Int _pixelCoords)
+    public static Vector2Int TilemapPixelCoordsToTileCoords(Vector2Int pixelCoords)
     {
-        return new Vector2Int(_pixelCoords.x - (TilemapTexture.width / 2), _pixelCoords.y - (TilemapTexture.height / 2));
+        return new Vector2Int(pixelCoords.x - (TilemapTexture.width / 2), pixelCoords.y - (TilemapTexture.height / 2));
     }
 
     // Convert world coords to tile coords
-    public static Vector2Int WorldCoordsToTileCoords(Vector3 _worldCoords)
+    public static Vector2Int WorldCoordsToTileCoords(Vector3 worldCoords)
     {
-        return new Vector2Int(Mathf.RoundToInt(_worldCoords.x / BackgroundTileSize), Mathf.RoundToInt(_worldCoords.z / BackgroundTileSize));
+        return new Vector2Int(Mathf.RoundToInt(worldCoords.x / BackgroundTileSize), Mathf.RoundToInt(worldCoords.z / BackgroundTileSize));
     }
 
     // Convert tile coords to world coords
-    public static Vector3 TileCoordsToWorldCoords(Vector2Int _tileCoords)
+    public static Vector3 TileCoordsToWorldCoords(Vector2Int tileCoords)
     {
-        return new Vector3(_tileCoords.x * BackgroundTileSize, 0, _tileCoords.y * BackgroundTileSize);
+        return new Vector3(tileCoords.x * BackgroundTileSize, 0, tileCoords.y * BackgroundTileSize);
     }
 
     // Store tilemap in Dict
@@ -267,87 +267,87 @@ public struct BackgroundTile
     public TileDirectionEnum Rotation;
 
     // Background tile constructor
-    public BackgroundTile(Zone.ZoneType _zoneType, byte _tileTypeAndRotation)
+    public BackgroundTile(Zone.ZoneType zoneType, byte tileTypeAndRotation)
     {
         // Assign zone type to zone type passed in
-        this.ZoneType = _zoneType;
+        this.ZoneType = zoneType;
         // Set tile type and rotation to byte value passed in
-        if(_tileTypeAndRotation == 0)
+        if(tileTypeAndRotation == 0)
         {
             this.TileType = TileTypeEnum.Full;
             this.Rotation = TileDirectionEnum.North;
         }
-        else if(_tileTypeAndRotation == 1)
+        else if(tileTypeAndRotation == 1)
         {
             this.TileType = TileTypeEnum.Corner;
             this.Rotation = TileDirectionEnum.SouthEast;
         }
-        else if(_tileTypeAndRotation == 2)
+        else if(tileTypeAndRotation == 2)
         {
             this.TileType = TileTypeEnum.Corner;
             this.Rotation = TileDirectionEnum.SouthWest;
         }
-        else if(_tileTypeAndRotation == 3)
+        else if(tileTypeAndRotation == 3)
         {
             this.TileType = TileTypeEnum.Half;
             this.Rotation = TileDirectionEnum.South;
         }
-        else if(_tileTypeAndRotation == 4)
+        else if(tileTypeAndRotation == 4)
         {
             this.TileType = TileTypeEnum.Corner;
             this.Rotation = TileDirectionEnum.NorthEast;
         }
-        else if(_tileTypeAndRotation == 5)
+        else if(tileTypeAndRotation == 5)
         {
             this.TileType = TileTypeEnum.Half;
             this.Rotation = TileDirectionEnum.East;
         }
-        else if(_tileTypeAndRotation == 6)
+        else if(tileTypeAndRotation == 6)
         {
             this.TileType = TileTypeEnum.Full;
             this.Rotation = TileDirectionEnum.North;
         }
-        else if(_tileTypeAndRotation == 7)
+        else if(tileTypeAndRotation == 7)
         {
             this.TileType = TileTypeEnum.Full;
             this.Rotation = TileDirectionEnum.North;
         }
-        else if(_tileTypeAndRotation == 8)
+        else if(tileTypeAndRotation == 8)
         {
             this.TileType = TileTypeEnum.Corner;
             this.Rotation = TileDirectionEnum.NorthWest;
         }
-        else if(_tileTypeAndRotation == 9)
+        else if(tileTypeAndRotation == 9)
         {
             this.TileType = TileTypeEnum.Full;
             this.Rotation = TileDirectionEnum.North;
         }
-        else if(_tileTypeAndRotation == 10)
+        else if(tileTypeAndRotation == 10)
         {
             this.TileType = TileTypeEnum.Half;
             this.Rotation = TileDirectionEnum.West;
         }
-        else if(_tileTypeAndRotation == 11)
+        else if(tileTypeAndRotation == 11)
         {
             this.TileType = TileTypeEnum.Full;
             this.Rotation = TileDirectionEnum.North;
         }
-        else if(_tileTypeAndRotation == 12)
+        else if(tileTypeAndRotation == 12)
         {
             this.TileType = TileTypeEnum.Half;
             this.Rotation = TileDirectionEnum.North;
         }
-        else if(_tileTypeAndRotation == 13)
+        else if(tileTypeAndRotation == 13)
         {
             this.TileType = TileTypeEnum.Full;
             this.Rotation = TileDirectionEnum.North;
         }
-        else if(_tileTypeAndRotation == 14)
+        else if(tileTypeAndRotation == 14)
         {
             this.TileType = TileTypeEnum.Full;
             this.Rotation = TileDirectionEnum.North;
         }
-        else if(_tileTypeAndRotation == 15)
+        else if(tileTypeAndRotation == 15)
         {
             this.TileType = TileTypeEnum.Full;
             this.Rotation = TileDirectionEnum.North;

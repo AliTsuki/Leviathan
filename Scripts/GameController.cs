@@ -23,7 +23,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public const string Version = "0.0.16k";
+    public const string Version = "0.0.17a";
 
     // GM reference
     private static GameManager gm = GameManager.Instance;
@@ -110,8 +110,8 @@ public static class GameController
     public static void Initialize()
     {
         Logger.Initialize();
-        UIController.Initialize();
         PlayerInput.Initialize();
+        UIController.Initialize();
         InitializeCamera();
     }
 
@@ -152,12 +152,12 @@ public static class GameController
     }
 
     // Change game state
-    public static void ChangeGameState(GameState _newGameState)
+    public static void ChangeGameState(GameState newGameState)
     {
-        CurrentGameState = _newGameState;
-        UIController.ChangeGameState(_newGameState);
+        CurrentGameState = newGameState;
+        UIController.ChangeGameState(newGameState);
         // Pause time during pause game state
-        if(_newGameState == GameState.Paused)
+        if(newGameState == GameState.Paused)
         {
             Time.timeScale = 0f;
         }
@@ -168,9 +168,9 @@ public static class GameController
     }
 
     // Change player ship type
-    public static void ChangePlayerShipType(PlayerShip.PlayerShipType _type)
+    public static void ChangePlayerShipType(PlayerShip.PlayerShipType type)
     {
-        PlayerShipType = _type;
+        PlayerShipType = type;
     }
 
     // On application quit
@@ -268,19 +268,19 @@ public static class GameController
     }
 
     // Initialize player ship in world
-    private static void SpawnPlayer(PlayerShip.PlayerShipType _type)
+    private static void SpawnPlayer(PlayerShip.PlayerShipType type)
     {
         NextShipID();
         // Spawn appropriate ship to player ship type
-        if(_type == PlayerShip.PlayerShipType.Bomber)
+        if(type == PlayerShip.PlayerShipType.Bomber)
         {
             Ships.Add(ShipID, new PSBomber(ShipID));
         }
-        else if(_type == PlayerShip.PlayerShipType.Engineer)
+        else if(type == PlayerShip.PlayerShipType.Engineer)
         {
             Ships.Add(ShipID, new PSEngineer(ShipID));
         }
-        else if(_type == PlayerShip.PlayerShipType.Scout)
+        else if(type == PlayerShip.PlayerShipType.Scout)
         {
             Ships.Add(ShipID, new PSScout(ShipID));
         }
@@ -296,34 +296,38 @@ public static class GameController
     }
 
     // Spawn enemy ship
-    private static void SpawnEnemy(Vector3 _startingPosition)
+    private static void SpawnEnemy(Vector3 startingPosition)
     {
         NextShipID();
-        Ships.Add(ShipID, Zone.SpawnEnemy(ShipID, _startingPosition));
+        Ships.Add(ShipID, Zone.SpawnEnemy(ShipID, startingPosition));
         EnemyCount++;
     }
 
     // Spawn bolt
-    public static void SpawnBolt(IFF _iff, uint _type, float _curvature, float _sightCone, float _damage, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public static void SpawnBolt(IFF iff, uint type, float curvature, float sightCone, float damage, Vector3 position, Quaternion rotation, 
+        Vector3 velocity, float speed, float lifetime)
     {
         NextProjectileID();
-        Projectiles.Add(ProjectileID, new Bolt(ProjectileID, _iff, _type, _curvature, _sightCone, _damage, _position, _rotation, _velocity, _speed, _lifetime));
+        Projectiles.Add(ProjectileID, new Bolt(ProjectileID, iff, type, curvature, sightCone, damage, position, rotation, velocity, speed, lifetime));
     }
 
     // Spawn bomb
-    public static Bomb SpawnBomb(Ship _player, IFF _iff, float _damage, float _radius, Vector3 _position, Quaternion _rotation, Vector3 _velocity, float _speed, float _lifetime)
+    public static Bomb SpawnBomb(Ship player, IFF iff, float damage, float radius, Vector3 position, Quaternion rotation, Vector3 velocity, 
+        float speed, float lifetime)
     {
         NextProjectileID();
-        Bomb bomb = new Bomb(_player, ProjectileID, _iff, _damage, _radius, _position, _rotation, _velocity, _speed, _lifetime);
+        Bomb bomb = new Bomb(player, ProjectileID, iff, damage, radius, position, rotation, velocity, speed, lifetime);
         Projectiles.Add(ProjectileID, bomb);
         return bomb;
     }
 
     // Spawn drone
-    public static DroneShip SpawnDrone(Ship _parent, List<DroneShip> _parentDroneList, DroneShip.DroneShipType _type, Vector3 _startingPosition, float _maxHealth, float _maxShields, float _maxSpeed, uint _gunShotProjectileType, float _gunCooldownTime, uint _gunShotAmount, float _gunShotDamage, float _gunShotAccuracy, float _gunShotSpeed, float _gunShotLifetime, float _maxTargetAcquisitionDistance, float _maxStrafeDistance, float _maxLeashDistance)
+    public static DroneShip SpawnDrone(Ship parent, List<DroneShip> parentDroneList, DroneShip.DroneShipType type, Vector3 startingPosition, 
+        float maxHealth, float maxShields, float maxSpeed, uint gunShotProjectileType, float gunCooldownTime, uint gunShotAmount, float gunShotDamage, 
+        float gunShotAccuracy, float gunShotSpeed, float gunShotLifetime, float maxTargetAcquisitionDistance, float maxStrafeDistance, float maxLeashDistance)
     {
         NextShipID();
-        DroneShip droneShip = new DroneShip(ShipID, _parent, _parentDroneList, _type, _startingPosition, _maxHealth, _maxShields, _maxSpeed, _gunShotProjectileType, _gunCooldownTime, _gunShotAmount, _gunShotDamage, _gunShotAccuracy, _gunShotSpeed, _gunShotLifetime, _maxTargetAcquisitionDistance, _maxStrafeDistance, _maxLeashDistance);
+        DroneShip droneShip = new DroneShip(ShipID, parent, parentDroneList, type, startingPosition, maxHealth, maxShields, maxSpeed, gunShotProjectileType, gunCooldownTime, gunShotAmount, gunShotDamage, gunShotAccuracy, gunShotSpeed, gunShotLifetime, maxTargetAcquisitionDistance, maxStrafeDistance, maxLeashDistance);
         // This gets called during a ship update, so it can't modify the ships list directly. As such, it adds to a list of ships to add and gets added after ships list finishes enumerating
         ShipsToAdd.Add(ShipID, droneShip);
         return droneShip;
@@ -344,9 +348,9 @@ public static class GameController
     }
 
     // Add to score
-    public static void AddToScore(uint _exp)
+    public static void AddToScore(uint exp)
     {
-        Score += _exp;
+        Score += exp;
     }
 
     // Process ship updates
@@ -396,9 +400,9 @@ public static class GameController
     }
 
     // Add ship to removal list
-    public static void AddShipToRemovalList(uint _id)
+    public static void AddShipToRemovalList(uint id)
     {
-        ShipsToRemove.Add(_id);
+        ShipsToRemove.Add(id);
     }
 
     // Cleans up ship list
@@ -425,9 +429,9 @@ public static class GameController
     }
 
     // Add projectile to removal list
-    public static void AddProjectileToRemovalList(uint _id)
+    public static void AddProjectileToRemovalList(uint id)
     {
-        ProjectilesToRemove.Add(_id);
+        ProjectilesToRemove.Add(id);
     }
 
     // Clean up projectile list
@@ -507,31 +511,31 @@ public static class GameController
     }
 
     // Recieve Collision info and propogate, this is referenced by the CollisionHandler script placed on all Ship and Projectile prefabs
-    public static void Collide(GameObject _collisionReporter, GameObject _collidedWith)
+    public static void Collide(GameObject collisionReporter, GameObject collidedWith)
     {
         // If the object reporting collision is a projectile
-        if(_collisionReporter.tag == "Projectile" && _collidedWith.tag != "Projectile")
+        if(collisionReporter.tag == "Projectile" && collidedWith.tag != "Projectile")
         {
             try
             {
                 // Get the projectile
-                Projectile projectile = Projectiles[uint.Parse(_collisionReporter.name)];
-                Ship collidedWith = Ships[uint.Parse(_collidedWith.name)];
+                Projectile projectile = Projectiles[uint.Parse(collisionReporter.name)];
+                Ship collidedWithShip = Ships[uint.Parse(collidedWith.name)];
                 // If projectile is friendly and has collided with an enemy
-                if(projectile.IFF == IFF.Friend && collidedWith.IFF != IFF.Friend)
+                if(projectile.IFF == IFF.Friend && collidedWithShip.IFF != IFF.Friend)
                 {
                     // Run ReceivedCollision for projectile
                     projectile.ReceivedCollision();
                     // Run ReceivedCollision for enemy
-                    Ships[uint.Parse(_collidedWith.name)].ReceivedCollisionFromProjectile(projectile.Damage, projectile.ProjectileObject.transform.position);
+                    Ships[uint.Parse(collidedWith.name)].ReceivedCollisionFromProjectile(projectile.Damage, projectile.ProjectileObject.transform.position);
                 }
                 // If projectile is enemy and has collided with a player
-                else if(projectile.IFF == IFF.Enemy && collidedWith.IFF != IFF.Enemy)
+                else if(projectile.IFF == IFF.Enemy && collidedWithShip.IFF != IFF.Enemy)
                 {
                     // Run ReceivedCollision for projectile
                     projectile.ReceivedCollision();
                     // Run ReceivedCollision for player
-                    Ships[uint.Parse(_collidedWith.name)].ReceivedCollisionFromProjectile(projectile.Damage, projectile.ProjectileObject.transform.position);
+                    Ships[uint.Parse(collidedWith.name)].ReceivedCollisionFromProjectile(projectile.Damage, projectile.ProjectileObject.transform.position);
                 }
             }
             catch(Exception e)
@@ -543,19 +547,19 @@ public static class GameController
             }
         }
         // If two ships collided
-        else if(_collisionReporter.tag != "Projectile" && _collidedWith.tag != "Projectile")
+        else if(collisionReporter.tag != "Projectile" && collidedWith.tag != "Projectile")
         {
             try
             {
                 // Get ships
-                Ship reporter = Ships[uint.Parse(_collisionReporter.name)];
-                Ship collidedWith = Ships[uint.Parse(_collidedWith.name)];
+                Ship reporter = Ships[uint.Parse(collisionReporter.name)];
+                Ship collidedWithShip = Ships[uint.Parse(collidedWith.name)];
                 // If both ships are alive
-                if(reporter.Alive == true && collidedWith.Alive == true && reporter.Parent != collidedWith && reporter != collidedWith.Parent)
+                if(reporter.Alive == true && collidedWithShip.Alive == true && reporter.Parent != collidedWithShip && reporter != collidedWithShip.Parent)
                 {
                     // Send collision report
-                    reporter.ReceivedCollisionFromShip(collidedWith.ShipObject.transform.position, collidedWith.IFF);
-                    collidedWith.ReceivedCollisionFromShip(reporter.ShipObject.transform.position, reporter.IFF);
+                    reporter.ReceivedCollisionFromShip(collidedWithShip.ShipObject.transform.position, collidedWithShip.IFF);
+                    collidedWithShip.ReceivedCollisionFromShip(reporter.ShipObject.transform.position, reporter.IFF);
                 }
             }
             catch(Exception e)

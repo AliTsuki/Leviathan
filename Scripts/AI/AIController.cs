@@ -291,11 +291,11 @@ public abstract partial class Ship
     }
 
     // Checks if the ship should accelerate based on its distance to its target
-    public bool ShouldShipAccelerate(bool _shouldStrafe, Vector3 _userPosition, Vector3 _targetPosition, float _maxOrbitRange)
+    public bool ShouldShipAccelerate(bool shouldStrafe, Vector3 userPosition, Vector3 targetPosition, float maxOrbitRange)
     {
-        if(_shouldStrafe == true)
+        if(shouldStrafe == true)
         {
-            if(Vector3.Distance(_userPosition, _targetPosition) > _maxOrbitRange)
+            if(Vector3.Distance(userPosition, targetPosition) > maxOrbitRange)
             {
                 return true;
             }
@@ -304,7 +304,7 @@ public abstract partial class Ship
                 return false;
             }
         }
-        else if(_shouldStrafe == false)
+        else if(shouldStrafe == false)
         {
             return true;
         }
@@ -312,9 +312,9 @@ public abstract partial class Ship
     }
 
     // Checks if the ship should strafe based on its distance to its target
-    public bool ShouldShipStrafe(Vector3 _userPosition, Vector3 _targetPosition, float _maxOrbitRange)
+    public bool ShouldShipStrafe(Vector3 userPosition, Vector3 targetPosition, float maxOrbitRange)
     {
-        if(Vector3.Distance(_userPosition, _targetPosition) <= _maxOrbitRange)
+        if(Vector3.Distance(userPosition, targetPosition) <= maxOrbitRange)
         {
             return true;
         }
@@ -325,9 +325,9 @@ public abstract partial class Ship
     }
 
     // Checks if the ship should fire main weapons based on its distance to its target
-    public bool ShouldShipFireGun(Vector3 _userPosition, Vector3 _targetPosition, float _maxWeaponsRange)
+    public bool ShouldShipFireGun(Vector3 userPosition, Vector3 targetPosition, float maxWeaponsRange)
     {
-        if(Vector3.Distance(_userPosition, _targetPosition) < _maxWeaponsRange)
+        if(Vector3.Distance(userPosition, targetPosition) < maxWeaponsRange)
         {
             return true;
         }
@@ -338,9 +338,9 @@ public abstract partial class Ship
     }
 
     // Checks if the ship should use an ability
-    public bool ShouldShipUseAbility(Vector3 _userPosition, Vector3 _targetPosition, float _abilityUsageRange)
+    public bool ShouldShipUseAbility(Vector3 userPosition, Vector3 targetPosition, float abilityUsageRange)
     {
-        if(Vector3.Distance(_userPosition, _targetPosition) < _abilityUsageRange)
+        if(Vector3.Distance(userPosition, targetPosition) < abilityUsageRange)
         {
             return true;
         }
@@ -355,13 +355,13 @@ public abstract partial class Ship
 public static class Targeting
 {
     // Acquires a target with opposite IFF
-    public static Ship AcquireTarget(Vector3 _userPosition, GameController.IFF _iff, float _maxTargetingDistance)
+    public static Ship AcquireTarget(Vector3 userPosition, GameController.IFF iff, float maxTargetingDistance)
     {
         // Loops through all ships in game
         foreach(KeyValuePair<uint, Ship> ship in GameController.Ships)
         {
             // Checks if ship is opposite IFF, is alive, and is within max targeting distance
-            if(ship.Value.IFF != _iff && ship.Value.Alive == true && ship.Value.AItype != Ship.AIType.Drone && Vector3.Distance(ship.Value.ShipObject.transform.position, _userPosition) < _maxTargetingDistance)
+            if(ship.Value.IFF != iff && ship.Value.Alive == true && ship.Value.AItype != Ship.AIType.Drone && Vector3.Distance(ship.Value.ShipObject.transform.position, userPosition) < maxTargetingDistance)
             {
                 // Returns the target
                 return ship.Value;
@@ -372,7 +372,7 @@ public static class Targeting
     }
 
     // Acquires closest target
-    public static Ship AcquireClosestTarget(Vector3 _userPosition, GameController.IFF _iff, float _maxTargetingDistance)
+    public static Ship AcquireClosestTarget(Vector3 userPosition, GameController.IFF iff, float maxTargetingDistance)
     {
         Ship CurrentTarget = null;
         Ship FinalTarget = null;
@@ -380,7 +380,7 @@ public static class Targeting
         foreach(KeyValuePair<uint, Ship> ship in GameController.Ships)
         {
             // Checks if ship is opposite IFF, is alive, and is within max targeting distance
-            if(ship.Value.IFF != _iff && ship.Value.Alive == true && Vector3.Distance(ship.Value.ShipObject.transform.position, _userPosition) < _maxTargetingDistance)
+            if(ship.Value.IFF != iff && ship.Value.Alive == true && Vector3.Distance(ship.Value.ShipObject.transform.position, userPosition) < maxTargetingDistance)
             {
                 CurrentTarget = ship.Value;
                 if(FinalTarget == null)
@@ -388,7 +388,7 @@ public static class Targeting
                     FinalTarget = CurrentTarget;
                 }
             }
-            if(FinalTarget != null && CurrentTarget != null && Vector3.Distance(CurrentTarget.ShipObject.transform.position, _userPosition) < Vector3.Distance(FinalTarget.ShipObject.transform.position, _userPosition))
+            if(FinalTarget != null && CurrentTarget != null && Vector3.Distance(CurrentTarget.ShipObject.transform.position, userPosition) < Vector3.Distance(FinalTarget.ShipObject.transform.position, userPosition))
             {
                 FinalTarget = CurrentTarget;
             }
@@ -398,13 +398,13 @@ public static class Targeting
     }
 
     // Acquires a target with opposite IFF that is forward
-    public static Ship AcquireForwardTarget(Transform _userTransform, GameController.IFF _iff, float _maxTargetingDistance, float _sightCone)
+    public static Ship AcquireForwardTarget(Transform userTransform, GameController.IFF iff, float maxTargetingDistance, float sightCone)
     {
         // Loops through all ships in game
         foreach(KeyValuePair<uint, Ship> ship in GameController.Ships)
         {
             // Checks if ship is opposite IFF, is alive, and is within max targeting distance
-            if(ship.Value.IFF != _iff && ship.Value.Alive == true && Vector3.Distance(ship.Value.ShipObject.transform.position, _userTransform.position) < _maxTargetingDistance && Vector3.Dot(_userTransform.forward, (ship.Value.ShipObject.transform.position - _userTransform.position).normalized) > _sightCone)
+            if(ship.Value.IFF != iff && ship.Value.Alive == true && Vector3.Distance(ship.Value.ShipObject.transform.position, userTransform.position) < maxTargetingDistance && Vector3.Dot(userTransform.forward, (ship.Value.ShipObject.transform.position - userTransform.position).normalized) > sightCone)
             {
                 // Returns the target
                 return ship.Value;
@@ -415,8 +415,8 @@ public static class Targeting
     }
 
     // Gets the intended rotation to face toward given target
-    public static Quaternion GetRotationToTarget(Transform _userTransform, Vector3 _targetPosition)
+    public static Quaternion GetRotationToTarget(Transform userTransform, Vector3 targetPosition)
     {
-        return Quaternion.LookRotation(_targetPosition - _userTransform.position);
+        return Quaternion.LookRotation(targetPosition - userTransform.position);
     }
 }

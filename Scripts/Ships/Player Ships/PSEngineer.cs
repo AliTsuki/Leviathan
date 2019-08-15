@@ -39,9 +39,9 @@ public class PSEngineer : PlayerShip
     private float EMPEnergyCost; //
 
     // Player ship constructor
-    public PSEngineer(uint _id)
+    public PSEngineer(uint id)
     {
-        this.ID = _id;
+        this.ID = id;
         // TODO: Change starting position to be last home zone saved to
         this.StartingPosition = new Vector3(0, 0, 0);
         this.Type = PlayerShipType.Engineer;

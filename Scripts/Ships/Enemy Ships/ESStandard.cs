@@ -4,10 +4,10 @@
 public class ESStandard : EnemyShip
 {
     // Enemy ship standard constructor
-    public ESStandard(uint _id, Vector3 _startingPosition)
+    public ESStandard(uint id, Vector3 startingPosition)
     {
-        this.ID = _id;
-        this.StartingPosition = _startingPosition;
+        this.ID = id;
+        this.StartingPosition = startingPosition;
         this.Type = EnemyShipType.Standard;
         this.AItype = AIType.Standard;
         this.IFF = GameController.IFF.Enemy;

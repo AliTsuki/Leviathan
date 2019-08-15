@@ -4,10 +4,10 @@
 public class ESBroadside : EnemyShip
 {
     // Enemy ship constructor
-    public ESBroadside(uint _id, Vector3 _startingPosition)
+    public ESBroadside(uint id, Vector3 startingPosition)
     {
-        this.ID = _id;
-        this.StartingPosition = _startingPosition;
+        this.ID = id;
+        this.StartingPosition = startingPosition;
         this.Type = EnemyShipType.Broadside;
         this.AItype = AIType.Broadside;
         this.IFF = GameController.IFF.Enemy;

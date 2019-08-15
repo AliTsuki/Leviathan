@@ -176,7 +176,7 @@ public static class UIController
             UpdatePlayerUI();
         }
         // If input mode is KBM
-        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.KeyboardAndMouse)
+        if(PlayerInput.InputSettings.InputMode == PlayerInput.InputModeEnum.KeyboardAndMouse)
         {
             // Deselect any selected items
             EventSys.SetSelectedGameObject(null);
@@ -368,9 +368,9 @@ public static class UIController
         PlayerAbilityIcons.Ability3Keybind.text = PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.Ability3);
         PlayerAbilityIcons.MainGunKeybind.text = PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MainGun);
         PlayerAbilityIcons.WarpKeybind.text = PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.Warp);
-        PlayerAbilityIcons.MoveKeybind.text = (PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller) ? $@"{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MoveXAxis)}" : 
+        PlayerAbilityIcons.MoveKeybind.text = (PlayerInput.InputSettings.InputMode == PlayerInput.InputModeEnum.Controller) ? $@"{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MoveXAxis)}" : 
             $@"{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MoveForward)}{Environment.NewLine}{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MoveLeft)}{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MoveBack)}{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.MoveRight)}";
-        PlayerAbilityIcons.AimKeybind.text = (PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller) ? $@"{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.AimXAxis)}" : "Mouse";
+        PlayerAbilityIcons.AimKeybind.text = (PlayerInput.InputSettings.InputMode == PlayerInput.InputModeEnum.Controller) ? $@"{PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.AimXAxis)}" : "Mouse";
         PlayerAbilityIcons.PauseKeybind.text = PlayerInput.GetKeybindNameForInput(InputBinding.GameInputsEnum.Pause);
     }
 
@@ -602,10 +602,10 @@ public static class UIController
     }
 
     // Update cursor state
-    private static void UpdateCursorState(bool _forceCursorVisible)
+    private static void UpdateCursorState(bool forceCursorVisible)
     {
         // If input mode is controller
-        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        if(PlayerInput.InputSettings.InputMode == PlayerInput.InputModeEnum.Controller)
         {
             // Use default cursor and set invisible
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
@@ -626,7 +626,7 @@ public static class UIController
             else
             {
                 // If force cursor visible is true
-                if(_forceCursorVisible == true)
+                if(forceCursorVisible == true)
                 {
                     // Use default cursor and set visible
                     Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
@@ -644,13 +644,13 @@ public static class UIController
     }
 
     // Check select default button
-    private static void CheckSelectDefaultButton(GameObject _defaultButton)
+    private static void CheckSelectDefaultButton(GameObject defaultButton)
     {
         // If input mode is controller
-        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        if(PlayerInput.InputSettings.InputMode == PlayerInput.InputModeEnum.Controller)
         {
             // Select default button for screen
-            EventSys.SetSelectedGameObject(_defaultButton);
+            EventSys.SetSelectedGameObject(defaultButton);
         }
     }
 
@@ -676,6 +676,8 @@ public static class UIController
         {
             // Show menu background
             MenuBackground.SetActive(true);
+            // Update settings toggles
+            UpdateSettingsToggles();
         }
         // If new screen is player UI
         else if(CurrentScreen.gameObject == PlayerUIScreen)
@@ -699,10 +701,10 @@ public static class UIController
     }
 
     // Remove Healthbar
-    public static void RemoveHealthbar(uint _id)
+    public static void RemoveHealthbar(uint id)
     {
-        GameObject.Destroy(Healthbars[_id]);
-        Healthbars.Remove(_id);
+        GameObject.Destroy(Healthbars[id]);
+        Healthbars.Remove(id);
     }
 
     // Show shield damage effect vignette
@@ -720,23 +722,25 @@ public static class UIController
     }
 
     // Change game state
-    public static void ChangeGameState(GameController.GameState _newGameState)
+    public static void ChangeGameState(GameController.GameState newGameState)
     {
         // Update cursor
         UpdateCursorState(false);
     }
 
     // Change screen
-    public static void ChangeScreen(UIScreen _newScreen)
+    public static void ChangeScreen(UIScreen newScreen)
     {
         // Slide out current screen
         CurrentScreen.SetupSlideScreen(UIAnimations.InOutEnum.Out);
         CurrentScreen.Active = false;
         // Set current screen to new screen
-        CurrentScreen = _newScreen;
+        CurrentScreen = newScreen;
         // Slide in new screen
         CurrentScreen.SetupSlideScreen(UIAnimations.InOutEnum.In);
         CurrentScreen.Active = true;
+        // Update cursor state
+        UpdateCursorState(false);
         // Check select default button
         CheckSelectDefaultButton(CurrentScreen.DefaultButton);
         // Make unique changes depending on new screen
@@ -755,22 +759,22 @@ public static class UIController
     }
 
     // Open PopUp
-    public static void OpenPopUp(UIPopUp _newPopUp)
+    public static void OpenPopUp(UIPopUp newPopUp)
     {
         // Update cursor
         UpdateCursorState(true);
         // Slide in popup
-        _newPopUp.SetupSlideScreen(UIAnimations.InOutEnum.In);
-        _newPopUp.Active = true;
-        ActivePopUps.Add(_newPopUp);
+        newPopUp.SetupSlideScreen(UIAnimations.InOutEnum.In);
+        newPopUp.Active = true;
+        ActivePopUps.Add(newPopUp);
         // If popup is supposed to be only popup on screen
-        if(_newPopUp.OnlyPopUp == true)
+        if(newPopUp.OnlyPopUp == true)
         {
             // Loop through all pop ups
             foreach(KeyValuePair<string, UIPopUp> popUp in UIPopUps)
             {
                 // If popup is not the new popup
-                if(popUp.Value != _newPopUp)
+                if(popUp.Value != newPopUp)
                 {
                     // Deactivate popup
                     ClosePopUp(popUp.Value);
@@ -778,24 +782,24 @@ public static class UIController
             }
         }
         // If select button on open is enabled for this popup
-        if(_newPopUp.SelectButtonOnOpen == true)
+        if(newPopUp.SelectButtonOnOpen == true)
         {
             // Check if default button should be selected and select if so
-            CheckSelectDefaultButton(_newPopUp.DefaultButton);
+            CheckSelectDefaultButton(newPopUp.DefaultButton);
         }
     }
 
     // Close PopUp
-    public static void ClosePopUp(UIPopUp _popUp)
+    public static void ClosePopUp(UIPopUp popUp)
     {
         // Update cursor
         UpdateCursorState(false);
         // Slide out popup
-        _popUp.SetupSlideScreen(UIAnimations.InOutEnum.Out);
-        _popUp.Active = false;
-        ActivePopUps.Remove(_popUp);
+        popUp.SetupSlideScreen(UIAnimations.InOutEnum.Out);
+        popUp.Active = false;
+        ActivePopUps.Remove(popUp);
         // If select button on open is enabled for this popup
-        if(_popUp.SelectButtonOnOpen == true)
+        if(popUp.SelectButtonOnOpen == true)
         {
             // If this popup was the only popup active
             if(ActivePopUps.Count == 0)
@@ -826,18 +830,18 @@ public static class UIController
     }
 
     // Show ship model
-    public static void ShowShipModel(GameObject _model)
+    public static void ShowShipModel(GameObject model)
     {
         // Set model game object active
-        _model.SetActive(true);
+        model.SetActive(true);
         // Loop through all models
-        foreach(KeyValuePair<string, GameObject> model in ShipModels)
+        foreach(KeyValuePair<string, GameObject> shipModel in ShipModels)
         {
             // If current model is not model to be shown
-            if(model.Value != _model)
+            if(shipModel.Value != model)
             {
                 // Deactivate model
-                model.Value.SetActive(false);
+                shipModel.Value.SetActive(false);
             }
         }
     }
@@ -854,10 +858,10 @@ public static class UIController
     }
 
     // Change error text
-    public static void ChangeErrorText(string _newText)
+    public static void ChangeErrorText(string newText)
     {
         // Update text
-        ErrorText.text = _newText;
+        ErrorText.text = newText;
         // Update alpha to 1
         ErrorText.alpha = 1f;
         // Error text is visible
@@ -874,10 +878,10 @@ public static class UIController
     }
 
     // Get or set selected button
-    public static void GetOrSetSelectedButton(bool _get)
+    public static void GetOrSetSelectedButton(bool get)
     {
         // If get is true
-        if(_get == true)
+        if(get == true)
         {
             // Grab currently selected button
             LastSelectedButton = EventSys.currentSelectedGameObject;
@@ -926,7 +930,7 @@ public static class UIController
             }
         }
         // If input is controller
-        if(PlayerInput.InputMode == PlayerInput.InputModeEnum.Controller)
+        if(PlayerInput.InputSettings.InputMode == PlayerInput.InputModeEnum.Controller)
         {
             // Select currently selected toggle
             EventSys.SetSelectedGameObject(ShipSelectElements.CurrentSelection.gameObject);
@@ -979,6 +983,12 @@ public static class UIController
         }
     }
 
+    // Update settings toggles
+    public static void UpdateSettingsToggles()
+    {
+        SettingsElements.UpdateSettingsToggles();
+    }
+
     // Start new game
     public static void StartNewGame()
     {
@@ -1004,10 +1014,10 @@ public static class UIController
     }
 
     // Open game over popup
-    public static void OpenGameOverPopUp(bool _open)
+    public static void OpenGameOverPopUp(bool open)
     {
         // If open is true
-        if(_open == true)
+        if(open == true)
         {
             // Open game over popup
             OpenPopUp(UIPopUps[GameOverPopUpName]);

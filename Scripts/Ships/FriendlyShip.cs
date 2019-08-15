@@ -4,7 +4,7 @@
 public abstract class FriendlyShip : Ship
 {
     // Enemy ship constructor
-    public FriendlyShip(uint _id)
+    public FriendlyShip(uint id)
     {
         
     }

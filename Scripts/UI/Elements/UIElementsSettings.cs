@@ -12,15 +12,14 @@ public class UIElementsSettings : MonoBehaviour
     public TMP_Dropdown InputTypeDropdown;
 
     // Current selections
-    public int MovementStyle = 0;
-    public int InputType = 0;
+    public int MovementStyle;
+    public int InputType;
 
 
     // Start is called before the first frame update
     private void Start()
     {
-        this.GetMovementStyleToggle();
-        this.GetInputTypeToggle();
+        this.UpdateSettingsToggles();
     }
 
     // Get movement style toggle
@@ -33,5 +32,14 @@ public class UIElementsSettings : MonoBehaviour
     public void GetInputTypeToggle()
     {
         this.InputType = this.InputTypeDropdown.value;
+    }
+
+    // Update settings toggles
+    public void UpdateSettingsToggles()
+    {
+        this.MovementStyle = (int)PlayerInput.InputSettings.MovementStyle;
+        this.MovementStyleDropdown.value = this.MovementStyle;
+        this.InputType = (int)PlayerInput.InputSettings.InputMode;
+        this.InputTypeDropdown.value = this.InputType;
     }
 }

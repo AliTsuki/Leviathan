@@ -23,25 +23,27 @@ public class DroneShip : Ship
     }
     public DroneShipType Type { get; private set; }
 
-    public DroneShip(uint _id, Ship _parent, List<DroneShip> _parentDroneList, DroneShipType _type, Vector3 _startingPosition, float _maxHealth, float _maxShields, float _maxSpeed, uint _gunShotProjectileType, float _gunCooldownTime, uint _gunShotAmount, float _gunShotDamage, float _gunShotAccuracy, float _gunShotSpeed, float _gunShotLifetime, float _maxTargetAcquisitionDistance, float _maxStrafeDistance, float _maxLeashDistance)
+    public DroneShip(uint id, Ship parent, List<DroneShip> parentDroneList, DroneShipType type, Vector3 startingPosition, float maxHealth, 
+        float maxShields, float maxSpeed, uint gunShotProjectileType, float gunCooldownTime, uint gunShotAmount, float gunShotDamage, 
+        float gunShotAccuracy, float gunShotSpeed, float gunShotLifetime, float maxTargetAcquisitionDistance, float maxStrafeDistance, float maxLeashDistance)
     {
-        this.ID = _id;
-        this.Parent = _parent;
-        this.ParentDroneList = _parentDroneList;
-        this.Type = _type;
+        this.ID = id;
+        this.Parent = parent;
+        this.ParentDroneList = parentDroneList;
+        this.Type = type;
         this.AItype = AIType.Drone;
-        this.StartingPosition = _startingPosition;
+        this.StartingPosition = startingPosition;
         this.IFF = GameController.IFF.Friend;
         this.IsPlayer = false;
         // Ship stats
         this.Stats = new ShipStats
         {
             // --Health/Armor/Shields
-            Health = _maxHealth,
-            MaxHealth = _maxHealth,
+            Health = maxHealth,
+            MaxHealth = maxHealth,
             Armor = 99f,
-            Shields = _maxShields,
-            MaxShields = _maxShields,
+            Shields = maxShields,
+            MaxShields = maxShields,
             ShieldRegenSpeed = 1f,
             ShieldCooldownTime = 3f,
             // --Current/Max energy
@@ -57,32 +59,32 @@ public class DroneShip : Ship
             WarpAccelerationMultiplier = 0f,
             StrafeAcceleration = 50f,
             // --Max Speed
-            MaxImpulseSpeed = _maxSpeed,
+            MaxImpulseSpeed = maxSpeed,
             MaxWarpSpeed = 0f,
             MaxStrafeSpeed = 20f,
             MaxRotationSpeed = 0.1f,
             // --Weapon stats
             // ----Main gun
             GunBarrelCount = 1,
-            GunShotProjectileType = _gunShotProjectileType,
-            GunCooldownTime = _gunCooldownTime,
-            GunShotAmount = _gunShotAmount,
+            GunShotProjectileType = gunShotProjectileType,
+            GunCooldownTime = gunCooldownTime,
+            GunShotAmount = gunShotAmount,
             GunShotCurvature = 0f,
             GunShotSightCone = 0f,
-            GunShotDamage = _gunShotDamage,
-            GunShotAccuracy = _gunShotAccuracy,
-            GunShotSpeed = _gunShotSpeed,
-            GunShotLifetime = _gunShotLifetime,
+            GunShotDamage = gunShotDamage,
+            GunShotAccuracy = gunShotAccuracy,
+            GunShotSpeed = gunShotSpeed,
+            GunShotLifetime = gunShotLifetime,
         };
         // Self Destruct
         this.BombRadius = 25f;
         this.BombDamage = 25f;
         // AI fields
         this.AIAimAssist = true;
-        this.MaxTargetAcquisitionRange = _maxTargetAcquisitionDistance;
-        this.MaxOrbitRange = _maxStrafeDistance;
-        this.MaxWeaponsRange = _maxTargetAcquisitionDistance;
-        this.MaxLeashDistance = _maxLeashDistance;
+        this.MaxTargetAcquisitionRange = maxTargetAcquisitionDistance;
+        this.MaxOrbitRange = maxStrafeDistance;
+        this.MaxWeaponsRange = maxTargetAcquisitionDistance;
+        this.MaxLeashDistance = maxLeashDistance;
         this.OrbitParentRange = 25f;
         // GameObject Instantiation
         this.ShipObjectPrefab = Resources.Load<GameObject>(GameController.DronePrefabName + $@" {this.Type}");

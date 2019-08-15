@@ -4,9 +4,9 @@
 public static class Mathematics
 {
     // Rounds to nearest half
-    public static float RoundToNearestHalf(float _input)
+    public static float RoundToNearestHalf(float input)
     {
-        return (float)(Math.Round(_input * 2, MidpointRounding.AwayFromZero) / 2);
+        return (float)(Math.Round(input * 2, MidpointRounding.AwayFromZero) / 2);
     }
 }
 
@@ -23,26 +23,26 @@ public class Float2
         this.y = 0f;
     }
 
-    public Float2(float _x, float _y)
+    public Float2(float x, float y)
     {
-        this.x = _x;
-        this.y = _y;
+        this.x = x;
+        this.y = y;
     }
 
-    public void Set(float _x, float _y)
+    public void Set(float x, float y)
     {
-        this.x = _x;
-        this.y = _y;
+        this.x = x;
+        this.y = y;
     }
 
-    public void SetX(float _x)
+    public void SetX(float x)
     {
-        this.x = _x;
+        this.x = x;
     }
 
-    public void SetY(float _y)
+    public void SetY(float y)
     {
-        this.y = _y;
+        this.y = y;
     }
 
     public override string ToString()

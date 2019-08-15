@@ -39,9 +39,9 @@ public class UIHandler : MonoBehaviour
     }
 
     // Change error text
-    public void ChangeErrorText(string _newErrorText)
+    public void ChangeErrorText(string newErrorText)
     {
-        UIController.ChangeErrorText(_newErrorText);
+        UIController.ChangeErrorText(newErrorText);
     }
 
     // Get selected toggle
@@ -63,15 +63,15 @@ public class UIHandler : MonoBehaviour
     }
 
     // Rebind keybind KBM
-    public void RebindKeybindKBM(string _inputToRebind)
+    public void RebindKeybindKBM(string inputToRebind)
     {
-        PlayerInput.SetupRebind(PlayerInput.InputModeEnum.KeyboardAndMouse, _inputToRebind);
+        PlayerInput.SetupRebind(PlayerInput.InputModeEnum.KeyboardAndMouse, inputToRebind);
     }
 
     // Rebind keybind controller
-    public void RebindKeybindController(string _inputToRebind)
+    public void RebindKeybindController(string inputToRebind)
     {
-        PlayerInput.SetupRebind(PlayerInput.InputModeEnum.Controller, _inputToRebind);
+        PlayerInput.SetupRebind(PlayerInput.InputModeEnum.Controller, inputToRebind);
     }
 
     // Set bindings to default
@@ -81,11 +81,17 @@ public class UIHandler : MonoBehaviour
         UIController.ChangeErrorText($@"Input bindings set to defaults.");
     }
 
+    // Save settings to file
+    public void SaveSettingsToFile()
+    {
+        FileOps.WriteSettingsToFile();
+    }
+
     // Change game state
-    public void ChangeGameState(int _newGameState)
+    public void ChangeGameState(int newGameState)
     {
         // int 0: menus, 1: playing, 2: paused
-        switch(_newGameState)
+        switch(newGameState)
         {
             case 0:
             {
@@ -104,17 +110,17 @@ public class UIHandler : MonoBehaviour
             }
             default:
             {
-                Debug.Log($@"Invalid Game State: {_newGameState}");
-                Logger.Log($@"Invalid Game State: {_newGameState}");
+                Debug.Log($@"Invalid Game State: {newGameState}");
+                Logger.Log($@"Invalid Game State: {newGameState}");
                 break;
             }
         }
     }
 
     // Change screen
-    public void ChangeScreen(UIScreen _newScreen)
+    public void ChangeScreen(UIScreen newScreen)
     {
-        UIController.ChangeScreen(_newScreen);
+        UIController.ChangeScreen(newScreen);
     }
 
     // Back
@@ -124,15 +130,15 @@ public class UIHandler : MonoBehaviour
     }
 
     // Open PopUp
-    public void OpenPopUp(UIPopUp _popUpToOpen)
+    public void OpenPopUp(UIPopUp popUpToOpen)
     {
-        UIController.OpenPopUp(_popUpToOpen);
+        UIController.OpenPopUp(popUpToOpen);
     }
 
     // Close PopUp
-    public void ClosePopUp(UIPopUp _popUpToClose)
+    public void ClosePopUp(UIPopUp popUpToClose)
     {
-        UIController.ClosePopUp(_popUpToClose);
+        UIController.ClosePopUp(popUpToClose);
     }
 
     // Close all PopUps

@@ -14,10 +14,10 @@ public class ESRamming : EnemyShip
     private readonly Vector3 BombScale = new Vector3(1, 1, 1);
 
     // Enemy ship constructor
-    public ESRamming(uint _id, Vector3 _startingPosition)
+    public ESRamming(uint id, Vector3 startingPosition)
     {
-        this.ID = _id;
-        this.StartingPosition = _startingPosition;
+        this.ID = id;
+        this.StartingPosition = startingPosition;
         this.Type = EnemyShipType.Ramming;
         this.AItype = AIType.Ramming;
         this.IFF = GameController.IFF.Enemy;
@@ -63,17 +63,17 @@ public class ESRamming : EnemyShip
     }
 
     // Called when receiving collision from ship
-    public override void ReceivedCollisionFromShip(Vector3 _collisionVelocity, GameController.IFF _iff)
+    public override void ReceivedCollisionFromShip(Vector3 collisionVelocity, GameController.IFF iff)
     {
         // Apply velocity received from collision
-        this.ShipRigidbody.AddRelativeForce(_collisionVelocity * 0.20f, ForceMode.Impulse);
+        this.ShipRigidbody.AddRelativeForce(collisionVelocity * 0.20f, ForceMode.Impulse);
         // If ship is different faction
-        if(_iff != this.IFF)
+        if(iff != this.IFF)
         {
             // If armor percentage is above 100, cap it at 100
             Mathf.Clamp(this.Stats.Armor, 0, 100);
             // Take impact damage less armor percentage
-            this.TakeDamage(_collisionVelocity.magnitude * ((100 - this.Stats.Armor) / 100));
+            this.TakeDamage(collisionVelocity.magnitude * ((100 - this.Stats.Armor) / 100));
             // If this ship is not EMPed
             if(this.IsEMPed == false)
             {

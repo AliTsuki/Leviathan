@@ -660,13 +660,13 @@ public abstract partial class Ship
     }
 
     // Called when receiving collision from projectile
-    public virtual void ReceivedCollisionFromProjectile(float _damage, Vector3 _projectileStrikeLocation)
+    public virtual void ReceivedCollisionFromProjectile(float damage, Vector3 projectileStrikeLocation)
     {
         // If shields are above 0 or barrier is active
         if(this.Stats.Shields > 0f)
         {
             // Spawn a shield strike particle effect
-            this.ProjectileShieldStrike = GameObject.Instantiate(this.ProjectileShieldStrikePrefab, _projectileStrikeLocation, Quaternion.identity);
+            this.ProjectileShieldStrike = GameObject.Instantiate(this.ProjectileShieldStrikePrefab, projectileStrikeLocation, Quaternion.identity);
             // Set particle effect to self destroy after 1 second
             GameObject.Destroy(this.ProjectileShieldStrike, 1f);
         }
@@ -674,22 +674,22 @@ public abstract partial class Ship
         else
         {
             // Spawn a hull strike particle effect
-            this.ProjectileHullStrike = GameObject.Instantiate(this.ProjectileHullStrikePrefab, _projectileStrikeLocation, Quaternion.identity);
+            this.ProjectileHullStrike = GameObject.Instantiate(this.ProjectileHullStrikePrefab, projectileStrikeLocation, Quaternion.identity);
             // Set particle effect to self destroy after 1 second
             GameObject.Destroy(this.ProjectileHullStrike, 1f);
         }
         // Take damage from projectile
-        this.TakeDamage(_damage);
+        this.TakeDamage(damage);
     }
 
     // Called when receiving collision from ship
-    public virtual void ReceivedCollisionFromShip(Vector3 _collisionVelocity, GameController.IFF _iff)
+    public virtual void ReceivedCollisionFromShip(Vector3 collisionVelocity, GameController.IFF iff)
     {
         // Apply velocity inverse to the rotation of the colliding ship
-        Quaternion rotationToTarget = Targeting.GetRotationToTarget(this.ShipObject.transform, _collisionVelocity);
+        Quaternion rotationToTarget = Targeting.GetRotationToTarget(this.ShipObject.transform, collisionVelocity);
         this.ShipRigidbody.AddRelativeForce(rotationToTarget * new Vector3(0, 0, -1000));
         // If ship is different faction
-        if(_iff != this.IFF)
+        if(iff != this.IFF)
         {
             // If armor percentage is above 100, cap it at 100
             Mathf.Clamp(this.Stats.Armor, 0f, 100f);
@@ -699,9 +699,9 @@ public abstract partial class Ship
     }
 
     // Subtract energy
-    protected void SubtractEnergy(float _energyCost)
+    protected void SubtractEnergy(float energyCost)
     {
-        this.Stats.Energy -= _energyCost;
+        this.Stats.Energy -= energyCost;
         if(this.Stats.Energy < 0f)
         {
             this.Stats.Energy = 0f;
@@ -709,12 +709,12 @@ public abstract partial class Ship
     }
 
     // Called when ship receives a damaging attack
-    public virtual void TakeDamage(float _damage)
+    public virtual void TakeDamage(float damage)
     {
         if(this.Stats.Health > 0f)
         {
             // Apply damage to shields
-            this.Stats.Shields -= _damage;
+            this.Stats.Shields -= damage;
             // If shields are knocked below 0
             if(this.Stats.Shields < 0f)
             {
@@ -759,9 +759,9 @@ public abstract partial class Ship
     }
 
     // Turns the damage shader effect on or off
-    protected void ShowDamageShaderEffect(bool _show)
+    protected void ShowDamageShaderEffect(bool show)
     {
-        if(_show == true)
+        if(show == true)
         {
             // Turn on damage shader
             this.ShipObject.transform.GetChild(0).GetComponent<MeshRenderer>().material.SetFloat("_ShowingEffect", 1f);
