@@ -153,12 +153,10 @@ public abstract class PlayerShip : Ship
         this.Explosion = GameObject.Instantiate(this.ExplosionPrefab, this.ShipObject.transform.position, Quaternion.identity);
         // Set explosion object to self destroy after 1 second
         GameObject.Destroy(this.Explosion, 1f);
-        // If this is player
-        // Destroy ship objects
-        for(int i = 0; i < this.ShipObject.transform.childCount; i++)
-        {
-            GameObject.Destroy(this.ShipObject.transform.GetChild(i).gameObject);
-        }
+        // Destroy ship object
+        GameObject.Destroy(this.ShipObject);
+        // Get final time and score
+        GameController.OnPlayerDeath();
         // Show game over screen
         UIController.OpenGameOverPopUp(true);
     }

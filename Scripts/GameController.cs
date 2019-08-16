@@ -23,7 +23,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public const string Version = "0.0.17b";
+    public const string Version = "0.0.17c";
 
     // GM reference
     private static GameManager gm = GameManager.Instance;
@@ -57,8 +57,10 @@ public static class GameController
     private static uint ProjectileID = 0;
 
     // Score
-    public static uint Score { get; private set; } = 0;
+    public static uint CurrentScore { get; private set; } = 0;
+    public static uint FinalScore { get; private set; } = 0;
     public static float TimeStarted { get; private set; } = 0f;
+    public static string FinalTime { get; private set; } = "";
 
     // Identify Friend or Foe
     public enum IFF
@@ -127,14 +129,17 @@ public static class GameController
             {
                 InitializeGameplay();
             }
-            FollowCamera();
+            if(Player.Alive == true)
+            {
+                FollowCamera();
+                AddShips();
+                EnemyDespawnUpdate();
+                EnemySpawnUpdate();
+                Background.Update();
+            }
             ProcessShipUpdate();
-            AddShips();
-            EnemyDespawnUpdate();
-            EnemySpawnUpdate();
             CleanupShipList();
             CleanupProjectileList();
-            Background.Update();
         }
         UIController.Update();
         Logger.Update();
@@ -149,6 +154,12 @@ public static class GameController
             ProcessShipPhysicsUpdate();
             ProcessProjectilePhysicsUpdate();
         }
+    }
+
+    // On player death
+    public static void OnPlayerDeath()
+    {
+        GetFinalTimeAndScore();
     }
 
     // Change game state
@@ -257,7 +268,7 @@ public static class GameController
         EnemyCount = 0;
         ShipID = 0;
         ProjectileID = 0;
-        Score = 0;
+        CurrentScore = 0;
         // Get time started
         TimeStarted = Time.time;
         // Initialize player, follow camera, and backgrounds
@@ -350,7 +361,14 @@ public static class GameController
     // Add to score
     public static void AddToScore(uint exp)
     {
-        Score += exp;
+        CurrentScore += exp;
+    }
+
+    // Get final time and score
+    private static void GetFinalTimeAndScore()
+    {
+        FinalScore = CurrentScore;
+        FinalTime = UIController.TimeString;
     }
 
     // Process ship updates

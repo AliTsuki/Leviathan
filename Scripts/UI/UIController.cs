@@ -37,6 +37,7 @@ public static class UIController
     private static UIPopUp RebindPopUp;
     // PopUp Elements
     private static UIElementsRebind RebindElements;
+    private static UIElementsGameOver GameOverElements;
 
     // Universals
     // Event system
@@ -82,7 +83,7 @@ public static class UIController
     private static int Seconds = 0;
     private static int Minutes = 0;
     private static int Hours = 0;
-    private static string TimeString = "";
+    public static string TimeString { get; private set; } = "";
     // Minimap
     private static TextMeshProUGUI MinimapCoords;
     // Player stats
@@ -260,6 +261,7 @@ public static class UIController
         RebindPopUp = UIPopUps[RebindPopUpName];
         // PopUp Elements
         RebindElements = RebindPopUp.GetComponent<UIElementsRebind>();
+        GameOverElements = GameOverPopUp.GetComponent<UIElementsGameOver>();
         // Main menu
         VersionText = MainMenuElements.VersionText;
         // Set version text
@@ -394,10 +396,13 @@ public static class UIController
     // Update minimap coords
     private static void UpdateMinimapCoords()
     {
-        // Get player position
-        Vector3 PlayerPosition = GameController.Player.ShipObject.transform.position;
-        // Update minimap coord text to display position
-        MinimapCoords.text = $@"X: {Mathf.RoundToInt(PlayerPosition.x)}{Environment.NewLine}Z: {Mathf.RoundToInt(PlayerPosition.z)}";
+        if(GameController.Player.Alive == true)
+        {
+            // Get player position
+            Vector3 PlayerPosition = GameController.Player.ShipObject.transform.position;
+            // Update minimap coord text to display position
+            MinimapCoords.text = $@"X: {Mathf.RoundToInt(PlayerPosition.x)}{Environment.NewLine}Z: {Mathf.RoundToInt(PlayerPosition.z)}";
+        }
     }
 
     // Update info label
@@ -414,7 +419,7 @@ public static class UIController
         // Format time string
         TimeString = $@"{Hours}:{(Minutes < 10 ? "0" + Minutes.ToString() : Minutes.ToString())}:{(Seconds < 10 ? "0" + Seconds.ToString() : Seconds.ToString())}";
         // Update info label with FPS, Time, and Score
-        InfoLabel.text = $@"FPS: {FPS}{Environment.NewLine}Timer: {TimeString}{Environment.NewLine}Score: {GameController.Score}";
+        InfoLabel.text = $@"FPS: {FPS}{Environment.NewLine}Timer: {TimeString}{Environment.NewLine}Score: {GameController.CurrentScore}";
     }
 
     // Update NPC healthbars
@@ -626,7 +631,7 @@ public static class UIController
             else
             {
                 // If force cursor visible is true
-                if(forceCursorVisible == true)
+                if(forceCursorVisible == true || ActivePopUps.Count > 0)
                 {
                     // Use default cursor and set visible
                     Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
@@ -686,6 +691,16 @@ public static class UIController
             MenuBackground.SetActive(false);
             // Initialize ability icons
             InitializeAbilityIcons();
+        }
+    }
+
+    // New PopUp unique changes
+    private static void NewPopUpUniqueChanges(UIPopUp newPopUp)
+    {
+        // If new pop up is game over pop up
+        if(newPopUp = UIPopUps[GameOverPopUpName])
+        {
+            GameOverElements.GameOver();
         }
     }
 
@@ -787,6 +802,7 @@ public static class UIController
             // Check if default button should be selected and select if so
             CheckSelectDefaultButton(newPopUp.DefaultButton);
         }
+        NewPopUpUniqueChanges(newPopUp);
     }
 
     // Close PopUp
