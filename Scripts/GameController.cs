@@ -23,7 +23,7 @@ using UnityEngine;
 public static class GameController
 {
     // Version
-    public const string Version = "0.0.17a";
+    public const string Version = "0.0.17b";
 
     // GM reference
     private static GameManager gm = GameManager.Instance;

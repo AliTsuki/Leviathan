@@ -767,19 +767,20 @@ public class InputBinding
     public int InputMouseButton { get; private set; }
 
     // Default Constructor
-    public InputBinding(GameInputsEnum inputName, InputTypeEnum inputType, string inputButton, KeyCode inputKey, int mouseButton)
+    public InputBinding(GameInputsEnum inputName, InputTypeEnum inputType, string inputButton, KeyCode inputKey, int inputMouseButton)
     {
         this.InputName = inputName;
         this.InputType = inputType;
         this.InputButton = inputButton;
         this.InputKey = inputKey;
-        this.InputMouseButton = mouseButton;
+        this.InputMouseButton = inputMouseButton;
     }
 
 
     // Update button
     public void UpdateInputButton(string newInputButton)
     {
+        Debug.Log($@"Updating Input for {this.InputName} from {this.InputButton} to {newInputButton}");
         Logger.Log($@"Updating Input for {this.InputName} from {this.InputButton} to {newInputButton}");
         this.InputButton = newInputButton;
     }
@@ -787,6 +788,7 @@ public class InputBinding
     // Update key
     public void UpdateInputKey(KeyCode newInputKey)
     {
+        Debug.Log($@"Updating Input for {this.InputName} from {this.InputKey} to {newInputKey}");
         Logger.Log($@"Updating Input for {this.InputName} from {this.InputKey} to {newInputKey}");
         this.InputKey = newInputKey;
     }
@@ -794,6 +796,7 @@ public class InputBinding
     // Update mouse button
     public void UpdateInputMouseButton(int newMouseButton)
     {
+        Debug.Log($@"Updating Input for {this.InputName} from {this.InputMouseButton} to {newMouseButton}");
         Logger.Log($@"Updating Input for {this.InputName} from {this.InputMouseButton} to {newMouseButton}");
         this.InputMouseButton = newMouseButton;
     }
@@ -801,6 +804,7 @@ public class InputBinding
     // Update input type
     public void UpdateInputType(InputTypeEnum newInputType)
     {
+        Debug.Log($@"Updating Input Type for {this.InputName} from {this.InputType} to {newInputType}");
         Logger.Log($@"Updating Input Type for {this.InputName} from {this.InputType} to {newInputType}");
         this.InputType = newInputType;
     }

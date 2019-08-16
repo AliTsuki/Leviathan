@@ -435,7 +435,7 @@ public static class UIController
                     Healthbars.Add(ship.Key, GameObject.Instantiate(NPCUIPrefab));
                     // Set the parent and name of healthbar object
                     HealthbarUI = Healthbars[ship.Key];
-                    HealthbarUI.transform.SetParent(PlayerUIScreen.transform, false);
+                    HealthbarUI.transform.SetParent(PlayerUIElements.HealthbarsParent.transform, false);
                     HealthbarUI.name = $@"Healthbar: {ship.Key}";
                     // If ship is drone
                     if(ship.Value.AItype == Ship.AIType.Drone)

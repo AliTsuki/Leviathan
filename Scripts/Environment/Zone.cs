@@ -13,8 +13,8 @@ public class Zone
     };
     private static readonly EnemyAndSpawnRate[] GreenZoneEnemies = new EnemyAndSpawnRate[]
     {
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 85),
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 2),
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 80),
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 7),
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 13)
     };
     private static readonly EnemyAndSpawnRate[] RedZoneEnemies = new EnemyAndSpawnRate[]
@@ -25,7 +25,8 @@ public class Zone
     private static readonly EnemyAndSpawnRate[] OrangeZoneEnemies = new EnemyAndSpawnRate[]
     {
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 10),
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Flanker, 90)
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 10),
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Flanker, 80)
     };
     private static readonly EnemyAndSpawnRate[] PurpleZoneEnemies = new EnemyAndSpawnRate[]
     {
@@ -35,9 +36,9 @@ public class Zone
     private static readonly EnemyAndSpawnRate[] BlueZoneEnemies = new EnemyAndSpawnRate[]
     {
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Standard, 40),
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 5),
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Ramming, 10),
         new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Broadside, 15),
-        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Flanker, 40)
+        new EnemyAndSpawnRate(EnemyShip.EnemyShipType.Flanker, 35)
     };
 
     // Zone types

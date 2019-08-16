@@ -10225,7 +10225,6 @@ GameObject:
   - component: {fileID: 2122637302586307631}
   - component: {fileID: 2122637302586307630}
   - component: {fileID: 8726705926826557480}
-  - component: {fileID: 6027558426212403073}
   m_Layer: 0
   m_Name: Player Ship Bomber
   m_TagString: Player
@@ -10296,14 +10295,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eb2d09c1485f0f4fbcefd9dfb5bd03a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!81 &6027558426212403073
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2122637302586307625}
-  m_Enabled: 1
 --- !u!1 &5065850101362349699
 GameObject:
   m_ObjectHideFlags: 0

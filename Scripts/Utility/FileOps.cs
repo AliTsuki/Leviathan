@@ -10,12 +10,18 @@ using UnityEngine;
 public static class FileOps
 {
     // Settings file path
-    private const string SettingsFilePath = "Settings.json";
+    private const string SettingsDirPath = @"Settings";
+    private const string SettingsFilePath = @"Settings\Settings.json";
 
     // Read settings from file
     public static bool ReadSettingsFromFile()
     {
-        // If settings file does not exist, return false
+        // If settings directory doesn't exist, create it
+        if(Directory.Exists(SettingsDirPath) == false)
+        {
+            Directory.CreateDirectory(SettingsDirPath);
+        }
+        // If settings file doesn't exist, return false
         if(File.Exists(SettingsFilePath) == false)
         {
             Debug.Log($@"No settings file currently exists.");
@@ -60,6 +66,11 @@ public static class FileOps
     // Write settings to file
     public static void WriteSettingsToFile()
     {
+        // If settings directory doesn't exist, create it
+        if(Directory.Exists(SettingsDirPath) == false)
+        {
+            Directory.CreateDirectory(SettingsDirPath);
+        }
         File.WriteAllText(SettingsFilePath, JsonConvert.SerializeObject(PlayerInput.InputSettings, Formatting.Indented));
         Debug.Log($@"Wrote settings to file.");
         Logger.Log($@"Wrote settings to file.");

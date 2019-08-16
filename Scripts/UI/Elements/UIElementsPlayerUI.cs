@@ -7,6 +7,9 @@ using UnityEngine.UI;
 public class UIElementsPlayerUI : MonoBehaviour
 {
     // Element references
+    [Header("Healthbars")]
+    [SerializeField]
+    public GameObject HealthbarsParent;
     [Header("Info Label")]
     [SerializeField]
     public TextMeshProUGUI InfoLabel;
