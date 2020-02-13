@@ -1,0 +1,176 @@
+{
+  "MovementStyle": 0,
+  "InputMode": 0,
+  "InputBindingsKBM": {
+    "Submit": {
+      "InputName": 0,
+      "InputType": 0,
+      "InputButton": null,
+      "InputKey": 13,
+      "InputMouseButton": 0
+    },
+    "Cancel": {
+      "InputName": 1,
+      "InputType": 0,
+      "InputButton": null,
+      "InputKey": 8,
+      "InputMouseButton": 0
+    },
+    "Pause": {
+      "InputName": 2,
+      "InputType": 0,
+      "InputButton": null,
+      "InputKey": 27,
+      "InputMouseButton": 0
+    },
+    "MainGun": {
+      "InputName": 3,
+      "InputType": 1,
+      "InputButton": null,
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "Ability1": {
+      "InputName": 4,
+      "InputType": 0,
+      "InputButton": null,
+      "InputKey": 101,
+      "InputMouseButton": 0
+    },
+    "Ability2": {
+      "InputName": 5,
+      "InputType": 0,
+      "InputButton": null,
+      "InputKey": 113,
+      "InputMouseButton": 0
+    },
+    "Ability3": {
+      "InputName": 6,
+      "InputType": 1,
+      "InputButton": null,
+      "InputKey": 0,
+      "InputMouseButton": 1
+    },
+    "Warp": {
+      "InputName": 7,
+      "InputType": 0,
+      "InputButton": null,
+      "InputKey": 304,
+      "InputMouseButton": 0
+    },
+    "MoveRight": {
+      "InputName": 8,
+      "InputType": 0,
+      "InputButton": null,
+      "InputKey": 100,
+      "InputMouseButton": 0
+    },
+    "MoveLeft": {
+      "InputName": 9,
+      "InputType": 0,
+      "InputButton": null,
+      "InputKey": 97,
+      "InputMouseButton": 0
+    },
+    "MoveForward": {
+      "InputName": 10,
+      "InputType": 0,
+      "InputButton": null,
+      "InputKey": 119,
+      "InputMouseButton": 0
+    },
+    "MoveBack": {
+      "InputName": 11,
+      "InputType": 0,
+      "InputButton": null,
+      "InputKey": 115,
+      "InputMouseButton": 0
+    }
+  },
+  "InputBindingsController": {
+    "Submit": {
+      "InputName": 0,
+      "InputType": 2,
+      "InputButton": "Controller Button 0",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "Cancel": {
+      "InputName": 1,
+      "InputType": 2,
+      "InputButton": "Controller Button 1",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "Pause": {
+      "InputName": 2,
+      "InputType": 2,
+      "InputButton": "Controller Button 7",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "MainGun": {
+      "InputName": 3,
+      "InputType": 4,
+      "InputButton": "Controller Right Trigger",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "Ability1": {
+      "InputName": 4,
+      "InputType": 2,
+      "InputButton": "Controller Button 4",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "Ability2": {
+      "InputName": 5,
+      "InputType": 4,
+      "InputButton": "Controller Left Trigger",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "Ability3": {
+      "InputName": 6,
+      "InputType": 2,
+      "InputButton": "Controller Button 5",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "Warp": {
+      "InputName": 7,
+      "InputType": 2,
+      "InputButton": "Controller Button 8",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "MoveXAxis": {
+      "InputName": 12,
+      "InputType": 5,
+      "InputButton": "Controller Left Stick Horizontal",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "MoveYAxis": {
+      "InputName": 13,
+      "InputType": 5,
+      "InputButton": "Controller Left Stick Vertical",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "AimXAxis": {
+      "InputName": 14,
+      "InputType": 5,
+      "InputButton": "Controller Right Stick Horizontal",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    },
+    "AimYAxis": {
+      "InputName": 15,
+      "InputType": 5,
+      "InputButton": "Controller Right Stick Vertical",
+      "InputKey": 0,
+      "InputMouseButton": 0
+    }
+  }
+}
